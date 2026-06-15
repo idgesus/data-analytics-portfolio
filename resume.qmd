@@ -1,0 +1,105 @@
+---
+title: "Resume"
+toc: false
+---
+
+::: {style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 1rem; margin-bottom: 0.5rem;"}
+::: {style="flex: 1; min-width: 280px;"}
+# Jesse G
+
+**Manager of Analytics Insights · TV Attribution & Media Measurement**
+:::
+
+::: {style="text-align: right; font-size: 0.92rem; color: var(--ink-soft);"}
+[idgesus@gmail.com](mailto:idgesus@gmail.com)
+[LinkedIn](https://linkedin.com/in/YOURUSERNAME) · [GitHub](https://github.com/YOURUSERNAME)
+:::
+:::
+
+::: {style="border-top: 2px solid var(--ink); margin: 1rem 0 2rem;"}
+:::
+
+[
+::: {.featured-card style="background: var(--accent-soft); border-color: rgba(37,99,235,0.2);"}
+**📄 Download PDF version** — *Generate a PDF from this page once you have the assets ready (or use a tailored design service like FlowCV).*
+:::
+](#)
+
+
+## Summary
+
+Analytics leader with **13+ years** building measurement frameworks that connect media investment to business outcomes. Specialized in TV attribution, probabilistic modeling, spike detection, and code-driven reporting infrastructure. Currently lead a team of analysts at JuiceMedia, having grown into the role through Senior Analyst, Manager, and Director progression.
+
+Known for combining **statistical rigor** with **operational discipline** — the rare analytics leader who can architect a Bayesian model and the AWS-backed pipeline that delivers it to a CMO every Monday morning.
+
+---
+
+## Experience
+
+### Manager of Analytics Insights
+**JuiceMedia** · *2020 – Present*
+
+- Lead the Analytics Insights team measuring TV and multi-channel campaigns for clients across pharma, telemarketing, and media verticals
+- Architect probabilistic attribution and DMA-level lift measurement frameworks used in weekly client deliverables
+- Built the automated reporting infrastructure (Quarto, gt tables, AWS S3 + Athena, Excel/openxlsx) that **eliminated 8+ hours/week of manual analyst work**
+- Designed spike detection systems for real-time identification of media-driven traffic events
+- Manage **3+ analysts**: methodology standards, technical reviews, mentorship, hiring partnership
+- Partner cross-functionally with engineering, data science, and client success teams to ship integrated analytics products
+- Present findings and methodology to client VP/C-level stakeholders
+
+### Senior Analyst → Manager → Director
+**DirectAvenue / JuiceMedia** · *2016 – 2020*
+
+- Promoted through three levels while building the measurement practice
+- Owned methodology for DMA-level TV attribution and lift analysis
+- Designed the spike detection framework still used across the company
+- Established executive reporting cadence and templates
+
+### Data Analyst → Senior Analyst
+**Encore Capital Group** · *2012 – 2016*
+
+- Built reporting and analytical systems supporting data-driven decision making in financial services
+- Developed statistical models and quantitative analyses
+- Created automated reporting workflows and executive presentations
+
+---
+
+## Education
+
+**B.A. Economics (Quantitative Analysis) & Statistics**
+San Diego State University · *2012*
+
+Double major combining economic theory with applied statistical methods.
+
+---
+
+## Technical Skills
+
+**Languages & Tools:** Python, R, SQL, Quarto, Excel/VBA
+**Data engineering:** Parquet, Polars, DuckDB, pyarrow, AWS (S3, Athena), Hive partitioning
+**Statistics:** Causal inference, synthetic controls, probabilistic attribution, Bayesian methods (familiar), time-series analysis, anomaly detection, A/B & geo-testing
+**Reporting & viz:** Quarto, gt/gtExtras, ggplot2, Plotly, Tableau, openxlsx2, matplotlib
+**Engineering practices:** Git, GitHub, code review, testing, reproducible pipelines, parameterized reports
+
+---
+
+## Domain Expertise
+
+- **TV attribution & lift analysis** at DMA and national level
+- **Probabilistic attribution modeling** across overlapping media channels
+- **Spike detection** and anomaly detection on time-series traffic data
+- **Automated executive reporting** — Quarto/gt/Excel pipeline design
+- **Pharma, telemarketing, and media** vertical experience
+- **Team leadership** — managing analysts, defining standards, mentorship
+
+---
+
+## Featured Writing
+
+[**The Case for Code-Driven Reporting: Why Your Analytics Team Should Stop Building Decks**](posts/code-driven-reporting.html) — A methodology paper on treating analytical reports as software products. *2025.*
+
+---
+
+::: {style="text-align: center; font-size: 0.85rem; color: var(--ink-muted); margin-top: 3rem;"}
+For case studies and code, see [the portfolio →](index.html)
+:::

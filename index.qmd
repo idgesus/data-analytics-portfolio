@@ -1,0 +1,180 @@
+---
+title: ""
+page-layout: full
+toc: false
+include-in-header:
+  text: |
+    <meta name="description" content="Jesse G — Analytics leader specializing in media measurement, attribution modeling, and reproducible analytics infrastructure.">
+---
+
+::: {.hero}
+::: {.hero-inner}
+
+[Manager → Director · Analytics Leadership]{.hero-eyebrow}
+
+# Measurement frameworks that *survive contact* with executives.
+
+::: {.hero-tagline}
+13+ years building TV attribution models, anomaly detection systems, and code-driven reporting infrastructure for media measurement at scale.
+:::
+
+::: {.hero-cta-row}
+[See the work](#case-studies){.btn-primary-cta}
+[Read the methodology paper](posts/code-driven-reporting.qmd){.btn-secondary-cta}
+:::
+
+:::
+:::
+
+
+::: {.metrics-row}
+
+::: {.metric}
+[13+]{.metric-value}
+[Years in analytics]{.metric-label}
+[Encore → JuiceMedia]{.metric-detail}
+:::
+
+::: {.metric}
+[210]{.metric-value}
+[DMAs measured]{.metric-label}
+[National + regional campaigns]{.metric-detail}
+:::
+
+::: {.metric}
+[3+]{.metric-value}
+[Analysts managed]{.metric-label}
+[Methodology + mentorship]{.metric-detail}
+:::
+
+::: {.metric}
+[Python · R · SQL]{.metric-value style="font-size: 1.4rem;"}
+[Stack]{.metric-label}
+[AWS · Quarto · Tableau]{.metric-detail}
+:::
+
+:::
+
+
+[Featured writing]{.section-label}
+
+[
+::: {.featured-essay}
+[2025 · Methodology Paper]{.fe-eyebrow}
+
+### The Case for Code-Driven Reporting: Why Your Analytics Team Should Stop Building Decks
+
+What separates a data team that scales from one that drowns in deliverables. A deep argument for treating reports as products — version-controlled, reproducible, and tested — instead of one-off PowerPoints assembled by hand.
+
+:::
+](posts/code-driven-reporting.qmd)
+
+
+[Case studies]{.section-label}
+
+::: {.section-title}
+Selected work {#case-studies}
+:::
+
+::: {.section-intro}
+Each case study uses **public or synthetic data** — never client work. Code is on GitHub, methodology is documented, and trade-offs are explained honestly.
+:::
+
+[
+::: {.featured-card}
+
+::: {.fc-row}
+[Spike Detection · Time-Series Anomaly Detection]{.fc-category}
+[Data: Wikipedia Pageviews]{.fc-data}
+:::
+
+### Detecting Media-Driven Spikes in 50GB of Wikipedia Traffic
+
+Built an anomaly detection framework on real Wikipedia pageview data, demonstrating how to identify statistically significant traffic spikes against dynamic baselines. Uses Polars on Parquet for queries 10x faster than CSV.
+
+::: {.fc-tags}
+[Python]{.fc-tag} [Polars]{.fc-tag} [DuckDB]{.fc-tag} [Parquet]{.fc-tag} [Time-Series]{.fc-tag} [Z-Score Detection]{.fc-tag}
+:::
+
+:::
+](case-studies/spike-detection.qmd)
+
+[
+::: {.featured-card}
+
+::: {.fc-row}
+[Media Spend Analysis · Real Public Data]{.fc-category}
+[Data: FEC Bulk Files]{.fc-data}
+:::
+
+### Political Ad Spend Patterns in FEC Operating Expenditures
+
+Analyzed real political committee disbursements from FEC bulk data — converting messy fixed-width text files to a partitioned Parquet warehouse and surfacing channel-level spend patterns across election cycles.
+
+::: {.fc-tags}
+[Python]{.fc-tag} [pyarrow]{.fc-tag} [Parquet Partitioning]{.fc-tag} [DuckDB]{.fc-tag} [R/Plotly]{.fc-tag}
+:::
+
+:::
+](case-studies/political-ad-spend.qmd)
+
+[
+::: {.featured-card}
+
+::: {.fc-row}
+[Reporting Engineering · End-to-End Pipeline]{.fc-category}
+[Data: CMS Open Payments]{.fc-data}
+:::
+
+### Automated Reporting Pipeline (R + Quarto + gt)
+
+A reproducible pipeline that ingests real CMS Open Payments data, applies cleaning rules, and renders publication-quality HTML reports and formatted Excel workbooks — with zero manual steps after the first run.
+
+::: {.fc-tags}
+[R]{.fc-tag} [Quarto]{.fc-tag} [gt / gtExtras]{.fc-tag} [openxlsx2]{.fc-tag} [arrow]{.fc-tag}
+:::
+
+:::
+](case-studies/automated-pipeline.qmd)
+
+
+[Engineering POV]{.section-label}
+
+[
+::: {.featured-card style="border-color: var(--accent-bright); background: var(--accent-soft);"}
+
+### → Data Foundation: How I Think About the Storage Layer
+
+A walkthrough of the schema, partitioning strategy, and query patterns that underlie the case studies. The boring infrastructure choices that make everything else fast.
+:::
+](data-foundation/data-engineering.qmd)
+
+
+[Toolkit]{.section-label}
+
+::: {.section-title}
+What I work with
+:::
+
+::: {.skill-grid}
+[Python]{.skill .primary}
+[R]{.skill .primary}
+[SQL]{.skill .primary}
+[Polars]{.skill .primary}
+[DuckDB]{.skill .primary}
+[Parquet / pyarrow]{.skill .primary}
+[AWS S3 · Athena]{.skill .primary}
+[Quarto]{.skill}
+[gt / gtExtras]{.skill}
+[Plotly]{.skill}
+[Tableau]{.skill}
+[Excel · VBA]{.skill}
+[Git · GitHub]{.skill}
+[Bayesian Methods]{.skill}
+[Time-Series Analysis]{.skill}
+[Causal Inference]{.skill}
+[Anomaly Detection]{.skill}
+[A/B & Geo Testing]{.skill}
+[Team Leadership]{.skill}
+[Executive Communication]{.skill}
+:::

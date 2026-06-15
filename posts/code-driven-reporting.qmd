@@ -1,0 +1,185 @@
+---
+title: "The Case for Code-Driven Reporting"
+subtitle: "Why your analytics team should stop building decks"
+date: 2025-01-20
+author: "Jesse G"
+description: "A methodology paper on treating reports as software products: version-controlled, reproducible, tested. Why most analytics teams drown in deliverables — and how to fix it."
+categories: [Methodology, Engineering, Analytics Leadership]
+toc: true
+toc-depth: 2
+reading-time: true
+---
+
+[Methodology Paper · 12 min read]{.section-label}
+
+::: {.tldr}
+**TL;DR** — Most analytics teams drown in manually-assembled deliverables: PowerPoints, Excel files, ad-hoc dashboards. This is technical debt disguised as productivity. The fix is to treat reports as software products — version-controlled, parameterized, reproducible, and tested. This essay argues the case, lays out the maturity model, and walks through what it actually looks like in practice.
+:::
+
+---
+
+## The problem nobody quite admits
+
+Every analytics team I've worked with — across financial services, pharma measurement, and ad-tech — has the same Tuesday morning. An analyst is hunched over a PowerPoint, copy-pasting numbers from Excel into a deck because the executive review is at 2 PM and the data refreshed at 11. Someone else is in Slack asking "wait, which version of the Q3 file is the real one?" A senior analyst is fixing a formula in a workbook that breaks every quarter when the date format shifts.
+
+This is normal. It's also a slow-motion disaster.
+
+I'm going to make a strong claim: **manually-assembled deliverables are the single biggest source of avoidable risk and waste in modern analytics teams.** Bigger than bad SQL. Bigger than tooling debates. Bigger than headcount. And yet most teams treat the problem as a soft cultural issue ("we should automate more") rather than what it actually is: a structural choice with measurable cost.
+
+This essay lays out the case for **code-driven reporting** — treating analytical deliverables the way software engineers treat applications. It's not a tools post. It's an argument about what analytics work *is*, and what it should be.
+
+## What "code-driven reporting" actually means
+
+The term is broader than it sounds. I don't just mean "use Python instead of Excel." I mean a specific commitment:
+
+::: {.pullquote}
+Every analytical deliverable — every chart, table, metric, and narrative — should be reproducible from raw data with a single command.
+
+[The single-command test for analytics maturity.]{.pullquote-attr}
+:::
+
+If your team can't answer "yes, just run this script" when asked how a number was produced, you don't have analytics — you have artisanal data work. That has a place (research, exploration) but it shouldn't be the *output medium* for recurring deliverables.
+
+Code-driven reporting means:
+
+- **Inputs are explicit.** Source data is specified, dated, and pulled from a system of record — not "the file Sarah sent."
+- **Logic is in code.** Filtering, aggregation, business rules, and metric definitions live in version-controlled files, not in someone's head or a hidden Excel formula.
+- **Outputs are generated.** The PDF, HTML report, Excel workbook, or slide deck is produced by a script that anyone on the team can run.
+- **Changes are tracked.** When the CFO asks "why did this number change from last quarter?" the answer is a git diff, not a memory test.
+- **Reviews happen on the code.** Pull requests force methodology discussions before reports go out.
+
+That's the full commitment. Anything less is a halfway state that incurs most of the cost of manual work without much of the benefit of automation.
+
+## The maturity model
+
+Most teams sit somewhere on this spectrum. Be honest about where yours actually is.
+
+### Level 0: Artisanal reporting
+
+Reports are assembled by hand each cycle. Numbers come from running queries, copying outputs, and pasting into PowerPoint or Excel. Senior analysts are bottlenecks because they're the only ones who remember how each metric is calculated.
+
+**Cost signal:** When someone leaves the team, reporting capability degrades for weeks.
+
+### Level 1: Templated reporting
+
+A spreadsheet template or PowerPoint template exists. Data still gets pasted in by hand, but at least the formatting is stable. Charts auto-update from source ranges.
+
+**Cost signal:** Quarter-end takes 3+ days of analyst time, every time.
+
+### Level 2: Scripted extraction
+
+Scripts pull data from sources and produce intermediate outputs (CSVs, summary tables). A human still assembles the final deliverable.
+
+**Cost signal:** Reports go out, but the team can't answer "what changed?" without manual investigation.
+
+### Level 3: Parameterized reports
+
+A Quarto, R Markdown, or Jupyter document renders the full deliverable from raw data. Parameters control client, date range, or scope. One command produces the artifact.
+
+**Cost signal:** New report variants take hours, not days.
+
+### Level 4: Continuous reporting
+
+Reports render automatically on a schedule (or on data refresh). Outputs are versioned, archived, and accessible via URL. Changes to methodology go through code review. Tests catch breaking changes before stakeholders see them.
+
+**Cost signal:** The team spends most of its time on *new* analytical questions, not on reproducing old ones.
+
+Most teams I've seen — including good ones — sit at Level 1 or Level 2 and *think* they're at Level 3. The honest test: pick last quarter's executive deck. Can someone who wasn't on the team reproduce it from the raw data this morning, before lunch? If no, you're below Level 3.
+
+## Why teams stay stuck
+
+The objections are predictable. They're also mostly wrong.
+
+**"We don't have time to build infrastructure."** This is the most common objection and it's exactly backwards. The time you don't have is being consumed by the manual work itself. The investment pays back in weeks for any recurring report. The math is brutal: a 40-hour build that saves 4 hours/week breaks even in 10 weeks and saves 200+ hours/year thereafter. I have never seen a team where the math didn't work.
+
+**"Our stakeholders want PowerPoint."** They want to read information in a familiar format. They do not care, at all, how the PowerPoint was made. A code-driven pipeline can produce a `.pptx` file just as easily as a hand-built one — and the resulting deck will have consistent formatting, accurate numbers, and traceable provenance. The stakeholder gets their format. You get your sanity.
+
+**"Our data is too messy."** Yes. That's exactly why you need to encode the cleaning logic in version control. Messy data plus manual handling is how mistakes propagate silently. Messy data plus tested cleaning code is how you catch upstream changes the day they happen.
+
+**"We're not engineers."** Modern tools — Quarto, R Markdown, Jupyter, dbt — are explicitly designed for analysts. You don't need to be a software engineer to write reproducible reports any more than you need to be a structural engineer to live in a building. You do need to take the craft seriously.
+
+**"It's not worth it for one-off analyses."** Agreed. Code-driven reporting is for **recurring deliverables**. Exploratory analysis can stay messy. The discipline applies where the work repeats.
+
+## What it costs to stay at Level 1
+
+I want to put real numbers on this, because the cost of artisanal reporting is invisible until you measure it.
+
+A team I worked with — five analysts, one director — produced 12 recurring client-facing reports per month plus ad-hoc work. Manual assembly time per report was averaging 6 hours, plus 2 hours of senior review. That's 96 hours/month on production work alone. Across the team, that was roughly **30% of total analyst capacity** going to producing things that had been produced 50+ times before.
+
+After moving the recurring reports to a code-driven pipeline (Quarto + parameterized R + an orchestration layer), production time dropped to about 4 hours/month for the same 12 reports. The reclaimed capacity went to actual analytical work: methodology improvements, new measurement frameworks, deeper client engagements.
+
+The build took two analysts about six weeks of partial effort. It saved roughly 1,100 analyst-hours per year. That's the equivalent of more than half a full-time analyst, recovered in perpetuity, from one project.
+
+This is not an unusual outcome. It's the typical outcome.
+
+## What "doing it right" looks like in practice
+
+Here's the structure I converge on, regardless of language:
+
+```
+project/
+├── data/                # Raw data (gitignored if large)
+├── R/ or src/           # Cleaning, transformation, modeling functions
+├── reports/             # Quarto/RMarkdown/Jupyter sources
+│   ├── _quarto.yml      # Site/book config
+│   ├── monthly_review.qmd
+│   └── client_X_report.qmd
+├── output/              # Rendered deliverables (gitignored)
+├── tests/               # Tests for transformation functions
+├── renv.lock or pyproject.toml   # Pinned dependencies
+└── README.md            # How to run it
+```
+
+The non-negotiables:
+
+1. **Pinned dependencies.** `renv` for R, `uv`/`pyproject.toml` for Python. The pipeline must run identically on a teammate's laptop a year from now.
+2. **Functions live separately from reports.** The `.qmd` calls functions; it doesn't define them. This makes everything testable.
+3. **Tests on transformations, not reports.** Test that `compute_cpa()` returns the right number for known inputs. Don't test the rendered HTML.
+4. **Parameterization is first-class.** Reports take parameters (date range, client ID). Variants are configuration, not copies.
+5. **Outputs are reproducible from `main`.** The current branch should always produce a runnable pipeline.
+
+## The leadership angle
+
+This isn't a tooling argument. It's a leadership argument.
+
+Analytics managers and directors who insist on code-driven reporting do three things at once:
+
+**They protect their team from burnout.** Manual deliverable production is the work analysts complain about most. It's repetitive, error-prone, and high-stakes. Eliminating it makes the job better.
+
+**They protect the business from quiet errors.** A typo in a hand-built deck can sit there for weeks. A test failure in a code-driven pipeline blocks the deploy.
+
+**They build a team that scales.** A team at Level 3+ can take on more work without proportional headcount. A team at Level 1 needs more analysts every time output volume grows.
+
+::: {.pullquote}
+The best analytics leaders I know don't measure their teams by the volume of decks produced. They measure by the number of recurring deliverables that no longer require human assembly.
+
+[A useful KPI for analytics leadership.]{.pullquote-attr}
+:::
+
+If you're an analytics leader and your team is at Level 1 or 2, you have a budget problem and you're paying for it in analyst time. If you're an analytics IC and your team is at Level 1 or 2, you have a career problem — your most valuable hours are being consumed by work that doesn't grow your skills.
+
+## Where to start
+
+If you're convinced and want to move, here's the sequence that has worked for me:
+
+1. **Pick one recurring report.** Not the most complex. Pick one that runs at least monthly, has a stable structure, and would be embarrassing if it broke.
+2. **Reproduce it in Quarto or RMarkdown.** Match the existing format exactly. The goal is not to improve the report — it's to demonstrate that the code can produce the same output.
+3. **Run both side-by-side for one cycle.** Generate the manual version *and* the automated version. Check that they match. Fix the discrepancies.
+4. **Switch over.** The next cycle, only run the automated version. Keep the manual process as fallback for one more cycle, then retire it.
+5. **Repeat.** Move the next report. Then the next. Within a year you'll have inverted the team's time distribution.
+
+The hardest part is the first one. The seventh report takes 1/4 the time of the first. The team builds shared infrastructure as they go.
+
+## Closing
+
+Code-driven reporting is not a fashion choice or a technical preference. It's a strategic decision about how an analytics team allocates its scarcest resource — analyst time — and how it manages its largest hidden risk: silent errors in artisanal work.
+
+The teams that take this seriously will spend their time on harder, more valuable problems. The teams that don't will keep producing decks until automation does it for them. There is no third option.
+
+---
+
+::: {style="text-align: center; color: var(--ink-muted); font-size: 0.9rem; margin-top: 3rem;"}
+Found this useful? [Share on LinkedIn →](https://www.linkedin.com/sharing/share-offsite/?url=https://YOURUSERNAME.github.io/portfolio/posts/code-driven-reporting.html)
+
+Or read more in the [case studies](/index.html#case-studies).
+:::

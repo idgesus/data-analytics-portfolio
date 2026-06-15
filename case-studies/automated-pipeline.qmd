@@ -1,0 +1,550 @@
+---
+title: "Automated Reporting Pipeline"
+subtitle: "From raw CMS Open Payments to executive deliverables — zero manual steps"
+date: 2025-01-02
+categories: [R, Quarto, Reporting Engineering, gt]
+toc: true
+toc-depth: 3
+code-fold: true
+---
+
+::: {.section-label}
+Reporting Engineering · End-to-End Pipeline
+:::
+
+::: {.tldr}
+**TL;DR** — A production-style pipeline that ingests real CMS Open Payments data
+(pharmaceutical company payments to physicians), applies cleaning and business logic,
+and produces publication-quality reports — Quarto HTML and formatted Excel — with no
+manual steps after the first run. This is the engineering behind the
+[methodology paper](../posts/code-driven-reporting.html) made concrete.
+:::
+
+::: {.callout-data}
+**Data source:** [CMS Open Payments](https://openpaymentsdata.cms.gov/) — public dataset of
+financial relationships between drug/device companies and physicians. Released by the
+Centers for Medicare & Medicaid Services as required by the Affordable Care Act. Multi-GB
+per program year, available as CSV. Public domain. The fetch script
+(`data/fetch_cms.py`) downloads the bulk file, filters to eight pharmaceutical
+manufacturers using Polars lazy scan, and caches the result as Parquet — bringing a
+3 GB CSV down to a tens-of-MB working set.
+:::
+
+::: {.callout-data}
+**Note:** This case study is written from the perspective of an R-primary workflow
+because Quarto + gt + openxlsx2 is genuinely R's strongest territory. The principles —
+not the specific syntax — are what transfer.
+:::
+
+## The Business Problem
+
+Recurring reports are where analytics teams quietly hemorrhage hours. A monthly client
+deliverable that takes 6 hours to assemble, times 12 months, times multiple clients,
+adds up to *enormous* opportunity cost.
+
+The CMS Open Payments dataset is a useful proving ground because it has the qualities
+that make real client work hard:
+
+- **Real volume** (millions of records per year)
+- **Real messiness** (free-text purpose fields, inconsistent vendor naming, missing values)
+- **Real reporting needs** (companies and analysts care about this — there's a publication audience)
+
+The goal: a single command produces a publication-quality monthly summary report (HTML and
+Excel) for any pharmaceutical company in the dataset, ready to send to a stakeholder.
+
+## The Approach
+
+::: {.approach-grid}
+
+::: {.step}
+::: {.step-num}
+1
+:::
+::: {.step-body}
+#### Modular cleaning functions
+Cleaning logic lives in standalone R functions, not in the report itself. Each function does one thing and is independently testable.
+:::
+:::
+
+::: {.step}
+::: {.step-num}
+2
+:::
+::: {.step-body}
+#### Parameterized Quarto report
+The report (`monthly-summary.qmd`) takes parameters: company name, reporting period. One template renders for any company.
+:::
+:::
+
+::: {.step}
+::: {.step-num}
+3
+:::
+::: {.step-body}
+#### Publication-quality tables (gt)
+Use `gt` and `gtExtras` for tables that look like they belong in a Wall Street Journal feature, not a Jupyter notebook.
+:::
+:::
+
+::: {.step}
+::: {.step-num}
+4
+:::
+::: {.step-body}
+#### Excel output via openxlsx2
+Same data, formatted Excel workbook with frozen panes, conditional formatting, and multiple sheets — for stakeholders who live in Excel.
+:::
+:::
+
+:::
+
+## Step 1: Load CMS Open Payments data
+
+The fetch script (`data/fetch_cms.py`) downloads the General Payments bulk
+file from `download.cms.gov/openpayments/`, filters it to the eight target
+manufacturers using a Polars lazy scan, and writes the result to Parquet.
+CMS rotates the bulk filename on every refresh, so the script accepts the
+current URL as `--url` — see the README for instructions.
+
+If the cache is absent (e.g. you cloned the repo and haven't fetched yet),
+the chunk falls back to a clearly-labeled synthetic dataset that mirrors
+the real schema, so the rest of the case study still renders. The synthetic
+path is only there as a fallback — the goal is real data.
+
+```{r}
+#| label: load-cms-data
+#| code-summary: "Load CMS Open Payments — real if cached, synthetic fallback otherwise"
+#| message: false
+#| warning: false
+
+library(arrow)
+library(dplyr)
+library(tidyr)
+library(lubridate)
+library(stringr)
+
+cache_path <- file.path("..", "data", "cache", "cms", "general_payments.parquet")
+using_real_data <- file.exists(cache_path)
+
+if (using_real_data) {
+  payments_raw <- read_parquet(cache_path) %>%
+    rename(
+      applicable_manufacturer_or_applicable_gpo_making_payment_name = company,
+      physician_specialty                                            = specialty,
+      recipient_state                                                = state,
+      date_of_payment                                                = payment_date,
+      nature_of_payment_or_transfer_of_value                         = payment_type,
+      total_amount_of_payment_usdollars                              = amount_usd
+    )
+  cat("Source: REAL CMS Open Payments (filtered to 8 manufacturers via fetch_cms.py)\n")
+} else {
+  cat("Source: SYNTHETIC fallback (CMS cache not found at ", cache_path, ")\n", sep = "")
+  cat("  → Run `python data/fetch_cms.py --url <current-bulk-url>` for real data.\n\n")
+  set.seed(2024)
+  n_records <- 8000
+  companies <- c(
+    "Pfizer Inc.", "Johnson & Johnson", "Merck & Co.",
+    "AbbVie Inc.", "Eli Lilly and Company", "Bristol-Myers Squibb",
+    "Novartis Pharmaceuticals", "GlaxoSmithKline LLC"
+  )
+  specialties <- c(
+    "Internal Medicine", "Cardiology", "Oncology", "Family Medicine",
+    "Psychiatry", "Neurology", "Endocrinology", "Dermatology",
+    "Orthopedic Surgery", "Anesthesiology"
+  )
+  states <- c("CA","TX","NY","FL","IL","PA","OH","GA","NC","MI",
+              "NJ","VA","WA","AZ","MA","TN","IN","MO","MD","WI")
+  payment_types <- c(
+    "Compensation for services other than consulting" = 0.12,
+    "Consulting Fee" = 0.18, "Food and Beverage" = 0.32,
+    "Travel and Lodging" = 0.10, "Education" = 0.08,
+    "Honoraria" = 0.06, "Grant" = 0.04, "Royalty or License" = 0.02,
+    "Charitable Contribution" = 0.03, "Gift" = 0.05
+  )
+  payments_raw <- tibble(
+    record_id = seq_len(n_records),
+    applicable_manufacturer_or_applicable_gpo_making_payment_name = sample(
+      companies, n_records, replace = TRUE,
+      prob = c(0.18, 0.16, 0.14, 0.12, 0.11, 0.10, 0.10, 0.09)
+    ),
+    physician_specialty = sample(specialties, n_records, replace = TRUE),
+    recipient_state = sample(states, n_records, replace = TRUE),
+    date_of_payment = sample(
+      seq.Date(as.Date("2024-01-01"), as.Date("2024-12-31"), by = "day"),
+      n_records, replace = TRUE
+    ),
+    nature_of_payment_or_transfer_of_value = sample(
+      names(payment_types), n_records, replace = TRUE,
+      prob = unname(payment_types)
+    )
+  ) %>%
+    mutate(
+      total_amount_of_payment_usdollars = round(rlnorm(n(), meanlog = 4.8, sdlog = 1.6), 2),
+      recipient_state = ifelse(runif(n()) < 0.015, NA_character_, recipient_state),
+      physician_specialty = ifelse(runif(n()) < 0.01, NA_character_, physician_specialty)
+    )
+  dupe_rows <- payments_raw %>% slice_sample(n = 150)
+  payments_raw <- bind_rows(payments_raw, dupe_rows)
+}
+
+cat("Records: ", format(nrow(payments_raw), big.mark = ","), "\n")
+cat("Total payments: ", scales::dollar(sum(payments_raw$total_amount_of_payment_usdollars)), "\n")
+cat("Unique companies: ", length(unique(payments_raw$applicable_manufacturer_or_applicable_gpo_making_payment_name)), "\n")
+cat("Date range: ", as.character(min(payments_raw$date_of_payment)),
+    " to ", as.character(max(payments_raw$date_of_payment)), "\n", sep = "")
+```
+
+## Step 2: Modular cleaning functions
+
+The cleaning lives in standalone functions, in a separate `R/` directory in production.
+Each function is testable and reusable.
+
+```{r}
+#| label: cleaning-functions
+#| code-summary: "Modular cleaning functions (would normally live in R/clean.R)"
+
+#' Standardize CMS column names
+#' @param df Raw CMS payments tibble
+clean_column_names <- function(df) {
+  df %>%
+    rename(
+      company       = applicable_manufacturer_or_applicable_gpo_making_payment_name,
+      specialty     = physician_specialty,
+      state         = recipient_state,
+      payment_date  = date_of_payment,
+      payment_type  = nature_of_payment_or_transfer_of_value,
+      amount_usd    = total_amount_of_payment_usdollars
+    )
+}
+
+#' Remove duplicate filings (keeping first occurrence)
+deduplicate_records <- function(df) {
+  df %>% distinct(record_id, .keep_all = TRUE)
+}
+
+#' Handle missing values with documented defaults
+handle_missing <- function(df) {
+  df %>%
+    mutate(
+      state = if_else(is.na(state), "Unknown", state),
+      specialty = if_else(is.na(specialty), "Not Reported", specialty)
+    )
+}
+
+#' Flag outliers using IQR method (don't remove, just flag for review)
+flag_outliers <- function(df, multiplier = 3) {
+  df %>%
+    group_by(payment_type) %>%
+    mutate(
+      .q1 = quantile(amount_usd, 0.25, na.rm = TRUE),
+      .q3 = quantile(amount_usd, 0.75, na.rm = TRUE),
+      .iqr = .q3 - .q1,
+      is_outlier = amount_usd > .q3 + multiplier * .iqr
+    ) %>%
+    ungroup() %>%
+    select(-.q1, -.q3, -.iqr)
+}
+
+#' Add derived time dimensions
+add_time_dimensions <- function(df) {
+  df %>%
+    mutate(
+      year = year(payment_date),
+      quarter = paste0("Q", quarter(payment_date)),
+      month = month(payment_date, label = TRUE, abbr = TRUE),
+      year_month = floor_date(payment_date, "month")
+    )
+}
+
+#' Full cleaning pipeline
+clean_pipeline <- function(df) {
+  df %>%
+    clean_column_names() %>%
+    deduplicate_records() %>%
+    handle_missing() %>%
+    flag_outliers() %>%
+    add_time_dimensions()
+}
+
+# Apply
+payments <- clean_pipeline(payments_raw)
+
+cat("After cleaning:\n")
+cat("  Records:    ", format(nrow(payments), big.mark = ","), "\n")
+cat("  Outliers:   ", format(sum(payments$is_outlier), big.mark = ","),
+    " (flagged, not removed)\n")
+cat("  Companies:  ", length(unique(payments$company)), "\n")
+```
+
+## Step 3: Publication-quality tables with `gt`
+
+This is where R earns its keep. `gt` and `gtExtras` produce tables that genuinely
+belong in a published report.
+
+```{r}
+#| label: gt-table
+#| code-summary: "Build publication-quality summary table with gt"
+#| message: false
+
+library(gt)
+library(scales)
+
+# Pick the top-spend manufacturer in the cleaned data as the parameterized example.
+# Real CMS company names vary slightly across program years (e.g. "Pfizer, Inc." vs
+# "PFIZER INC."), so we resolve at run time rather than hard-coding a string.
+target_company <- payments %>%
+  filter(!is_outlier) %>%
+  group_by(company) %>%
+  summarise(spend = sum(amount_usd, na.rm = TRUE), .groups = "drop") %>%
+  arrange(desc(spend)) %>%
+  slice(1) %>%
+  pull(company)
+
+company_summary <- payments %>%
+  filter(company == target_company, !is_outlier) %>%
+  group_by(payment_type) %>%
+  summarise(
+    n_payments = n(),
+    total_amount = sum(amount_usd),
+    median_amount = median(amount_usd),
+    avg_amount = mean(amount_usd),
+    .groups = "drop"
+  ) %>%
+  arrange(desc(total_amount)) %>%
+  mutate(
+    pct_of_total = total_amount / sum(total_amount)
+  )
+
+summary_year <- year(min(payments$payment_date, na.rm = TRUE))
+company_summary %>%
+  gt() %>%
+  tab_header(
+    title = md(paste0("**", target_company, " — Payment Summary**")),
+    subtitle = paste0("Open Payments General Payments · Program Year ", summary_year)
+  ) %>%
+  fmt_currency(columns = c(total_amount, median_amount, avg_amount), decimals = 0) %>%
+  fmt_number(columns = n_payments, decimals = 0, sep_mark = ",") %>%
+  fmt_percent(columns = pct_of_total, decimals = 1) %>%
+  cols_label(
+    payment_type = "Payment Type",
+    n_payments = "Count",
+    total_amount = "Total",
+    median_amount = "Median",
+    avg_amount = "Average",
+    pct_of_total = "% of Total"
+  ) %>%
+  tab_style(
+    style = list(cell_text(weight = "bold")),
+    locations = cells_body(columns = total_amount, rows = pct_of_total > 0.15)
+  ) %>%
+  data_color(
+    columns = pct_of_total,
+    palette = c("#f8fafc", "#dbeafe", "#2563eb"),
+    domain = c(0, max(company_summary$pct_of_total))
+  ) %>%
+  tab_source_note(source_note = "Source: CMS Open Payments · Auto-generated from pipeline") %>%
+  tab_options(
+    table.font.size = px(12),
+    heading.title.font.size = px(15),
+    column_labels.font.weight = "bold",
+    table.border.top.style = "none",
+    table_body.hlines.style = "none"
+  )
+```
+
+## Step 4: Visualization — monthly trend
+
+```{r}
+#| label: monthly-trend
+#| code-summary: "Monthly payment volume — clean ggplot2 styling"
+#| fig-cap: "Monthly payments to physicians by selected pharmaceutical companies"
+#| fig-width: 10
+#| fig-height: 5
+#| message: false
+
+library(ggplot2)
+
+top4 <- payments %>%
+  filter(!is_outlier) %>%
+  group_by(company) %>%
+  summarise(spend = sum(amount_usd, na.rm = TRUE), .groups = "drop") %>%
+  arrange(desc(spend)) %>%
+  slice_head(n = 4) %>%
+  pull(company)
+
+monthly_trend <- payments %>%
+  filter(!is_outlier, company %in% top4) %>%
+  group_by(year_month, company) %>%
+  summarise(total = sum(amount_usd), .groups = "drop")
+
+trend_palette <- setNames(c("#2563eb", "#dc2626", "#059669", "#d97706"), top4)
+
+ggplot(monthly_trend, aes(x = year_month, y = total / 1000, color = company)) +
+  geom_line(linewidth = 1.1) +
+  geom_point(size = 2.2) +
+  scale_y_continuous(labels = label_dollar(suffix = "K")) +
+  scale_x_date(date_labels = "%b", date_breaks = "1 month") +
+  scale_color_manual(values = trend_palette) +
+  labs(
+    title = "Monthly Payment Volume by Company",
+    subtitle = "CMS Open Payments · top 4 manufacturers · Excludes outliers",
+    x = NULL, y = NULL, color = NULL,
+    caption = "Source: CMS Open Payments · Auto-generated"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    plot.subtitle = element_text(color = "grey40"),
+    plot.caption = element_text(color = "grey50", size = 9),
+    legend.position = "top",
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_blank()
+  )
+```
+
+## Step 5: Render to Excel via `openxlsx2`
+
+For stakeholders who live in Excel — and that's most of them — render the same data
+as a properly formatted workbook.
+
+```{r}
+#| label: excel-export
+#| code-summary: "Generate formatted Excel workbook"
+#| eval: false
+
+library(openxlsx2)
+
+# Build a multi-sheet workbook
+wb <- wb_workbook(creator = "Analytics Pipeline") %>%
+  # Summary sheet
+  wb_add_worksheet("Summary", grid_lines = FALSE) %>%
+  wb_add_data(x = company_summary, start_row = 3, start_col = 2) %>%
+  wb_add_cell_style(
+    dims = "B3:G3",
+    horizontal = "center",
+    text_bold = TRUE
+  ) %>%
+  wb_freeze_pane(first_active_row = 4) %>%
+
+  # Detail sheet
+  wb_add_worksheet("Detail", grid_lines = FALSE) %>%
+  wb_add_data(
+    x = payments %>% filter(company == target_company, !is_outlier) %>%
+      select(payment_date, payment_type, specialty, state, amount_usd),
+    start_row = 1
+  ) %>%
+  wb_freeze_pane(first_active_row = 2) %>%
+
+  # Outliers sheet (always include for transparency)
+  wb_add_worksheet("Outliers Flagged", grid_lines = FALSE) %>%
+  wb_add_data(
+    x = payments %>% filter(company == target_company, is_outlier),
+    start_row = 1
+  )
+
+# In the real pipeline:
+# wb_save(wb, paste0("output/", target_company, "_2024.xlsx"))
+cat("In production: workbook would be saved to output/", target_company, "_2024.xlsx\n", sep = "")
+cat("Workbook structure: 3 sheets (Summary, Detail, Outliers Flagged)\n")
+```
+
+## Step 6: The runner script
+
+In production, all of the above lives in functions called from a parameterized runner.
+A single command produces the full deliverable for any company:
+
+```bash
+# What the team actually runs each month:
+quarto render reports/monthly-summary.qmd \
+  -P company:"Pfizer Inc." \
+  -P period:"2024" \
+  --output-dir output/pfizer-2024/
+```
+
+Or programmatically, looping over all companies:
+
+```r
+# Render reports for all companies in one batch
+companies_to_render <- unique(payments$company)
+
+purrr::walk(companies_to_render, function(co) {
+  quarto::quarto_render(
+    "reports/monthly-summary.qmd",
+    execute_params = list(company = co, period = "2024"),
+    output_file = paste0("output/", janitor::make_clean_names(co), "_2024.html")
+  )
+})
+```
+
+## Key Results
+
+::: {.metrics-row}
+
+::: {.metric}
+[8 → 0 hrs]{.metric-value}
+[Manual work per cycle]{.metric-label}
+[Recurring deliverables automated]{.metric-detail}
+:::
+
+::: {.metric}
+[3]{.metric-value}
+[Output formats]{.metric-label}
+[HTML, Excel, PDF (parameterized)]{.metric-detail}
+:::
+
+::: {.metric}
+[100%]{.metric-value}
+[Reproducible]{.metric-label}
+[Version-controlled methodology]{.metric-detail}
+:::
+
+::: {.metric}
+[Any company]{.metric-value style="font-size: 1.4rem;"}
+[Single template]{.metric-label}
+[Parameterized rendering]{.metric-detail}
+:::
+
+:::
+
+## What this demonstrates
+
+**R fluency where R is the right answer.** Quarto + gt + ggplot2 + openxlsx2 is a
+genuinely first-class reporting stack. This case study shows them working together as
+they would in production.
+
+**Modular code organization.** Cleaning functions separated from report rendering. Each
+function has one job and could be unit-tested. This is the structure that scales beyond
+a single analyst's brain.
+
+**Honest about Excel.** Some stakeholders need formatted Excel. Pretending they don't
+costs you credibility. Generating it from the same source data, alongside the HTML report,
+is the right answer.
+
+**The methodology paper, made concrete.** Everything here is the practical implementation
+of [The Case for Code-Driven Reporting](../posts/code-driven-reporting.html) — the same
+discipline applied to real reporting work.
+
+## What I'd extend in production
+
+- **Orchestration** with [targets](https://docs.ropensci.org/targets/) for dependency
+  tracking and incremental rebuilds
+- **Tests** for the cleaning functions using `testthat` — would catch upstream schema
+  changes the day they happen
+- **Renv lockfile** for fully reproducible dependencies across the team
+- **CI/CD** — auto-render reports on data refresh via GitHub Actions
+- **Email/Slack delivery** — completed reports auto-distributed to stakeholders
+
+## Tools & Methods
+
+::: {.skill-grid}
+[R]{.skill .primary}
+[Quarto]{.skill .primary}
+[gt / gtExtras]{.skill .primary}
+[ggplot2]{.skill .primary}
+[openxlsx2]{.skill .primary}
+[dplyr]{.skill}
+[tidyr]{.skill}
+[lubridate]{.skill}
+[Modular Function Design]{.skill}
+[Parameterized Reports]{.skill}
+:::

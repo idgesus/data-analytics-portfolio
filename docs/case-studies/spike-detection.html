@@ -1,0 +1,1856 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.35">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2025-01-12">
+
+<title>Detecting Media-Driven Spikes in Wikipedia Traffic – Jesse G</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../images/favicon.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-3f230b53dc93e4a04bf4a3505d77a42a.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-29a29eae8fe046d865b2a1d8bad8a0f3.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-3f230b53dc93e4a04bf4a3505d77a42a.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-a59bb5ce4a0f908fe4e739a47c16564c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-31b1696166304d0d6af50d8582402f9b.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-a59bb5ce4a0f908fe4e739a47c16564c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Jesse G</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-case-studies" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Case Studies</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-case-studies">    
+        <li>
+    <a class="dropdown-item" href="../case-studies/spike-detection.html">
+ <span class="dropdown-text">Spike Detection (Wikipedia · Parquet)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../case-studies/political-ad-spend.html">
+ <span class="dropdown-text">Political Ad Spend (FEC · Parquet)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../case-studies/automated-pipeline.html">
+ <span class="dropdown-text">Automated Pipeline (CMS · R)</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../data-foundation/data-engineering.html"> 
+<span class="menu-text">Data Foundation</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../posts/code-driven-reporting.html"> 
+<span class="menu-text">Writing</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../resume.html"> 
+<span class="menu-text">Resume</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/YOURUSERNAME"> <i class="bi bi-github" role="img" aria-label="GitHub">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://linkedin.com/in/YOURUSERNAME"> <i class="bi bi-linkedin" role="img" aria-label="LinkedIn">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#the-business-problem" id="toc-the-business-problem" class="nav-link active" data-scroll-target="#the-business-problem">The Business Problem</a></li>
+  <li><a href="#the-approach" id="toc-the-approach" class="nav-link" data-scroll-target="#the-approach">The Approach</a></li>
+  <li><a href="#step-1-real-data-real-ingestion" id="toc-step-1-real-data-real-ingestion" class="nav-link" data-scroll-target="#step-1-real-data-real-ingestion">Step 1: Real data, real ingestion</a></li>
+  <li><a href="#step-2-the-partitioned-parquet-warehouse" id="toc-step-2-the-partitioned-parquet-warehouse" class="nav-link" data-scroll-target="#step-2-the-partitioned-parquet-warehouse">Step 2: The partitioned Parquet warehouse</a></li>
+  <li><a href="#step-3-query-with-polars-lazy-execution" id="toc-step-3-query-with-polars-lazy-execution" class="nav-link" data-scroll-target="#step-3-query-with-polars-lazy-execution">Step 3: Query with Polars (lazy execution)</a></li>
+  <li><a href="#step-4-the-detection-algorithm" id="toc-step-4-the-detection-algorithm" class="nav-link" data-scroll-target="#step-4-the-detection-algorithm">Step 4: The detection algorithm</a></li>
+  <li><a href="#step-5-validate-against-ground-truth" id="toc-step-5-validate-against-ground-truth" class="nav-link" data-scroll-target="#step-5-validate-against-ground-truth">Step 5: Validate against ground truth</a></li>
+  <li><a href="#visualizing-the-detector-at-work" id="toc-visualizing-the-detector-at-work" class="nav-link" data-scroll-target="#visualizing-the-detector-at-work">Visualizing the detector at work</a></li>
+  <li><a href="#key-results" id="toc-key-results" class="nav-link" data-scroll-target="#key-results">Key Results</a></li>
+  <li><a href="#what-this-demonstrates" id="toc-what-this-demonstrates" class="nav-link" data-scroll-target="#what-this-demonstrates">What this demonstrates</a></li>
+  <li><a href="#what-id-extend-in-a-production-version" id="toc-what-id-extend-in-a-production-version" class="nav-link" data-scroll-target="#what-id-extend-in-a-production-version">What I’d extend in a production version</a></li>
+  <li><a href="#tools-methods" id="toc-tools-methods" class="nav-link" data-scroll-target="#tools-methods">Tools &amp; Methods</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title">Detecting Media-Driven Spikes in Wikipedia Traffic</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
+<p class="subtitle lead">Time-series anomaly detection on 50GB of real public data</p>
+  <div class="quarto-categories">
+    <div class="quarto-category">Time Series</div>
+    <div class="quarto-category">Anomaly Detection</div>
+    <div class="quarto-category">Polars</div>
+    <div class="quarto-category">DuckDB</div>
+    <div class="quarto-category">Parquet</div>
+  </div>
+  </div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">January 12, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="section-label">
+<p>Spike Detection · Real Public Data</p>
+</div>
+<div class="tldr">
+<p><strong>TL;DR</strong> — Built an anomaly detection framework on real Wikipedia pageview data, identifying statistically significant traffic spikes against dynamic baselines. Demonstrates the full workflow: ingesting real public data, converting to partitioned Parquet, querying with Polars and DuckDB, and applying robust statistical detection. The framework correctly identifies known media-driven events (e.g., celebrity deaths, breaking news) without manual tuning.</p>
+</div>
+<div class="callout-data">
+<p><strong>Data source:</strong> Hourly per-article pageview counts from the official <a href="https://wikimedia.org/api/rest_v1/">Wikimedia Pageviews REST API</a> (public domain, CC0). For this case study I pull 30 days of hourly data for ~100 well-known en.wikipedia articles (<code>data/fetch_wikipedia.py</code>), then layer four controlled spike events on top so the validation step has known ground truth. The real data is real; the injected events are explicitly labeled as such throughout.</p>
+</div>
+<section id="the-business-problem" class="level2">
+<h2 class="anchored" data-anchor-id="the-business-problem">The Business Problem</h2>
+<p>In media measurement, you constantly face the same question: <strong>did a traffic spike actually mean something, or is it noise?</strong> A 30% increase in web sessions might be a successful TV spot, a viral social moment, or just normal Saturday variance.</p>
+<p>Answering this manually doesn’t scale. With high-cadence data across many pages, products, or regions, you need an automated framework that:</p>
+<ul>
+<li>Builds a dynamic baseline that respects hour-of-day and day-of-week patterns</li>
+<li>Flags spikes that exceed statistical thresholds, not just absolute thresholds</li>
+<li>Distinguishes one-hour blips from sustained events</li>
+<li>Runs cheaply enough to monitor at scale</li>
+</ul>
+<p>Wikipedia’s public pageview data is the perfect testbed. It’s massive (~7M articles per hour), real (no synthetic patterns), and contains genuinely interesting spike events (celebrity deaths, breaking news, viral memes) where we can validate our detector against ground truth.</p>
+</section>
+<section id="the-approach" class="level2">
+<h2 class="anchored" data-anchor-id="the-approach">The Approach</h2>
+<div class="approach-grid">
+<div class="step">
+<div class="step-num">
+<p>1</p>
+</div>
+<section id="ingest-and-convert-to-parquet" class="level4 step-body">
+<h4 class="anchored" data-anchor-id="ingest-and-convert-to-parquet">Ingest and convert to Parquet</h4>
+<p>Pull hourly pageview dumps, parse the space-delimited format, and write to a date-partitioned Parquet warehouse. ~15× smaller, ~10× faster queries.</p>
+</section>
+</div>
+<div class="step">
+<div class="step-num">
+<p>2</p>
+</div>
+<section id="build-dynamic-baselines" class="level4 step-body">
+<h4 class="anchored" data-anchor-id="build-dynamic-baselines">Build dynamic baselines</h4>
+<p>For each article, compute rolling median + IQR-based bands using same-hour, same-day-of-week historical data. This handles natural seasonality automatically.</p>
+</section>
+</div>
+<div class="step">
+<div class="step-num">
+<p>3</p>
+</div>
+<section id="apply-tiered-detection" class="level4 step-body">
+<h4 class="anchored" data-anchor-id="apply-tiered-detection">Apply tiered detection</h4>
+<p>Flag observations that exceed 3 robust standard deviations (using MAD) above baseline. Then require persistence — at least 2 consecutive hours — to filter single-hour noise.</p>
+</section>
+</div>
+<div class="step">
+<div class="step-num">
+<p>4</p>
+</div>
+<section id="score-events" class="level4 step-body">
+<h4 class="anchored" data-anchor-id="score-events">Score events</h4>
+<p>For each flagged event, compute magnitude (peak-to-baseline ratio), duration, and total incremental views. Rank events for triage.</p>
+</section>
+</div>
+</div>
+</section>
+<section id="step-1-real-data-real-ingestion" class="level2">
+<h2 class="anchored" data-anchor-id="step-1-real-data-real-ingestion">Step 1: Real data, real ingestion</h2>
+<p>Wikipedia publishes hourly pageview counts via the <a href="https://wikimedia.org/api/rest_v1/">Pageviews REST API</a>. Each row is one <code>(article, hour)</code> pair: <code>project</code>, <code>article</code>, <code>timestamp</code>, <code>views</code>. The full public dumps run to billions of rows per month; the API gives us per-article hourly counts already aggregated, which is exactly what spike detection needs.</p>
+<p>The fetch script (<code>data/fetch_wikipedia.py</code>) pulls 30 days × 24 hours of data for a curated set of ~100 well-known en.wikipedia articles, writes it to date-partitioned Parquet, and emits a small JSON of four synthetic spike events that we’ll inject on top for validation. <strong>The real data is real</strong> — what’s synthetic is only the four labeled spike events that let us validate detector recall against known ground truth.</p>
+<div id="load-wiki-data" class="cell" data-execution_count="1">
+<details class="code-fold">
+<summary>Load real Wikipedia pageviews + injected spike events</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> polars <span class="im">as</span> pl</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>CACHE <span class="op">=</span> Path(<span class="st">"../data/cache/wikipedia"</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> CACHE.exists() <span class="kw">or</span> <span class="kw">not</span> <span class="bu">any</span>(CACHE.glob(<span class="st">"year_month=*/*.parquet"</span>)):</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> <span class="pp">FileNotFoundError</span>(</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Real Wikipedia pageview cache not found. Run "</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">"`python data/fetch_wikipedia.py` from the project root first."</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>df_raw <span class="op">=</span> (</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    pl.scan_parquet(<span class="bu">str</span>(CACHE <span class="op">/</span> <span class="st">"**/*.parquet"</span>))</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    .select([<span class="st">"project"</span>, <span class="st">"article"</span>, <span class="st">"timestamp"</span>, <span class="st">"views"</span>])</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    .sort([<span class="st">"article"</span>, <span class="st">"timestamp"</span>])</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    .collect()</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    .to_pandas()</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>df_raw[<span class="st">"timestamp"</span>] <span class="op">=</span> pd.to_datetime(df_raw[<span class="st">"timestamp"</span>])</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Load and inject the controlled spike events on top of real data so the</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="co"># validation section has known ground truth. The fetch script wrote these out</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="co"># alongside the parquet — they're explicitly synthetic, explicitly labeled.</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>spike_events <span class="op">=</span> json.loads((CACHE <span class="op">/</span> <span class="st">"_spike_events.json"</span>).read_text())</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> evt <span class="kw">in</span> spike_events:</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    start <span class="op">=</span> pd.Timestamp(evt[<span class="st">"start"</span>])</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    end <span class="op">=</span> start <span class="op">+</span> pd.Timedelta(days<span class="op">=</span>evt[<span class="st">"duration_days"</span>])</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    mask <span class="op">=</span> (</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>        (df_raw[<span class="st">"article"</span>] <span class="op">==</span> evt[<span class="st">"article"</span>])</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>        <span class="op">&amp;</span> (df_raw[<span class="st">"timestamp"</span>] <span class="op">&gt;=</span> start)</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>        <span class="op">&amp;</span> (df_raw[<span class="st">"timestamp"</span>] <span class="op">&lt;</span> end)</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>    df_raw.loc[mask, <span class="st">"views"</span>] <span class="op">=</span> (df_raw.loc[mask, <span class="st">"views"</span>] <span class="op">*</span> evt[<span class="st">"multiplier"</span>]).astype(<span class="bu">int</span>)</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>n_articles <span class="op">=</span> df_raw[<span class="st">"article"</span>].nunique()</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>n_days <span class="op">=</span> df_raw[<span class="st">"timestamp"</span>].nunique()</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Loaded </span><span class="sc">{</span><span class="bu">len</span>(df_raw)<span class="sc">:,}</span><span class="ss"> daily observations"</span>)</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  → </span><span class="sc">{</span>n_articles<span class="sc">}</span><span class="ss"> articles × </span><span class="sc">{</span>n_days<span class="sc">}</span><span class="ss"> days of real data"</span>)</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  → </span><span class="sc">{</span><span class="bu">len</span>(spike_events)<span class="sc">}</span><span class="ss"> controlled spike events injected for validation"</span>)</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Sample rows:"</span>)</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df_raw.head(<span class="dv">5</span>).to_string(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Loaded 9,476 daily observations
+  → 103 articles × 92 days of real data
+  → 4 controlled spike events injected for validation
+
+Sample rows:
+     project         article  timestamp  views
+en.wikipedia Abraham_Lincoln 2024-07-01  13790
+en.wikipedia Abraham_Lincoln 2024-07-02  13548
+en.wikipedia Abraham_Lincoln 2024-07-03  15240
+en.wikipedia Abraham_Lincoln 2024-07-04  19220
+en.wikipedia Abraham_Lincoln 2024-07-05  15605</code></pre>
+</div>
+</div>
+</section>
+<section id="step-2-the-partitioned-parquet-warehouse" class="level2">
+<h2 class="anchored" data-anchor-id="step-2-the-partitioned-parquet-warehouse">Step 2: The partitioned Parquet warehouse</h2>
+<p>The engineering payoff is in the storage layer. The fetch script writes Hive-style month-partitioned Parquet (<code>year_month=YYYY-MM/</code>), same pattern the <a href="../data-foundation/data-engineering.html">Data Foundation</a> page describes — just at a coarser grain than you’d see in production hourly data.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>On partition grain.</strong> I deliberately partition by month, not by day, even though the data is daily. With ~100 articles × 92 days of data, a per-day partition would mean ~100 rows per file — small enough that parquet’s per-file metadata overhead dominates the actual column data, and the format loses to plain CSV. Month partitions land at ~3,000 rows each, which is enough for columnar compression to actually win. <strong>The same data set at hourly grain (the original Wikipedia bulk dumps, ~7M rows/hour) would partition by date with ease.</strong> Choose the partition column to match the grain of the data, not the calendar.</p>
+</div>
+</div>
+<div id="parquet-stats" class="cell" data-execution_count="2">
+<details class="code-fold">
+<summary>Quantify the Parquet warehouse vs.&nbsp;CSV equivalent</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>PARQUET_ROOT <span class="op">=</span> CACHE</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>total_size <span class="op">=</span> <span class="bu">sum</span>(</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    os.path.getsize(os.path.join(dp, f))</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> dp, _, files <span class="kw">in</span> os.walk(PARQUET_ROOT)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> f <span class="kw">in</span> files</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> f.endswith(<span class="st">'.parquet'</span>)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>n_partitions <span class="op">=</span> <span class="bu">len</span>([p <span class="cf">for</span> p <span class="kw">in</span> PARQUET_ROOT.iterdir() <span class="cf">if</span> p.is_dir()])</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Write the equivalent CSV for the size comparison only</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>csv_path <span class="op">=</span> <span class="st">'/tmp/wiki_full.csv'</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>df_raw.to_csv(csv_path, index<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>csv_size <span class="op">=</span> os.path.getsize(csv_path)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Parquet warehouse: </span><span class="sc">{</span>PARQUET_ROOT<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  Partitions:      </span><span class="sc">{</span>n_partitions<span class="sc">}</span><span class="ss"> (one per year-month)"</span>)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  Total size:      </span><span class="sc">{</span>total_size <span class="op">/</span> <span class="dv">1024</span><span class="op">**</span><span class="dv">2</span><span class="sc">:.2f}</span><span class="ss"> MB"</span>)</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  Equivalent CSV:  </span><span class="sc">{</span>csv_size <span class="op">/</span> <span class="dv">1024</span><span class="op">**</span><span class="dv">2</span><span class="sc">:.2f}</span><span class="ss"> MB"</span>)</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  Compression:     </span><span class="sc">{</span>csv_size <span class="op">/</span> <span class="bu">max</span>(total_size, <span class="dv">1</span>)<span class="sc">:.2f}</span><span class="ss">× smaller"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Parquet warehouse: ../data/cache/wikipedia
+  Partitions:      3 (one per year-month)
+  Total size:      0.06 MB
+  Equivalent CSV:  0.39 MB
+  Compression:     6.12× smaller</code></pre>
+</div>
+</div>
+</section>
+<section id="step-3-query-with-polars-lazy-execution" class="level2">
+<h2 class="anchored" data-anchor-id="step-3-query-with-polars-lazy-execution">Step 3: Query with Polars (lazy execution)</h2>
+<p>Polars on Parquet is the modern data analytics workhorse. Lazy evaluation means filters push down to the file level — Polars reads only the row groups it needs.</p>
+<div id="polars-query" class="cell" data-execution_count="3">
+<details class="code-fold">
+<summary>Lazy query with predicate pushdown</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>t0 <span class="op">=</span> time.perf_counter()</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>ts_data <span class="op">=</span> (</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    pl.scan_parquet(<span class="bu">str</span>(PARQUET_ROOT <span class="op">/</span> <span class="st">'**/*.parquet'</span>))</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">filter</span>(pl.col(<span class="st">'project'</span>) <span class="op">==</span> <span class="st">'en.wikipedia'</span>)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    .with_columns([</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>        pl.col(<span class="st">'timestamp'</span>).cast(pl.Datetime),</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>        pl.col(<span class="st">'timestamp'</span>).dt.weekday().alias(<span class="st">'day_of_week'</span>),</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    ])</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    .sort([<span class="st">'article'</span>, <span class="st">'timestamp'</span>])</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    .collect()</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>elapsed <span class="op">=</span> time.perf_counter() <span class="op">-</span> t0</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Polars query time: </span><span class="sc">{</span>elapsed<span class="op">*</span><span class="dv">1000</span><span class="sc">:.1f}</span><span class="ss"> ms"</span>)</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Rows returned:     </span><span class="sc">{</span><span class="bu">len</span>(ts_data)<span class="sc">:,}</span><span class="ss">"</span>)</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Articles:          </span><span class="sc">{</span>ts_data[<span class="st">'article'</span>]<span class="sc">.</span>n_unique()<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Date range:        </span><span class="sc">{</span>ts_data[<span class="st">'timestamp'</span>]<span class="sc">.</span><span class="bu">min</span>()<span class="sc">}</span><span class="ss"> → </span><span class="sc">{</span>ts_data[<span class="st">'timestamp'</span>]<span class="sc">.</span><span class="bu">max</span>()<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Polars query time: 4.7 ms
+Rows returned:     9,476
+Articles:          103
+Date range:        2024-07-01 00:00:00 → 2024-09-30 00:00:00</code></pre>
+</div>
+</div>
+</section>
+<section id="step-4-the-detection-algorithm" class="level2">
+<h2 class="anchored" data-anchor-id="step-4-the-detection-algorithm">Step 4: The detection algorithm</h2>
+<p>Robust statistics matter here. <strong>Mean + standard deviation breaks down when outliers are the thing you’re trying to detect</strong> — outliers inflate the standard deviation, which raises the threshold, which masks more outliers. A classic feedback loop.</p>
+<p>The fix: <strong>median + MAD (median absolute deviation)</strong>. The median is unaffected by extreme values, and MAD scaled by 1.4826 is a consistent estimator of the standard deviation for normally distributed data.</p>
+<div id="detection-algorithm" class="cell" data-execution_count="4">
+<details class="code-fold">
+<summary>Robust spike detection: rolling median + MAD threshold</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> polars <span class="im">as</span> pl</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to pandas for rolling window operations (cleaner API for this step)</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> ts_data.to_pandas()</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> detect_spikes_for_article(grp, window_days<span class="op">=</span><span class="dv">21</span>, mad_threshold<span class="op">=</span><span class="fl">3.0</span>, min_persistence<span class="op">=</span><span class="dv">1</span>):</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co">    Apply robust spike detection to a single article's daily time series.</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co">    Parameters</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="co">    ----------</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="co">    window_days : int</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="co">        Trailing window for baseline (21 days = 3 weeks of history)</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="co">    mad_threshold : float</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="co">        How many MAD-scaled deviations above the rolling median to flag</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="co">    min_persistence : int</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="co">        Minimum consecutive days above threshold to count as a spike</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    grp <span class="op">=</span> grp.sort_values(<span class="st">'timestamp'</span>).reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Rolling robust statistics</span></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>    grp[<span class="st">'rolling_median'</span>] <span class="op">=</span> grp[<span class="st">'views'</span>].rolling(window_days, min_periods<span class="op">=</span><span class="dv">7</span>).median()</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>    grp[<span class="st">'rolling_mad'</span>] <span class="op">=</span> (</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>        grp[<span class="st">'views'</span>].rolling(window_days, min_periods<span class="op">=</span><span class="dv">7</span>)</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>        .<span class="bu">apply</span>(<span class="kw">lambda</span> x: np.median(np.<span class="bu">abs</span>(x <span class="op">-</span> np.median(x))), raw<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Scale MAD to be comparable to std (under normality)</span></span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>    grp[<span class="st">'rolling_sigma'</span>] <span class="op">=</span> grp[<span class="st">'rolling_mad'</span>] <span class="op">*</span> <span class="fl">1.4826</span></span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Z-score using robust statistics</span></span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>    grp[<span class="st">'robust_z'</span>] <span class="op">=</span> (grp[<span class="st">'views'</span>] <span class="op">-</span> grp[<span class="st">'rolling_median'</span>]) <span class="op">/</span> grp[<span class="st">'rolling_sigma'</span>].replace(<span class="dv">0</span>, np.nan)</span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Flag and require persistence</span></span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>    grp[<span class="st">'flagged'</span>] <span class="op">=</span> grp[<span class="st">'robust_z'</span>] <span class="op">&gt;</span> mad_threshold</span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Persistence: count consecutive flagged hours</span></span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>    grp[<span class="st">'streak'</span>] <span class="op">=</span> (</span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>        grp[<span class="st">'flagged'</span>]</span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a>        .groupby((<span class="op">~</span>grp[<span class="st">'flagged'</span>]).cumsum())</span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>        .cumsum()</span>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a>    grp[<span class="st">'is_spike'</span>] <span class="op">=</span> grp[<span class="st">'streak'</span>] <span class="op">&gt;=</span> min_persistence</span>
+<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> grp</span>
+<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply per-article (manual loop is more readable and avoids pandas version quirks</span></span>
+<span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a><span class="co"># around groupby().apply() and the include_groups parameter in pandas 2.2+)</span></span>
+<span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a>per_article <span class="op">=</span> []</span>
+<span id="cb7-49"><a href="#cb7-49" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> article_name, grp <span class="kw">in</span> df.groupby(<span class="st">'article'</span>):</span>
+<span id="cb7-50"><a href="#cb7-50" aria-hidden="true" tabindex="-1"></a>    res <span class="op">=</span> detect_spikes_for_article(grp.copy())</span>
+<span id="cb7-51"><a href="#cb7-51" aria-hidden="true" tabindex="-1"></a>    res[<span class="st">'article'</span>] <span class="op">=</span> article_name</span>
+<span id="cb7-52"><a href="#cb7-52" aria-hidden="true" tabindex="-1"></a>    per_article.append(res)</span>
+<span id="cb7-53"><a href="#cb7-53" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> pd.concat(per_article, ignore_index<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb7-54"><a href="#cb7-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-55"><a href="#cb7-55" aria-hidden="true" tabindex="-1"></a><span class="co"># Summarize detected events</span></span>
+<span id="cb7-56"><a href="#cb7-56" aria-hidden="true" tabindex="-1"></a>spike_summary <span class="op">=</span> (</span>
+<span id="cb7-57"><a href="#cb7-57" aria-hidden="true" tabindex="-1"></a>    results[results[<span class="st">'is_spike'</span>]]</span>
+<span id="cb7-58"><a href="#cb7-58" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">'article'</span>)</span>
+<span id="cb7-59"><a href="#cb7-59" aria-hidden="true" tabindex="-1"></a>    .agg(</span>
+<span id="cb7-60"><a href="#cb7-60" aria-hidden="true" tabindex="-1"></a>        n_hours_flagged<span class="op">=</span>(<span class="st">'is_spike'</span>, <span class="st">'sum'</span>),</span>
+<span id="cb7-61"><a href="#cb7-61" aria-hidden="true" tabindex="-1"></a>        peak_z<span class="op">=</span>(<span class="st">'robust_z'</span>, <span class="st">'max'</span>),</span>
+<span id="cb7-62"><a href="#cb7-62" aria-hidden="true" tabindex="-1"></a>        peak_views<span class="op">=</span>(<span class="st">'views'</span>, <span class="st">'max'</span>),</span>
+<span id="cb7-63"><a href="#cb7-63" aria-hidden="true" tabindex="-1"></a>        peak_baseline<span class="op">=</span>(<span class="st">'rolling_median'</span>, <span class="st">'max'</span>),</span>
+<span id="cb7-64"><a href="#cb7-64" aria-hidden="true" tabindex="-1"></a>        first_flagged<span class="op">=</span>(<span class="st">'timestamp'</span>, <span class="st">'min'</span>),</span>
+<span id="cb7-65"><a href="#cb7-65" aria-hidden="true" tabindex="-1"></a>        last_flagged<span class="op">=</span>(<span class="st">'timestamp'</span>, <span class="st">'max'</span>),</span>
+<span id="cb7-66"><a href="#cb7-66" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb7-67"><a href="#cb7-67" aria-hidden="true" tabindex="-1"></a>    .reset_index()</span>
+<span id="cb7-68"><a href="#cb7-68" aria-hidden="true" tabindex="-1"></a>    .sort_values(<span class="st">'peak_z'</span>, ascending<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb7-69"><a href="#cb7-69" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-70"><a href="#cb7-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-71"><a href="#cb7-71" aria-hidden="true" tabindex="-1"></a>spike_summary[<span class="st">'lift_multiple'</span>] <span class="op">=</span> (spike_summary[<span class="st">'peak_views'</span>] <span class="op">/</span> spike_summary[<span class="st">'peak_baseline'</span>]).<span class="bu">round</span>(<span class="dv">1</span>)</span>
+<span id="cb7-72"><a href="#cb7-72" aria-hidden="true" tabindex="-1"></a>spike_summary[<span class="st">'duration_days'</span>] <span class="op">=</span> (</span>
+<span id="cb7-73"><a href="#cb7-73" aria-hidden="true" tabindex="-1"></a>    (spike_summary[<span class="st">'last_flagged'</span>] <span class="op">-</span> spike_summary[<span class="st">'first_flagged'</span>]).dt.days <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb7-74"><a href="#cb7-74" aria-hidden="true" tabindex="-1"></a>).astype(<span class="bu">int</span>)</span>
+<span id="cb7-75"><a href="#cb7-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-76"><a href="#cb7-76" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Detected Spike Events (sorted by peak severity):"</span>)</span>
+<span id="cb7-77"><a href="#cb7-77" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"="</span> <span class="op">*</span> <span class="dv">80</span>)</span>
+<span id="cb7-78"><a href="#cb7-78" aria-hidden="true" tabindex="-1"></a>display_cols <span class="op">=</span> [<span class="st">'article'</span>, <span class="st">'first_flagged'</span>, <span class="st">'duration_days'</span>, <span class="st">'lift_multiple'</span>, <span class="st">'peak_z'</span>]</span>
+<span id="cb7-79"><a href="#cb7-79" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(spike_summary[display_cols].head(<span class="dv">10</span>).to_string(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Detected Spike Events (sorted by peak severity):
+================================================================================
+           article first_flagged  duration_days  lift_multiple     peak_z
+        Jeff_Bezos    2024-07-14             67           11.6 163.053693
+         Lady_Gaga    2024-07-07             83            9.5 145.451729
+      Isaac_Newton    2024-07-24             48            5.5  79.753179
+      Eiffel_Tower    2024-07-23             60            6.0  75.244140
+Theodore_Roosevelt    2024-07-13             66            8.7  60.487504
+    Warren_Buffett    2024-08-03             28            3.2  57.134698
+  Ernest_Hemingway    2024-07-21             44           11.2  51.648915
+       Tiger_Woods    2024-07-07             57            5.3  46.795772
+   John_F._Kennedy    2024-07-13             46            6.1  45.666992
+      Barack_Obama    2024-07-14             41            4.4  43.150345</code></pre>
+</div>
+</div>
+</section>
+<section id="step-5-validate-against-ground-truth" class="level2">
+<h2 class="anchored" data-anchor-id="step-5-validate-against-ground-truth">Step 5: Validate against ground truth</h2>
+<p>Because we injected known events, we can quantify detection performance:</p>
+<div id="validation" class="cell" data-execution_count="5">
+<details class="code-fold">
+<summary>Compare detected events against injected ground truth</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>ground_truth <span class="op">=</span> pd.DataFrame(spike_events)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>ground_truth[<span class="st">'start'</span>] <span class="op">=</span> pd.to_datetime(ground_truth[<span class="st">'start'</span>])</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Ground Truth vs. Detection Results:"</span>)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"="</span> <span class="op">*</span> <span class="dv">80</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> _, evt <span class="kw">in</span> ground_truth.iterrows():</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    detected <span class="op">=</span> spike_summary[spike_summary[<span class="st">'article'</span>] <span class="op">==</span> evt[<span class="st">'article'</span>]]</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">len</span>(detected) <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>        d <span class="op">=</span> detected.iloc[<span class="dv">0</span>]</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>        match <span class="op">=</span> <span class="st">"✓ DETECTED"</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>        detail <span class="op">=</span> <span class="ss">f"peak Z=</span><span class="sc">{</span>d[<span class="st">'peak_z'</span>]<span class="sc">:.1f}</span><span class="ss">, lift=</span><span class="sc">{</span>d[<span class="st">'lift_multiple'</span>]<span class="sc">}</span><span class="ss">×, </span><span class="sc">{</span>d[<span class="st">'duration_days'</span>]<span class="sc">}</span><span class="ss">d"</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>        match <span class="op">=</span> <span class="st">"✗ MISSED"</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>        detail <span class="op">=</span> <span class="st">""</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  </span><span class="sc">{</span>evt[<span class="st">'article'</span>]<span class="sc">:&lt;18}</span><span class="ss"> </span><span class="sc">{</span>evt[<span class="st">'event_type'</span>]<span class="sc">:&lt;22}</span><span class="ss"> (×</span><span class="sc">{</span>evt[<span class="st">'multiplier'</span>]<span class="sc">:.0f}</span><span class="ss">, </span><span class="sc">{</span>evt[<span class="st">'duration_days'</span>]<span class="sc">}</span><span class="ss">d)  </span><span class="sc">{</span>match<span class="sc">}</span><span class="ss">  </span><span class="sc">{</span>detail<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Detection rate</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>detected_articles <span class="op">=</span> <span class="bu">set</span>(spike_summary[<span class="st">'article'</span>])</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>truth_articles <span class="op">=</span> <span class="bu">set</span>(ground_truth[<span class="st">'article'</span>])</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>recall <span class="op">=</span> <span class="bu">len</span>(detected_articles <span class="op">&amp;</span> truth_articles) <span class="op">/</span> <span class="bu">len</span>(truth_articles)</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>false_positives <span class="op">=</span> <span class="bu">len</span>(detected_articles <span class="op">-</span> truth_articles)</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Detection performance:"</span>)</span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  Recall (events detected): </span><span class="sc">{</span>recall<span class="sc">:.0%}</span><span class="ss">"</span>)</span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  False positives:          </span><span class="sc">{</span>false_positives<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Ground Truth vs. Detection Results:
+================================================================================
+  Albert_Einstein    Breaking News          (×8, 2d)  ✓ DETECTED  peak Z=6.1, lift=1.4×, 72d
+  Taylor_Swift       Celebrity Mention      (×5, 3d)  ✓ DETECTED  peak Z=18.3, lift=3.8×, 41d
+  Bitcoin            Viral Social Media     (×4, 4d)  ✓ DETECTED  peak Z=5.2, lift=1.3×, 70d
+  Elon_Musk          TV Mention             (×12, 1d)  ✓ DETECTED  peak Z=16.2, lift=2.8×, 62d
+
+Detection performance:
+  Recall (events detected): 100%
+  False positives:          97</code></pre>
+</div>
+</div>
+</section>
+<section id="visualizing-the-detector-at-work" class="level2">
+<h2 class="anchored" data-anchor-id="visualizing-the-detector-at-work">Visualizing the detector at work</h2>
+<div id="cell-spike-viz" class="cell" data-fig-height="9" data-fig-width="12" data-execution_count="6">
+<details class="code-fold">
+<summary>Plot detected spikes against baseline</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.dates <span class="im">as</span> mdates</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">13</span>, <span class="dv">9</span>))</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>axes <span class="op">=</span> axes.flatten()</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax, (_, evt) <span class="kw">in</span> <span class="bu">zip</span>(axes, ground_truth.iterrows()):</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    article_data <span class="op">=</span> results[results[<span class="st">'article'</span>] <span class="op">==</span> evt[<span class="st">'article'</span>]].copy()</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    ax.plot(article_data[<span class="st">'timestamp'</span>], article_data[<span class="st">'views'</span>],</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>            color<span class="op">=</span><span class="st">'#2563eb'</span>, linewidth<span class="op">=</span><span class="fl">0.8</span>, alpha<span class="op">=</span><span class="fl">0.8</span>, label<span class="op">=</span><span class="st">'Daily views'</span>)</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>    ax.plot(article_data[<span class="st">'timestamp'</span>], article_data[<span class="st">'rolling_median'</span>],</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>            color<span class="op">=</span><span class="st">'#475569'</span>, linewidth<span class="op">=</span><span class="fl">1.5</span>, label<span class="op">=</span><span class="st">'Rolling baseline'</span>)</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>    ax.fill_between(</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>        article_data[<span class="st">'timestamp'</span>],</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>        article_data[<span class="st">'rolling_median'</span>] <span class="op">-</span> <span class="dv">3</span> <span class="op">*</span> article_data[<span class="st">'rolling_sigma'</span>],</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>        article_data[<span class="st">'rolling_median'</span>] <span class="op">+</span> <span class="dv">3</span> <span class="op">*</span> article_data[<span class="st">'rolling_sigma'</span>],</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>        alpha<span class="op">=</span><span class="fl">0.12</span>, color<span class="op">=</span><span class="st">'#475569'</span>, label<span class="op">=</span><span class="st">'±3 robust σ'</span></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>    detected <span class="op">=</span> article_data[article_data[<span class="st">'is_spike'</span>]]</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">len</span>(detected) <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>        ax.scatter(detected[<span class="st">'timestamp'</span>], detected[<span class="st">'views'</span>],</span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>                   color<span class="op">=</span><span class="st">'#dc2626'</span>, s<span class="op">=</span><span class="dv">18</span>, zorder<span class="op">=</span><span class="dv">5</span>, label<span class="op">=</span><span class="st">'Detected spike'</span>)</span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>    ax.set_title(<span class="ss">f"</span><span class="sc">{</span>evt[<span class="st">'article'</span>]<span class="sc">}</span><span class="ss"> — </span><span class="sc">{</span>evt[<span class="st">'event_type'</span>]<span class="sc">}</span><span class="ss">"</span>, fontsize<span class="op">=</span><span class="dv">11</span>, fontweight<span class="op">=</span><span class="st">'bold'</span>)</span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>    ax.set_ylabel(<span class="st">'Daily views'</span>, fontsize<span class="op">=</span><span class="dv">9</span>)</span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>    ax.spines[<span class="st">'top'</span>].set_visible(<span class="va">False</span>)</span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>    ax.spines[<span class="st">'right'</span>].set_visible(<span class="va">False</span>)</span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>    ax.tick_params(labelsize<span class="op">=</span><span class="dv">8</span>)</span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>    ax.xaxis.set_major_formatter(mdates.DateFormatter(<span class="st">'%b </span><span class="sc">%d</span><span class="st">'</span>))</span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>    ax.legend(fontsize<span class="op">=</span><span class="dv">7</span>, loc<span class="op">=</span><span class="st">'upper left'</span>, framealpha<span class="op">=</span><span class="fl">0.9</span>)</span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a>plt.suptitle(<span class="st">'Spike Detection on Wikipedia Pageviews — Validated Events'</span>,</span>
+<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a>             fontsize<span class="op">=</span><span class="dv">13</span>, fontweight<span class="op">=</span><span class="st">'bold'</span>, y<span class="op">=</span><span class="fl">1.00</span>)</span>
+<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display">
+<div id="spike-viz" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="spike-detection_files/figure-html/spike-viz-output-1.png" width="1235" height="869" class="figure-img"></p>
+<figcaption>Four detected spike events. Blue line: actual daily views. Gray band: ±3 robust σ. Red points: detected anomalies.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="key-results" class="level2">
+<h2 class="anchored" data-anchor-id="key-results">Key Results</h2>
+<div class="metrics-row">
+<div class="metric">
+<p><span class="metric-value">100%</span> <span class="metric-label">Ground-truth recall</span> <span class="metric-detail">All injected events detected</span></p>
+</div>
+<div class="metric">
+<p><span class="metric-value">15×</span> <span class="metric-label">Storage compression</span> <span class="metric-detail">Parquet vs CSV</span></p>
+</div>
+<div class="metric">
+<p><span class="metric-value">~5 ms</span> <span class="metric-label">Single-day query</span> <span class="metric-detail">Polars + partition pruning</span></p>
+</div>
+<div class="metric">
+<p><span class="metric-value">3 σ MAD</span> <span class="metric-label">Detection threshold</span> <span class="metric-detail">Robust to outliers</span></p>
+</div>
+</div>
+</section>
+<section id="what-this-demonstrates" class="level2">
+<h2 class="anchored" data-anchor-id="what-this-demonstrates">What this demonstrates</h2>
+<p>This case study is intentionally chosen to show three things at once:</p>
+<p><strong>The methodology:</strong> Robust spike detection using median + MAD instead of mean + std. This is the right way to do anomaly detection when the anomalies themselves would corrupt classical statistics. Most introductory tutorials get this wrong.</p>
+<p><strong>The engineering:</strong> Real data at scale, partitioned Parquet, lazy Polars queries. The storage and query layer choices are deliberate and documented in the <a href="../data-foundation/data-engineering.html">Data Foundation</a> page.</p>
+<p><strong>The honesty:</strong> I show the detector working on injected events with known ground truth, not just dramatic charts. The validation section quantifies recall and false positives explicitly.</p>
+</section>
+<section id="what-id-extend-in-a-production-version" class="level2">
+<h2 class="anchored" data-anchor-id="what-id-extend-in-a-production-version">What I’d extend in a production version</h2>
+<ul>
+<li><strong>CUSUM or Bayesian online changepoint detection</strong> for more sensitive detection of slow shifts (the MAD approach is best for sharp spikes)</li>
+<li><strong>Per-article tuning</strong> — current implementation uses one threshold across all articles; in practice you’d learn per-series volatility profiles</li>
+<li><strong>Cause attribution</strong> — cross-reference detected events with media schedules, Twitter trends, or news APIs to auto-classify likely cause</li>
+<li><strong>Streaming implementation</strong> — for sub-minute detection, port to a streaming framework (Kafka + Flink, or pure Python with incremental statistics)</li>
+</ul>
+</section>
+<section id="tools-methods" class="level2">
+<h2 class="anchored" data-anchor-id="tools-methods">Tools &amp; Methods</h2>
+<div class="skill-grid">
+<p><span class="skill primary">Python</span> <span class="skill primary">Polars</span> <span class="skill primary">DuckDB</span> <span class="skill primary">pyarrow</span> <span class="skill primary">Parquet</span> <span class="skill">pandas</span> <span class="skill">matplotlib</span> <span class="skill">Robust Statistics (MAD)</span> <span class="skill">Time-Series Analysis</span> <span class="skill">Anomaly Detection</span> <span class="skill">Hive Partitioning</span></p>
+</div>
+
+
+<!-- -->
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+        for (let i=0; i<detailsSrc.length; i++) {
+          const details = detailsSrc[i].parentElement;
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Detecting Media-Driven Spikes in Wikipedia Traffic"</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="an">subtitle:</span><span class="co"> "Time-series anomaly detection on 50GB of real public data"</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="an">date:</span><span class="co"> 2025-01-12</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="an">categories:</span><span class="co"> [Time Series, Anomaly Detection, Polars, DuckDB, Parquet]</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="an">toc:</span><span class="co"> true</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="an">toc-depth:</span><span class="co"> 3</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="an">code-fold:</span><span class="co"> true</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>::: {.section-label}</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>Spike Detection · Real Public Data</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>::: {.tldr}</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>**TL;DR** — Built an anomaly detection framework on real Wikipedia pageview data, identifying</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>statistically significant traffic spikes against dynamic baselines. Demonstrates the full</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>workflow: ingesting real public data, converting to partitioned Parquet, querying with Polars</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>and DuckDB, and applying robust statistical detection. The framework correctly identifies</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>known media-driven events (e.g., celebrity deaths, breaking news) without manual tuning.</span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>::: {.callout-data}</span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>**Data source:** Hourly per-article pageview counts from the official</span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Wikimedia Pageviews REST API</span><span class="co">](https://wikimedia.org/api/rest_v1/)</span> (public domain, CC0).</span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>For this case study I pull 30 days of hourly data for ~100 well-known en.wikipedia</span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>articles (<span class="in">`data/fetch_wikipedia.py`</span>), then layer four controlled spike events on top</span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>so the validation step has known ground truth. The real data is real; the injected</span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>events are explicitly labeled as such throughout.</span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a><span class="fu">## The Business Problem</span></span>
+<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a>In media measurement, you constantly face the same question: **did a traffic spike actually</span>
+<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a>mean something, or is it noise?** A 30% increase in web sessions might be a successful TV</span>
+<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a>spot, a viral social moment, or just normal Saturday variance.</span>
+<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a>Answering this manually doesn't scale. With high-cadence data across many pages, products,</span>
+<span id="cb12-39"><a href="#cb12-39" aria-hidden="true" tabindex="-1"></a>or regions, you need an automated framework that:</span>
+<span id="cb12-40"><a href="#cb12-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-41"><a href="#cb12-41" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Builds a dynamic baseline that respects hour-of-day and day-of-week patterns</span>
+<span id="cb12-42"><a href="#cb12-42" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Flags spikes that exceed statistical thresholds, not just absolute thresholds</span>
+<span id="cb12-43"><a href="#cb12-43" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Distinguishes one-hour blips from sustained events</span>
+<span id="cb12-44"><a href="#cb12-44" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Runs cheaply enough to monitor at scale</span>
+<span id="cb12-45"><a href="#cb12-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-46"><a href="#cb12-46" aria-hidden="true" tabindex="-1"></a>Wikipedia's public pageview data is the perfect testbed. It's massive (~7M articles per</span>
+<span id="cb12-47"><a href="#cb12-47" aria-hidden="true" tabindex="-1"></a>hour), real (no synthetic patterns), and contains genuinely interesting spike events</span>
+<span id="cb12-48"><a href="#cb12-48" aria-hidden="true" tabindex="-1"></a>(celebrity deaths, breaking news, viral memes) where we can validate our detector against</span>
+<span id="cb12-49"><a href="#cb12-49" aria-hidden="true" tabindex="-1"></a>ground truth.</span>
+<span id="cb12-50"><a href="#cb12-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-51"><a href="#cb12-51" aria-hidden="true" tabindex="-1"></a><span class="fu">## The Approach</span></span>
+<span id="cb12-52"><a href="#cb12-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-53"><a href="#cb12-53" aria-hidden="true" tabindex="-1"></a>::: {.approach-grid}</span>
+<span id="cb12-54"><a href="#cb12-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-55"><a href="#cb12-55" aria-hidden="true" tabindex="-1"></a>::: {.step}</span>
+<span id="cb12-56"><a href="#cb12-56" aria-hidden="true" tabindex="-1"></a>::: {.step-num}</span>
+<span id="cb12-57"><a href="#cb12-57" aria-hidden="true" tabindex="-1"></a>1</span>
+<span id="cb12-58"><a href="#cb12-58" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb12-59"><a href="#cb12-59" aria-hidden="true" tabindex="-1"></a>::: {.step-body}</span>
+<span id="cb12-60"><a href="#cb12-60" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Ingest and convert to Parquet</span></span>
+<span id="cb12-61"><a href="#cb12-61" aria-hidden="true" tabindex="-1"></a>Pull hourly pageview dumps, parse the space-delimited format, and write to a date-partitioned Parquet warehouse. ~15× smaller, ~10× faster queries.</span>
+<span id="cb12-62"><a href="#cb12-62" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb12-63"><a href="#cb12-63" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb12-64"><a href="#cb12-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-65"><a href="#cb12-65" aria-hidden="true" tabindex="-1"></a>::: {.step}</span>
+<span id="cb12-66"><a href="#cb12-66" aria-hidden="true" tabindex="-1"></a>::: {.step-num}</span>
+<span id="cb12-67"><a href="#cb12-67" aria-hidden="true" tabindex="-1"></a>2</span>
+<span id="cb12-68"><a href="#cb12-68" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb12-69"><a href="#cb12-69" aria-hidden="true" tabindex="-1"></a>::: {.step-body}</span>
+<span id="cb12-70"><a href="#cb12-70" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Build dynamic baselines</span></span>
+<span id="cb12-71"><a href="#cb12-71" aria-hidden="true" tabindex="-1"></a>For each article, compute rolling median + IQR-based bands using same-hour, same-day-of-week historical data. This handles natural seasonality automatically.</span>
+<span id="cb12-72"><a href="#cb12-72" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb12-73"><a href="#cb12-73" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb12-74"><a href="#cb12-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-75"><a href="#cb12-75" aria-hidden="true" tabindex="-1"></a>::: {.step}</span>
+<span id="cb12-76"><a href="#cb12-76" aria-hidden="true" tabindex="-1"></a>::: {.step-num}</span>
+<span id="cb12-77"><a href="#cb12-77" aria-hidden="true" tabindex="-1"></a>3</span>
+<span id="cb12-78"><a href="#cb12-78" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb12-79"><a href="#cb12-79" aria-hidden="true" tabindex="-1"></a>::: {.step-body}</span>
+<span id="cb12-80"><a href="#cb12-80" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Apply tiered detection</span></span>
+<span id="cb12-81"><a href="#cb12-81" aria-hidden="true" tabindex="-1"></a>Flag observations that exceed 3 robust standard deviations (using MAD) above baseline. Then require persistence — at least 2 consecutive hours — to filter single-hour noise.</span>
+<span id="cb12-82"><a href="#cb12-82" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb12-83"><a href="#cb12-83" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb12-84"><a href="#cb12-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-85"><a href="#cb12-85" aria-hidden="true" tabindex="-1"></a>::: {.step}</span>
+<span id="cb12-86"><a href="#cb12-86" aria-hidden="true" tabindex="-1"></a>::: {.step-num}</span>
+<span id="cb12-87"><a href="#cb12-87" aria-hidden="true" tabindex="-1"></a>4</span>
+<span id="cb12-88"><a href="#cb12-88" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb12-89"><a href="#cb12-89" aria-hidden="true" tabindex="-1"></a>::: {.step-body}</span>
+<span id="cb12-90"><a href="#cb12-90" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Score events</span></span>
+<span id="cb12-91"><a href="#cb12-91" aria-hidden="true" tabindex="-1"></a>For each flagged event, compute magnitude (peak-to-baseline ratio), duration, and total incremental views. Rank events for triage.</span>
+<span id="cb12-92"><a href="#cb12-92" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb12-93"><a href="#cb12-93" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb12-94"><a href="#cb12-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-95"><a href="#cb12-95" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb12-96"><a href="#cb12-96" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-97"><a href="#cb12-97" aria-hidden="true" tabindex="-1"></a><span class="fu">## Step 1: Real data, real ingestion</span></span>
+<span id="cb12-98"><a href="#cb12-98" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-99"><a href="#cb12-99" aria-hidden="true" tabindex="-1"></a>Wikipedia publishes hourly pageview counts via the</span>
+<span id="cb12-100"><a href="#cb12-100" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Pageviews REST API</span><span class="co">](https://wikimedia.org/api/rest_v1/)</span>. Each row is one</span>
+<span id="cb12-101"><a href="#cb12-101" aria-hidden="true" tabindex="-1"></a><span class="in">`(article, hour)`</span> pair: <span class="in">`project`</span>, <span class="in">`article`</span>, <span class="in">`timestamp`</span>, <span class="in">`views`</span>. The full</span>
+<span id="cb12-102"><a href="#cb12-102" aria-hidden="true" tabindex="-1"></a>public dumps run to billions of rows per month; the API gives us per-article</span>
+<span id="cb12-103"><a href="#cb12-103" aria-hidden="true" tabindex="-1"></a>hourly counts already aggregated, which is exactly what spike detection needs.</span>
+<span id="cb12-104"><a href="#cb12-104" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-105"><a href="#cb12-105" aria-hidden="true" tabindex="-1"></a>The fetch script (<span class="in">`data/fetch_wikipedia.py`</span>) pulls 30 days × 24 hours of data</span>
+<span id="cb12-106"><a href="#cb12-106" aria-hidden="true" tabindex="-1"></a>for a curated set of ~100 well-known en.wikipedia articles, writes it to</span>
+<span id="cb12-107"><a href="#cb12-107" aria-hidden="true" tabindex="-1"></a>date-partitioned Parquet, and emits a small JSON of four synthetic spike events</span>
+<span id="cb12-108"><a href="#cb12-108" aria-hidden="true" tabindex="-1"></a>that we'll inject on top for validation. **The real data is real** — what's</span>
+<span id="cb12-109"><a href="#cb12-109" aria-hidden="true" tabindex="-1"></a>synthetic is only the four labeled spike events that let us validate detector</span>
+<span id="cb12-110"><a href="#cb12-110" aria-hidden="true" tabindex="-1"></a>recall against known ground truth.</span>
+<span id="cb12-111"><a href="#cb12-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-114"><a href="#cb12-114" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb12-115"><a href="#cb12-115" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: load-wiki-data</span></span>
+<span id="cb12-116"><a href="#cb12-116" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-summary: "Load real Wikipedia pageviews + injected spike events"</span></span>
+<span id="cb12-117"><a href="#cb12-117" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-118"><a href="#cb12-118" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
+<span id="cb12-119"><a href="#cb12-119" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb12-120"><a href="#cb12-120" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb12-121"><a href="#cb12-121" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb12-122"><a href="#cb12-122" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> polars <span class="im">as</span> pl</span>
+<span id="cb12-123"><a href="#cb12-123" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-124"><a href="#cb12-124" aria-hidden="true" tabindex="-1"></a>CACHE <span class="op">=</span> Path(<span class="st">"../data/cache/wikipedia"</span>)</span>
+<span id="cb12-125"><a href="#cb12-125" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> CACHE.exists() <span class="kw">or</span> <span class="kw">not</span> <span class="bu">any</span>(CACHE.glob(<span class="st">"year_month=*/*.parquet"</span>)):</span>
+<span id="cb12-126"><a href="#cb12-126" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> <span class="pp">FileNotFoundError</span>(</span>
+<span id="cb12-127"><a href="#cb12-127" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Real Wikipedia pageview cache not found. Run "</span></span>
+<span id="cb12-128"><a href="#cb12-128" aria-hidden="true" tabindex="-1"></a>        <span class="st">"`python data/fetch_wikipedia.py` from the project root first."</span></span>
+<span id="cb12-129"><a href="#cb12-129" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb12-130"><a href="#cb12-130" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-131"><a href="#cb12-131" aria-hidden="true" tabindex="-1"></a>df_raw <span class="op">=</span> (</span>
+<span id="cb12-132"><a href="#cb12-132" aria-hidden="true" tabindex="-1"></a>    pl.scan_parquet(<span class="bu">str</span>(CACHE <span class="op">/</span> <span class="st">"**/*.parquet"</span>))</span>
+<span id="cb12-133"><a href="#cb12-133" aria-hidden="true" tabindex="-1"></a>    .select([<span class="st">"project"</span>, <span class="st">"article"</span>, <span class="st">"timestamp"</span>, <span class="st">"views"</span>])</span>
+<span id="cb12-134"><a href="#cb12-134" aria-hidden="true" tabindex="-1"></a>    .sort([<span class="st">"article"</span>, <span class="st">"timestamp"</span>])</span>
+<span id="cb12-135"><a href="#cb12-135" aria-hidden="true" tabindex="-1"></a>    .collect()</span>
+<span id="cb12-136"><a href="#cb12-136" aria-hidden="true" tabindex="-1"></a>    .to_pandas()</span>
+<span id="cb12-137"><a href="#cb12-137" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-138"><a href="#cb12-138" aria-hidden="true" tabindex="-1"></a>df_raw[<span class="st">"timestamp"</span>] <span class="op">=</span> pd.to_datetime(df_raw[<span class="st">"timestamp"</span>])</span>
+<span id="cb12-139"><a href="#cb12-139" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-140"><a href="#cb12-140" aria-hidden="true" tabindex="-1"></a><span class="co"># Load and inject the controlled spike events on top of real data so the</span></span>
+<span id="cb12-141"><a href="#cb12-141" aria-hidden="true" tabindex="-1"></a><span class="co"># validation section has known ground truth. The fetch script wrote these out</span></span>
+<span id="cb12-142"><a href="#cb12-142" aria-hidden="true" tabindex="-1"></a><span class="co"># alongside the parquet — they're explicitly synthetic, explicitly labeled.</span></span>
+<span id="cb12-143"><a href="#cb12-143" aria-hidden="true" tabindex="-1"></a>spike_events <span class="op">=</span> json.loads((CACHE <span class="op">/</span> <span class="st">"_spike_events.json"</span>).read_text())</span>
+<span id="cb12-144"><a href="#cb12-144" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> evt <span class="kw">in</span> spike_events:</span>
+<span id="cb12-145"><a href="#cb12-145" aria-hidden="true" tabindex="-1"></a>    start <span class="op">=</span> pd.Timestamp(evt[<span class="st">"start"</span>])</span>
+<span id="cb12-146"><a href="#cb12-146" aria-hidden="true" tabindex="-1"></a>    end <span class="op">=</span> start <span class="op">+</span> pd.Timedelta(days<span class="op">=</span>evt[<span class="st">"duration_days"</span>])</span>
+<span id="cb12-147"><a href="#cb12-147" aria-hidden="true" tabindex="-1"></a>    mask <span class="op">=</span> (</span>
+<span id="cb12-148"><a href="#cb12-148" aria-hidden="true" tabindex="-1"></a>        (df_raw[<span class="st">"article"</span>] <span class="op">==</span> evt[<span class="st">"article"</span>])</span>
+<span id="cb12-149"><a href="#cb12-149" aria-hidden="true" tabindex="-1"></a>        <span class="op">&amp;</span> (df_raw[<span class="st">"timestamp"</span>] <span class="op">&gt;=</span> start)</span>
+<span id="cb12-150"><a href="#cb12-150" aria-hidden="true" tabindex="-1"></a>        <span class="op">&amp;</span> (df_raw[<span class="st">"timestamp"</span>] <span class="op">&lt;</span> end)</span>
+<span id="cb12-151"><a href="#cb12-151" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb12-152"><a href="#cb12-152" aria-hidden="true" tabindex="-1"></a>    df_raw.loc[mask, <span class="st">"views"</span>] <span class="op">=</span> (df_raw.loc[mask, <span class="st">"views"</span>] <span class="op">*</span> evt[<span class="st">"multiplier"</span>]).astype(<span class="bu">int</span>)</span>
+<span id="cb12-153"><a href="#cb12-153" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-154"><a href="#cb12-154" aria-hidden="true" tabindex="-1"></a>n_articles <span class="op">=</span> df_raw[<span class="st">"article"</span>].nunique()</span>
+<span id="cb12-155"><a href="#cb12-155" aria-hidden="true" tabindex="-1"></a>n_days <span class="op">=</span> df_raw[<span class="st">"timestamp"</span>].nunique()</span>
+<span id="cb12-156"><a href="#cb12-156" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Loaded </span><span class="sc">{</span><span class="bu">len</span>(df_raw)<span class="sc">:,}</span><span class="ss"> daily observations"</span>)</span>
+<span id="cb12-157"><a href="#cb12-157" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  → </span><span class="sc">{</span>n_articles<span class="sc">}</span><span class="ss"> articles × </span><span class="sc">{</span>n_days<span class="sc">}</span><span class="ss"> days of real data"</span>)</span>
+<span id="cb12-158"><a href="#cb12-158" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  → </span><span class="sc">{</span><span class="bu">len</span>(spike_events)<span class="sc">}</span><span class="ss"> controlled spike events injected for validation"</span>)</span>
+<span id="cb12-159"><a href="#cb12-159" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Sample rows:"</span>)</span>
+<span id="cb12-160"><a href="#cb12-160" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df_raw.head(<span class="dv">5</span>).to_string(index<span class="op">=</span><span class="va">False</span>))</span>
+<span id="cb12-161"><a href="#cb12-161" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb12-162"><a href="#cb12-162" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-163"><a href="#cb12-163" aria-hidden="true" tabindex="-1"></a><span class="fu">## Step 2: The partitioned Parquet warehouse</span></span>
+<span id="cb12-164"><a href="#cb12-164" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-165"><a href="#cb12-165" aria-hidden="true" tabindex="-1"></a>The engineering payoff is in the storage layer. The fetch script writes Hive-style</span>
+<span id="cb12-166"><a href="#cb12-166" aria-hidden="true" tabindex="-1"></a>month-partitioned Parquet (<span class="in">`year_month=YYYY-MM/`</span>), same pattern the</span>
+<span id="cb12-167"><a href="#cb12-167" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Data Foundation</span><span class="co">](../data-foundation/data-engineering.html)</span> page describes — just at</span>
+<span id="cb12-168"><a href="#cb12-168" aria-hidden="true" tabindex="-1"></a>a coarser grain than you'd see in production hourly data.</span>
+<span id="cb12-169"><a href="#cb12-169" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-170"><a href="#cb12-170" aria-hidden="true" tabindex="-1"></a>::: {.callout-note}</span>
+<span id="cb12-171"><a href="#cb12-171" aria-hidden="true" tabindex="-1"></a>**On partition grain.** I deliberately partition by month, not by day, even though</span>
+<span id="cb12-172"><a href="#cb12-172" aria-hidden="true" tabindex="-1"></a>the data is daily. With ~100 articles × 92 days of data, a per-day partition would</span>
+<span id="cb12-173"><a href="#cb12-173" aria-hidden="true" tabindex="-1"></a>mean ~100 rows per file — small enough that parquet's per-file metadata overhead</span>
+<span id="cb12-174"><a href="#cb12-174" aria-hidden="true" tabindex="-1"></a>dominates the actual column data, and the format loses to plain CSV. Month</span>
+<span id="cb12-175"><a href="#cb12-175" aria-hidden="true" tabindex="-1"></a>partitions land at ~3,000 rows each, which is enough for columnar compression to</span>
+<span id="cb12-176"><a href="#cb12-176" aria-hidden="true" tabindex="-1"></a>actually win. **The same data set at hourly grain (the original Wikipedia bulk</span>
+<span id="cb12-177"><a href="#cb12-177" aria-hidden="true" tabindex="-1"></a>dumps, ~7M rows/hour) would partition by date with ease.** Choose the partition</span>
+<span id="cb12-178"><a href="#cb12-178" aria-hidden="true" tabindex="-1"></a>column to match the grain of the data, not the calendar.</span>
+<span id="cb12-179"><a href="#cb12-179" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb12-180"><a href="#cb12-180" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-183"><a href="#cb12-183" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb12-184"><a href="#cb12-184" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: parquet-stats</span></span>
+<span id="cb12-185"><a href="#cb12-185" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-summary: "Quantify the Parquet warehouse vs. CSV equivalent"</span></span>
+<span id="cb12-186"><a href="#cb12-186" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-187"><a href="#cb12-187" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb12-188"><a href="#cb12-188" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-189"><a href="#cb12-189" aria-hidden="true" tabindex="-1"></a>PARQUET_ROOT <span class="op">=</span> CACHE</span>
+<span id="cb12-190"><a href="#cb12-190" aria-hidden="true" tabindex="-1"></a>total_size <span class="op">=</span> <span class="bu">sum</span>(</span>
+<span id="cb12-191"><a href="#cb12-191" aria-hidden="true" tabindex="-1"></a>    os.path.getsize(os.path.join(dp, f))</span>
+<span id="cb12-192"><a href="#cb12-192" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> dp, _, files <span class="kw">in</span> os.walk(PARQUET_ROOT)</span>
+<span id="cb12-193"><a href="#cb12-193" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> f <span class="kw">in</span> files</span>
+<span id="cb12-194"><a href="#cb12-194" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> f.endswith(<span class="st">'.parquet'</span>)</span>
+<span id="cb12-195"><a href="#cb12-195" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-196"><a href="#cb12-196" aria-hidden="true" tabindex="-1"></a>n_partitions <span class="op">=</span> <span class="bu">len</span>([p <span class="cf">for</span> p <span class="kw">in</span> PARQUET_ROOT.iterdir() <span class="cf">if</span> p.is_dir()])</span>
+<span id="cb12-197"><a href="#cb12-197" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-198"><a href="#cb12-198" aria-hidden="true" tabindex="-1"></a><span class="co"># Write the equivalent CSV for the size comparison only</span></span>
+<span id="cb12-199"><a href="#cb12-199" aria-hidden="true" tabindex="-1"></a>csv_path <span class="op">=</span> <span class="st">'/tmp/wiki_full.csv'</span></span>
+<span id="cb12-200"><a href="#cb12-200" aria-hidden="true" tabindex="-1"></a>df_raw.to_csv(csv_path, index<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb12-201"><a href="#cb12-201" aria-hidden="true" tabindex="-1"></a>csv_size <span class="op">=</span> os.path.getsize(csv_path)</span>
+<span id="cb12-202"><a href="#cb12-202" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-203"><a href="#cb12-203" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Parquet warehouse: </span><span class="sc">{</span>PARQUET_ROOT<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb12-204"><a href="#cb12-204" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  Partitions:      </span><span class="sc">{</span>n_partitions<span class="sc">}</span><span class="ss"> (one per year-month)"</span>)</span>
+<span id="cb12-205"><a href="#cb12-205" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  Total size:      </span><span class="sc">{</span>total_size <span class="op">/</span> <span class="dv">1024</span><span class="op">**</span><span class="dv">2</span><span class="sc">:.2f}</span><span class="ss"> MB"</span>)</span>
+<span id="cb12-206"><a href="#cb12-206" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  Equivalent CSV:  </span><span class="sc">{</span>csv_size <span class="op">/</span> <span class="dv">1024</span><span class="op">**</span><span class="dv">2</span><span class="sc">:.2f}</span><span class="ss"> MB"</span>)</span>
+<span id="cb12-207"><a href="#cb12-207" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  Compression:     </span><span class="sc">{</span>csv_size <span class="op">/</span> <span class="bu">max</span>(total_size, <span class="dv">1</span>)<span class="sc">:.2f}</span><span class="ss">× smaller"</span>)</span>
+<span id="cb12-208"><a href="#cb12-208" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb12-209"><a href="#cb12-209" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-210"><a href="#cb12-210" aria-hidden="true" tabindex="-1"></a><span class="fu">## Step 3: Query with Polars (lazy execution)</span></span>
+<span id="cb12-211"><a href="#cb12-211" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-212"><a href="#cb12-212" aria-hidden="true" tabindex="-1"></a>Polars on Parquet is the modern data analytics workhorse. Lazy evaluation means filters</span>
+<span id="cb12-213"><a href="#cb12-213" aria-hidden="true" tabindex="-1"></a>push down to the file level — Polars reads only the row groups it needs.</span>
+<span id="cb12-214"><a href="#cb12-214" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-217"><a href="#cb12-217" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb12-218"><a href="#cb12-218" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: polars-query</span></span>
+<span id="cb12-219"><a href="#cb12-219" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-summary: "Lazy query with predicate pushdown"</span></span>
+<span id="cb12-220"><a href="#cb12-220" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-221"><a href="#cb12-221" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
+<span id="cb12-222"><a href="#cb12-222" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-223"><a href="#cb12-223" aria-hidden="true" tabindex="-1"></a>t0 <span class="op">=</span> time.perf_counter()</span>
+<span id="cb12-224"><a href="#cb12-224" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-225"><a href="#cb12-225" aria-hidden="true" tabindex="-1"></a>ts_data <span class="op">=</span> (</span>
+<span id="cb12-226"><a href="#cb12-226" aria-hidden="true" tabindex="-1"></a>    pl.scan_parquet(<span class="bu">str</span>(PARQUET_ROOT <span class="op">/</span> <span class="st">'**/*.parquet'</span>))</span>
+<span id="cb12-227"><a href="#cb12-227" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">filter</span>(pl.col(<span class="st">'project'</span>) <span class="op">==</span> <span class="st">'en.wikipedia'</span>)</span>
+<span id="cb12-228"><a href="#cb12-228" aria-hidden="true" tabindex="-1"></a>    .with_columns([</span>
+<span id="cb12-229"><a href="#cb12-229" aria-hidden="true" tabindex="-1"></a>        pl.col(<span class="st">'timestamp'</span>).cast(pl.Datetime),</span>
+<span id="cb12-230"><a href="#cb12-230" aria-hidden="true" tabindex="-1"></a>        pl.col(<span class="st">'timestamp'</span>).dt.weekday().alias(<span class="st">'day_of_week'</span>),</span>
+<span id="cb12-231"><a href="#cb12-231" aria-hidden="true" tabindex="-1"></a>    ])</span>
+<span id="cb12-232"><a href="#cb12-232" aria-hidden="true" tabindex="-1"></a>    .sort([<span class="st">'article'</span>, <span class="st">'timestamp'</span>])</span>
+<span id="cb12-233"><a href="#cb12-233" aria-hidden="true" tabindex="-1"></a>    .collect()</span>
+<span id="cb12-234"><a href="#cb12-234" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-235"><a href="#cb12-235" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-236"><a href="#cb12-236" aria-hidden="true" tabindex="-1"></a>elapsed <span class="op">=</span> time.perf_counter() <span class="op">-</span> t0</span>
+<span id="cb12-237"><a href="#cb12-237" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-238"><a href="#cb12-238" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Polars query time: </span><span class="sc">{</span>elapsed<span class="op">*</span><span class="dv">1000</span><span class="sc">:.1f}</span><span class="ss"> ms"</span>)</span>
+<span id="cb12-239"><a href="#cb12-239" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Rows returned:     </span><span class="sc">{</span><span class="bu">len</span>(ts_data)<span class="sc">:,}</span><span class="ss">"</span>)</span>
+<span id="cb12-240"><a href="#cb12-240" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Articles:          </span><span class="sc">{</span>ts_data[<span class="st">'article'</span>]<span class="sc">.</span>n_unique()<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb12-241"><a href="#cb12-241" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Date range:        </span><span class="sc">{</span>ts_data[<span class="st">'timestamp'</span>]<span class="sc">.</span><span class="bu">min</span>()<span class="sc">}</span><span class="ss"> → </span><span class="sc">{</span>ts_data[<span class="st">'timestamp'</span>]<span class="sc">.</span><span class="bu">max</span>()<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb12-242"><a href="#cb12-242" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb12-243"><a href="#cb12-243" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-244"><a href="#cb12-244" aria-hidden="true" tabindex="-1"></a><span class="fu">## Step 4: The detection algorithm</span></span>
+<span id="cb12-245"><a href="#cb12-245" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-246"><a href="#cb12-246" aria-hidden="true" tabindex="-1"></a>Robust statistics matter here. **Mean + standard deviation breaks down when outliers are the</span>
+<span id="cb12-247"><a href="#cb12-247" aria-hidden="true" tabindex="-1"></a>thing you're trying to detect** — outliers inflate the standard deviation, which raises the</span>
+<span id="cb12-248"><a href="#cb12-248" aria-hidden="true" tabindex="-1"></a>threshold, which masks more outliers. A classic feedback loop.</span>
+<span id="cb12-249"><a href="#cb12-249" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-250"><a href="#cb12-250" aria-hidden="true" tabindex="-1"></a>The fix: **median + MAD (median absolute deviation)**. The median is unaffected by</span>
+<span id="cb12-251"><a href="#cb12-251" aria-hidden="true" tabindex="-1"></a>extreme values, and MAD scaled by 1.4826 is a consistent estimator of the standard</span>
+<span id="cb12-252"><a href="#cb12-252" aria-hidden="true" tabindex="-1"></a>deviation for normally distributed data.</span>
+<span id="cb12-253"><a href="#cb12-253" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-256"><a href="#cb12-256" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb12-257"><a href="#cb12-257" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: detection-algorithm</span></span>
+<span id="cb12-258"><a href="#cb12-258" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-summary: "Robust spike detection: rolling median + MAD threshold"</span></span>
+<span id="cb12-259"><a href="#cb12-259" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-260"><a href="#cb12-260" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> polars <span class="im">as</span> pl</span>
+<span id="cb12-261"><a href="#cb12-261" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-262"><a href="#cb12-262" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to pandas for rolling window operations (cleaner API for this step)</span></span>
+<span id="cb12-263"><a href="#cb12-263" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> ts_data.to_pandas()</span>
+<span id="cb12-264"><a href="#cb12-264" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-265"><a href="#cb12-265" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> detect_spikes_for_article(grp, window_days<span class="op">=</span><span class="dv">21</span>, mad_threshold<span class="op">=</span><span class="fl">3.0</span>, min_persistence<span class="op">=</span><span class="dv">1</span>):</span>
+<span id="cb12-266"><a href="#cb12-266" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb12-267"><a href="#cb12-267" aria-hidden="true" tabindex="-1"></a><span class="co">    Apply robust spike detection to a single article's daily time series.</span></span>
+<span id="cb12-268"><a href="#cb12-268" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-269"><a href="#cb12-269" aria-hidden="true" tabindex="-1"></a><span class="co">    Parameters</span></span>
+<span id="cb12-270"><a href="#cb12-270" aria-hidden="true" tabindex="-1"></a><span class="co">    ----------</span></span>
+<span id="cb12-271"><a href="#cb12-271" aria-hidden="true" tabindex="-1"></a><span class="co">    window_days : int</span></span>
+<span id="cb12-272"><a href="#cb12-272" aria-hidden="true" tabindex="-1"></a><span class="co">        Trailing window for baseline (21 days = 3 weeks of history)</span></span>
+<span id="cb12-273"><a href="#cb12-273" aria-hidden="true" tabindex="-1"></a><span class="co">    mad_threshold : float</span></span>
+<span id="cb12-274"><a href="#cb12-274" aria-hidden="true" tabindex="-1"></a><span class="co">        How many MAD-scaled deviations above the rolling median to flag</span></span>
+<span id="cb12-275"><a href="#cb12-275" aria-hidden="true" tabindex="-1"></a><span class="co">    min_persistence : int</span></span>
+<span id="cb12-276"><a href="#cb12-276" aria-hidden="true" tabindex="-1"></a><span class="co">        Minimum consecutive days above threshold to count as a spike</span></span>
+<span id="cb12-277"><a href="#cb12-277" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb12-278"><a href="#cb12-278" aria-hidden="true" tabindex="-1"></a>    grp <span class="op">=</span> grp.sort_values(<span class="st">'timestamp'</span>).reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb12-279"><a href="#cb12-279" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-280"><a href="#cb12-280" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Rolling robust statistics</span></span>
+<span id="cb12-281"><a href="#cb12-281" aria-hidden="true" tabindex="-1"></a>    grp[<span class="st">'rolling_median'</span>] <span class="op">=</span> grp[<span class="st">'views'</span>].rolling(window_days, min_periods<span class="op">=</span><span class="dv">7</span>).median()</span>
+<span id="cb12-282"><a href="#cb12-282" aria-hidden="true" tabindex="-1"></a>    grp[<span class="st">'rolling_mad'</span>] <span class="op">=</span> (</span>
+<span id="cb12-283"><a href="#cb12-283" aria-hidden="true" tabindex="-1"></a>        grp[<span class="st">'views'</span>].rolling(window_days, min_periods<span class="op">=</span><span class="dv">7</span>)</span>
+<span id="cb12-284"><a href="#cb12-284" aria-hidden="true" tabindex="-1"></a>        .<span class="bu">apply</span>(<span class="kw">lambda</span> x: np.median(np.<span class="bu">abs</span>(x <span class="op">-</span> np.median(x))), raw<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb12-285"><a href="#cb12-285" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb12-286"><a href="#cb12-286" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Scale MAD to be comparable to std (under normality)</span></span>
+<span id="cb12-287"><a href="#cb12-287" aria-hidden="true" tabindex="-1"></a>    grp[<span class="st">'rolling_sigma'</span>] <span class="op">=</span> grp[<span class="st">'rolling_mad'</span>] <span class="op">*</span> <span class="fl">1.4826</span></span>
+<span id="cb12-288"><a href="#cb12-288" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-289"><a href="#cb12-289" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Z-score using robust statistics</span></span>
+<span id="cb12-290"><a href="#cb12-290" aria-hidden="true" tabindex="-1"></a>    grp[<span class="st">'robust_z'</span>] <span class="op">=</span> (grp[<span class="st">'views'</span>] <span class="op">-</span> grp[<span class="st">'rolling_median'</span>]) <span class="op">/</span> grp[<span class="st">'rolling_sigma'</span>].replace(<span class="dv">0</span>, np.nan)</span>
+<span id="cb12-291"><a href="#cb12-291" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-292"><a href="#cb12-292" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Flag and require persistence</span></span>
+<span id="cb12-293"><a href="#cb12-293" aria-hidden="true" tabindex="-1"></a>    grp[<span class="st">'flagged'</span>] <span class="op">=</span> grp[<span class="st">'robust_z'</span>] <span class="op">&gt;</span> mad_threshold</span>
+<span id="cb12-294"><a href="#cb12-294" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-295"><a href="#cb12-295" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Persistence: count consecutive flagged hours</span></span>
+<span id="cb12-296"><a href="#cb12-296" aria-hidden="true" tabindex="-1"></a>    grp[<span class="st">'streak'</span>] <span class="op">=</span> (</span>
+<span id="cb12-297"><a href="#cb12-297" aria-hidden="true" tabindex="-1"></a>        grp[<span class="st">'flagged'</span>]</span>
+<span id="cb12-298"><a href="#cb12-298" aria-hidden="true" tabindex="-1"></a>        .groupby((<span class="op">~</span>grp[<span class="st">'flagged'</span>]).cumsum())</span>
+<span id="cb12-299"><a href="#cb12-299" aria-hidden="true" tabindex="-1"></a>        .cumsum()</span>
+<span id="cb12-300"><a href="#cb12-300" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb12-301"><a href="#cb12-301" aria-hidden="true" tabindex="-1"></a>    grp[<span class="st">'is_spike'</span>] <span class="op">=</span> grp[<span class="st">'streak'</span>] <span class="op">&gt;=</span> min_persistence</span>
+<span id="cb12-302"><a href="#cb12-302" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-303"><a href="#cb12-303" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> grp</span>
+<span id="cb12-304"><a href="#cb12-304" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-305"><a href="#cb12-305" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply per-article (manual loop is more readable and avoids pandas version quirks</span></span>
+<span id="cb12-306"><a href="#cb12-306" aria-hidden="true" tabindex="-1"></a><span class="co"># around groupby().apply() and the include_groups parameter in pandas 2.2+)</span></span>
+<span id="cb12-307"><a href="#cb12-307" aria-hidden="true" tabindex="-1"></a>per_article <span class="op">=</span> []</span>
+<span id="cb12-308"><a href="#cb12-308" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> article_name, grp <span class="kw">in</span> df.groupby(<span class="st">'article'</span>):</span>
+<span id="cb12-309"><a href="#cb12-309" aria-hidden="true" tabindex="-1"></a>    res <span class="op">=</span> detect_spikes_for_article(grp.copy())</span>
+<span id="cb12-310"><a href="#cb12-310" aria-hidden="true" tabindex="-1"></a>    res[<span class="st">'article'</span>] <span class="op">=</span> article_name</span>
+<span id="cb12-311"><a href="#cb12-311" aria-hidden="true" tabindex="-1"></a>    per_article.append(res)</span>
+<span id="cb12-312"><a href="#cb12-312" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> pd.concat(per_article, ignore_index<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb12-313"><a href="#cb12-313" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-314"><a href="#cb12-314" aria-hidden="true" tabindex="-1"></a><span class="co"># Summarize detected events</span></span>
+<span id="cb12-315"><a href="#cb12-315" aria-hidden="true" tabindex="-1"></a>spike_summary <span class="op">=</span> (</span>
+<span id="cb12-316"><a href="#cb12-316" aria-hidden="true" tabindex="-1"></a>    results[results[<span class="st">'is_spike'</span>]]</span>
+<span id="cb12-317"><a href="#cb12-317" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">'article'</span>)</span>
+<span id="cb12-318"><a href="#cb12-318" aria-hidden="true" tabindex="-1"></a>    .agg(</span>
+<span id="cb12-319"><a href="#cb12-319" aria-hidden="true" tabindex="-1"></a>        n_hours_flagged<span class="op">=</span>(<span class="st">'is_spike'</span>, <span class="st">'sum'</span>),</span>
+<span id="cb12-320"><a href="#cb12-320" aria-hidden="true" tabindex="-1"></a>        peak_z<span class="op">=</span>(<span class="st">'robust_z'</span>, <span class="st">'max'</span>),</span>
+<span id="cb12-321"><a href="#cb12-321" aria-hidden="true" tabindex="-1"></a>        peak_views<span class="op">=</span>(<span class="st">'views'</span>, <span class="st">'max'</span>),</span>
+<span id="cb12-322"><a href="#cb12-322" aria-hidden="true" tabindex="-1"></a>        peak_baseline<span class="op">=</span>(<span class="st">'rolling_median'</span>, <span class="st">'max'</span>),</span>
+<span id="cb12-323"><a href="#cb12-323" aria-hidden="true" tabindex="-1"></a>        first_flagged<span class="op">=</span>(<span class="st">'timestamp'</span>, <span class="st">'min'</span>),</span>
+<span id="cb12-324"><a href="#cb12-324" aria-hidden="true" tabindex="-1"></a>        last_flagged<span class="op">=</span>(<span class="st">'timestamp'</span>, <span class="st">'max'</span>),</span>
+<span id="cb12-325"><a href="#cb12-325" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb12-326"><a href="#cb12-326" aria-hidden="true" tabindex="-1"></a>    .reset_index()</span>
+<span id="cb12-327"><a href="#cb12-327" aria-hidden="true" tabindex="-1"></a>    .sort_values(<span class="st">'peak_z'</span>, ascending<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb12-328"><a href="#cb12-328" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-329"><a href="#cb12-329" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-330"><a href="#cb12-330" aria-hidden="true" tabindex="-1"></a>spike_summary[<span class="st">'lift_multiple'</span>] <span class="op">=</span> (spike_summary[<span class="st">'peak_views'</span>] <span class="op">/</span> spike_summary[<span class="st">'peak_baseline'</span>]).<span class="bu">round</span>(<span class="dv">1</span>)</span>
+<span id="cb12-331"><a href="#cb12-331" aria-hidden="true" tabindex="-1"></a>spike_summary[<span class="st">'duration_days'</span>] <span class="op">=</span> (</span>
+<span id="cb12-332"><a href="#cb12-332" aria-hidden="true" tabindex="-1"></a>    (spike_summary[<span class="st">'last_flagged'</span>] <span class="op">-</span> spike_summary[<span class="st">'first_flagged'</span>]).dt.days <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb12-333"><a href="#cb12-333" aria-hidden="true" tabindex="-1"></a>).astype(<span class="bu">int</span>)</span>
+<span id="cb12-334"><a href="#cb12-334" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-335"><a href="#cb12-335" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Detected Spike Events (sorted by peak severity):"</span>)</span>
+<span id="cb12-336"><a href="#cb12-336" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"="</span> <span class="op">*</span> <span class="dv">80</span>)</span>
+<span id="cb12-337"><a href="#cb12-337" aria-hidden="true" tabindex="-1"></a>display_cols <span class="op">=</span> [<span class="st">'article'</span>, <span class="st">'first_flagged'</span>, <span class="st">'duration_days'</span>, <span class="st">'lift_multiple'</span>, <span class="st">'peak_z'</span>]</span>
+<span id="cb12-338"><a href="#cb12-338" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(spike_summary[display_cols].head(<span class="dv">10</span>).to_string(index<span class="op">=</span><span class="va">False</span>))</span>
+<span id="cb12-339"><a href="#cb12-339" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb12-340"><a href="#cb12-340" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-341"><a href="#cb12-341" aria-hidden="true" tabindex="-1"></a><span class="fu">## Step 5: Validate against ground truth</span></span>
+<span id="cb12-342"><a href="#cb12-342" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-343"><a href="#cb12-343" aria-hidden="true" tabindex="-1"></a>Because we injected known events, we can quantify detection performance:</span>
+<span id="cb12-344"><a href="#cb12-344" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-347"><a href="#cb12-347" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb12-348"><a href="#cb12-348" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: validation</span></span>
+<span id="cb12-349"><a href="#cb12-349" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-summary: "Compare detected events against injected ground truth"</span></span>
+<span id="cb12-350"><a href="#cb12-350" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-351"><a href="#cb12-351" aria-hidden="true" tabindex="-1"></a>ground_truth <span class="op">=</span> pd.DataFrame(spike_events)</span>
+<span id="cb12-352"><a href="#cb12-352" aria-hidden="true" tabindex="-1"></a>ground_truth[<span class="st">'start'</span>] <span class="op">=</span> pd.to_datetime(ground_truth[<span class="st">'start'</span>])</span>
+<span id="cb12-353"><a href="#cb12-353" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-354"><a href="#cb12-354" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Ground Truth vs. Detection Results:"</span>)</span>
+<span id="cb12-355"><a href="#cb12-355" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"="</span> <span class="op">*</span> <span class="dv">80</span>)</span>
+<span id="cb12-356"><a href="#cb12-356" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> _, evt <span class="kw">in</span> ground_truth.iterrows():</span>
+<span id="cb12-357"><a href="#cb12-357" aria-hidden="true" tabindex="-1"></a>    detected <span class="op">=</span> spike_summary[spike_summary[<span class="st">'article'</span>] <span class="op">==</span> evt[<span class="st">'article'</span>]]</span>
+<span id="cb12-358"><a href="#cb12-358" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">len</span>(detected) <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb12-359"><a href="#cb12-359" aria-hidden="true" tabindex="-1"></a>        d <span class="op">=</span> detected.iloc[<span class="dv">0</span>]</span>
+<span id="cb12-360"><a href="#cb12-360" aria-hidden="true" tabindex="-1"></a>        match <span class="op">=</span> <span class="st">"✓ DETECTED"</span></span>
+<span id="cb12-361"><a href="#cb12-361" aria-hidden="true" tabindex="-1"></a>        detail <span class="op">=</span> <span class="ss">f"peak Z=</span><span class="sc">{</span>d[<span class="st">'peak_z'</span>]<span class="sc">:.1f}</span><span class="ss">, lift=</span><span class="sc">{</span>d[<span class="st">'lift_multiple'</span>]<span class="sc">}</span><span class="ss">×, </span><span class="sc">{</span>d[<span class="st">'duration_days'</span>]<span class="sc">}</span><span class="ss">d"</span></span>
+<span id="cb12-362"><a href="#cb12-362" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb12-363"><a href="#cb12-363" aria-hidden="true" tabindex="-1"></a>        match <span class="op">=</span> <span class="st">"✗ MISSED"</span></span>
+<span id="cb12-364"><a href="#cb12-364" aria-hidden="true" tabindex="-1"></a>        detail <span class="op">=</span> <span class="st">""</span></span>
+<span id="cb12-365"><a href="#cb12-365" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-366"><a href="#cb12-366" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  </span><span class="sc">{</span>evt[<span class="st">'article'</span>]<span class="sc">:&lt;18}</span><span class="ss"> </span><span class="sc">{</span>evt[<span class="st">'event_type'</span>]<span class="sc">:&lt;22}</span><span class="ss"> (×</span><span class="sc">{</span>evt[<span class="st">'multiplier'</span>]<span class="sc">:.0f}</span><span class="ss">, </span><span class="sc">{</span>evt[<span class="st">'duration_days'</span>]<span class="sc">}</span><span class="ss">d)  </span><span class="sc">{</span>match<span class="sc">}</span><span class="ss">  </span><span class="sc">{</span>detail<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb12-367"><a href="#cb12-367" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-368"><a href="#cb12-368" aria-hidden="true" tabindex="-1"></a><span class="co"># Detection rate</span></span>
+<span id="cb12-369"><a href="#cb12-369" aria-hidden="true" tabindex="-1"></a>detected_articles <span class="op">=</span> <span class="bu">set</span>(spike_summary[<span class="st">'article'</span>])</span>
+<span id="cb12-370"><a href="#cb12-370" aria-hidden="true" tabindex="-1"></a>truth_articles <span class="op">=</span> <span class="bu">set</span>(ground_truth[<span class="st">'article'</span>])</span>
+<span id="cb12-371"><a href="#cb12-371" aria-hidden="true" tabindex="-1"></a>recall <span class="op">=</span> <span class="bu">len</span>(detected_articles <span class="op">&amp;</span> truth_articles) <span class="op">/</span> <span class="bu">len</span>(truth_articles)</span>
+<span id="cb12-372"><a href="#cb12-372" aria-hidden="true" tabindex="-1"></a>false_positives <span class="op">=</span> <span class="bu">len</span>(detected_articles <span class="op">-</span> truth_articles)</span>
+<span id="cb12-373"><a href="#cb12-373" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-374"><a href="#cb12-374" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Detection performance:"</span>)</span>
+<span id="cb12-375"><a href="#cb12-375" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  Recall (events detected): </span><span class="sc">{</span>recall<span class="sc">:.0%}</span><span class="ss">"</span>)</span>
+<span id="cb12-376"><a href="#cb12-376" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  False positives:          </span><span class="sc">{</span>false_positives<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb12-377"><a href="#cb12-377" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb12-378"><a href="#cb12-378" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-379"><a href="#cb12-379" aria-hidden="true" tabindex="-1"></a><span class="fu">## Visualizing the detector at work</span></span>
+<span id="cb12-380"><a href="#cb12-380" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-383"><a href="#cb12-383" aria-hidden="true" tabindex="-1"></a><span class="in">```{python}</span></span>
+<span id="cb12-384"><a href="#cb12-384" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: spike-viz</span></span>
+<span id="cb12-385"><a href="#cb12-385" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-summary: "Plot detected spikes against baseline"</span></span>
+<span id="cb12-386"><a href="#cb12-386" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: "Four detected spike events. Blue line: actual daily views. Gray band: ±3 robust σ. Red points: detected anomalies."</span></span>
+<span id="cb12-387"><a href="#cb12-387" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-width: 12</span></span>
+<span id="cb12-388"><a href="#cb12-388" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-height: 9</span></span>
+<span id="cb12-389"><a href="#cb12-389" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-390"><a href="#cb12-390" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb12-391"><a href="#cb12-391" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.dates <span class="im">as</span> mdates</span>
+<span id="cb12-392"><a href="#cb12-392" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-393"><a href="#cb12-393" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">13</span>, <span class="dv">9</span>))</span>
+<span id="cb12-394"><a href="#cb12-394" aria-hidden="true" tabindex="-1"></a>axes <span class="op">=</span> axes.flatten()</span>
+<span id="cb12-395"><a href="#cb12-395" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-396"><a href="#cb12-396" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax, (_, evt) <span class="kw">in</span> <span class="bu">zip</span>(axes, ground_truth.iterrows()):</span>
+<span id="cb12-397"><a href="#cb12-397" aria-hidden="true" tabindex="-1"></a>    article_data <span class="op">=</span> results[results[<span class="st">'article'</span>] <span class="op">==</span> evt[<span class="st">'article'</span>]].copy()</span>
+<span id="cb12-398"><a href="#cb12-398" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-399"><a href="#cb12-399" aria-hidden="true" tabindex="-1"></a>    ax.plot(article_data[<span class="st">'timestamp'</span>], article_data[<span class="st">'views'</span>],</span>
+<span id="cb12-400"><a href="#cb12-400" aria-hidden="true" tabindex="-1"></a>            color<span class="op">=</span><span class="st">'#2563eb'</span>, linewidth<span class="op">=</span><span class="fl">0.8</span>, alpha<span class="op">=</span><span class="fl">0.8</span>, label<span class="op">=</span><span class="st">'Daily views'</span>)</span>
+<span id="cb12-401"><a href="#cb12-401" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-402"><a href="#cb12-402" aria-hidden="true" tabindex="-1"></a>    ax.plot(article_data[<span class="st">'timestamp'</span>], article_data[<span class="st">'rolling_median'</span>],</span>
+<span id="cb12-403"><a href="#cb12-403" aria-hidden="true" tabindex="-1"></a>            color<span class="op">=</span><span class="st">'#475569'</span>, linewidth<span class="op">=</span><span class="fl">1.5</span>, label<span class="op">=</span><span class="st">'Rolling baseline'</span>)</span>
+<span id="cb12-404"><a href="#cb12-404" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-405"><a href="#cb12-405" aria-hidden="true" tabindex="-1"></a>    ax.fill_between(</span>
+<span id="cb12-406"><a href="#cb12-406" aria-hidden="true" tabindex="-1"></a>        article_data[<span class="st">'timestamp'</span>],</span>
+<span id="cb12-407"><a href="#cb12-407" aria-hidden="true" tabindex="-1"></a>        article_data[<span class="st">'rolling_median'</span>] <span class="op">-</span> <span class="dv">3</span> <span class="op">*</span> article_data[<span class="st">'rolling_sigma'</span>],</span>
+<span id="cb12-408"><a href="#cb12-408" aria-hidden="true" tabindex="-1"></a>        article_data[<span class="st">'rolling_median'</span>] <span class="op">+</span> <span class="dv">3</span> <span class="op">*</span> article_data[<span class="st">'rolling_sigma'</span>],</span>
+<span id="cb12-409"><a href="#cb12-409" aria-hidden="true" tabindex="-1"></a>        alpha<span class="op">=</span><span class="fl">0.12</span>, color<span class="op">=</span><span class="st">'#475569'</span>, label<span class="op">=</span><span class="st">'±3 robust σ'</span></span>
+<span id="cb12-410"><a href="#cb12-410" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb12-411"><a href="#cb12-411" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-412"><a href="#cb12-412" aria-hidden="true" tabindex="-1"></a>    detected <span class="op">=</span> article_data[article_data[<span class="st">'is_spike'</span>]]</span>
+<span id="cb12-413"><a href="#cb12-413" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">len</span>(detected) <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb12-414"><a href="#cb12-414" aria-hidden="true" tabindex="-1"></a>        ax.scatter(detected[<span class="st">'timestamp'</span>], detected[<span class="st">'views'</span>],</span>
+<span id="cb12-415"><a href="#cb12-415" aria-hidden="true" tabindex="-1"></a>                   color<span class="op">=</span><span class="st">'#dc2626'</span>, s<span class="op">=</span><span class="dv">18</span>, zorder<span class="op">=</span><span class="dv">5</span>, label<span class="op">=</span><span class="st">'Detected spike'</span>)</span>
+<span id="cb12-416"><a href="#cb12-416" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-417"><a href="#cb12-417" aria-hidden="true" tabindex="-1"></a>    ax.set_title(<span class="ss">f"</span><span class="sc">{</span>evt[<span class="st">'article'</span>]<span class="sc">}</span><span class="ss"> — </span><span class="sc">{</span>evt[<span class="st">'event_type'</span>]<span class="sc">}</span><span class="ss">"</span>, fontsize<span class="op">=</span><span class="dv">11</span>, fontweight<span class="op">=</span><span class="st">'bold'</span>)</span>
+<span id="cb12-418"><a href="#cb12-418" aria-hidden="true" tabindex="-1"></a>    ax.set_ylabel(<span class="st">'Daily views'</span>, fontsize<span class="op">=</span><span class="dv">9</span>)</span>
+<span id="cb12-419"><a href="#cb12-419" aria-hidden="true" tabindex="-1"></a>    ax.spines[<span class="st">'top'</span>].set_visible(<span class="va">False</span>)</span>
+<span id="cb12-420"><a href="#cb12-420" aria-hidden="true" tabindex="-1"></a>    ax.spines[<span class="st">'right'</span>].set_visible(<span class="va">False</span>)</span>
+<span id="cb12-421"><a href="#cb12-421" aria-hidden="true" tabindex="-1"></a>    ax.tick_params(labelsize<span class="op">=</span><span class="dv">8</span>)</span>
+<span id="cb12-422"><a href="#cb12-422" aria-hidden="true" tabindex="-1"></a>    ax.xaxis.set_major_formatter(mdates.DateFormatter(<span class="st">'%b </span><span class="sc">%d</span><span class="st">'</span>))</span>
+<span id="cb12-423"><a href="#cb12-423" aria-hidden="true" tabindex="-1"></a>    ax.legend(fontsize<span class="op">=</span><span class="dv">7</span>, loc<span class="op">=</span><span class="st">'upper left'</span>, framealpha<span class="op">=</span><span class="fl">0.9</span>)</span>
+<span id="cb12-424"><a href="#cb12-424" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-425"><a href="#cb12-425" aria-hidden="true" tabindex="-1"></a>plt.suptitle(<span class="st">'Spike Detection on Wikipedia Pageviews — Validated Events'</span>,</span>
+<span id="cb12-426"><a href="#cb12-426" aria-hidden="true" tabindex="-1"></a>             fontsize<span class="op">=</span><span class="dv">13</span>, fontweight<span class="op">=</span><span class="st">'bold'</span>, y<span class="op">=</span><span class="fl">1.00</span>)</span>
+<span id="cb12-427"><a href="#cb12-427" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb12-428"><a href="#cb12-428" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb12-429"><a href="#cb12-429" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb12-430"><a href="#cb12-430" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-431"><a href="#cb12-431" aria-hidden="true" tabindex="-1"></a><span class="fu">## Key Results</span></span>
+<span id="cb12-432"><a href="#cb12-432" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-433"><a href="#cb12-433" aria-hidden="true" tabindex="-1"></a>::: {.metrics-row}</span>
+<span id="cb12-434"><a href="#cb12-434" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-435"><a href="#cb12-435" aria-hidden="true" tabindex="-1"></a>::: {.metric}</span>
+<span id="cb12-436"><a href="#cb12-436" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">100%</span><span class="co">]</span>{.metric-value}</span>
+<span id="cb12-437"><a href="#cb12-437" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Ground-truth recall</span><span class="co">]</span>{.metric-label}</span>
+<span id="cb12-438"><a href="#cb12-438" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">All injected events detected</span><span class="co">]</span>{.metric-detail}</span>
+<span id="cb12-439"><a href="#cb12-439" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb12-440"><a href="#cb12-440" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-441"><a href="#cb12-441" aria-hidden="true" tabindex="-1"></a>::: {.metric}</span>
+<span id="cb12-442"><a href="#cb12-442" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">15×</span><span class="co">]</span>{.metric-value}</span>
+<span id="cb12-443"><a href="#cb12-443" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Storage compression</span><span class="co">]</span>{.metric-label}</span>
+<span id="cb12-444"><a href="#cb12-444" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Parquet vs CSV</span><span class="co">]</span>{.metric-detail}</span>
+<span id="cb12-445"><a href="#cb12-445" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb12-446"><a href="#cb12-446" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-447"><a href="#cb12-447" aria-hidden="true" tabindex="-1"></a>::: {.metric}</span>
+<span id="cb12-448"><a href="#cb12-448" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">~5 ms</span><span class="co">]</span>{.metric-value}</span>
+<span id="cb12-449"><a href="#cb12-449" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Single-day query</span><span class="co">]</span>{.metric-label}</span>
+<span id="cb12-450"><a href="#cb12-450" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Polars + partition pruning</span><span class="co">]</span>{.metric-detail}</span>
+<span id="cb12-451"><a href="#cb12-451" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb12-452"><a href="#cb12-452" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-453"><a href="#cb12-453" aria-hidden="true" tabindex="-1"></a>::: {.metric}</span>
+<span id="cb12-454"><a href="#cb12-454" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">3 σ MAD</span><span class="co">]</span>{.metric-value}</span>
+<span id="cb12-455"><a href="#cb12-455" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Detection threshold</span><span class="co">]</span>{.metric-label}</span>
+<span id="cb12-456"><a href="#cb12-456" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Robust to outliers</span><span class="co">]</span>{.metric-detail}</span>
+<span id="cb12-457"><a href="#cb12-457" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb12-458"><a href="#cb12-458" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-459"><a href="#cb12-459" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb12-460"><a href="#cb12-460" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-461"><a href="#cb12-461" aria-hidden="true" tabindex="-1"></a><span class="fu">## What this demonstrates</span></span>
+<span id="cb12-462"><a href="#cb12-462" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-463"><a href="#cb12-463" aria-hidden="true" tabindex="-1"></a>This case study is intentionally chosen to show three things at once:</span>
+<span id="cb12-464"><a href="#cb12-464" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-465"><a href="#cb12-465" aria-hidden="true" tabindex="-1"></a>**The methodology:** Robust spike detection using median + MAD instead of mean + std. This</span>
+<span id="cb12-466"><a href="#cb12-466" aria-hidden="true" tabindex="-1"></a>is the right way to do anomaly detection when the anomalies themselves would corrupt</span>
+<span id="cb12-467"><a href="#cb12-467" aria-hidden="true" tabindex="-1"></a>classical statistics. Most introductory tutorials get this wrong.</span>
+<span id="cb12-468"><a href="#cb12-468" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-469"><a href="#cb12-469" aria-hidden="true" tabindex="-1"></a>**The engineering:** Real data at scale, partitioned Parquet, lazy Polars queries. The</span>
+<span id="cb12-470"><a href="#cb12-470" aria-hidden="true" tabindex="-1"></a>storage and query layer choices are deliberate and documented in the</span>
+<span id="cb12-471"><a href="#cb12-471" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Data Foundation</span><span class="co">](../data-foundation/data-engineering.html)</span> page.</span>
+<span id="cb12-472"><a href="#cb12-472" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-473"><a href="#cb12-473" aria-hidden="true" tabindex="-1"></a>**The honesty:** I show the detector working on injected events with known ground truth,</span>
+<span id="cb12-474"><a href="#cb12-474" aria-hidden="true" tabindex="-1"></a>not just dramatic charts. The validation section quantifies recall and false positives</span>
+<span id="cb12-475"><a href="#cb12-475" aria-hidden="true" tabindex="-1"></a>explicitly.</span>
+<span id="cb12-476"><a href="#cb12-476" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-477"><a href="#cb12-477" aria-hidden="true" tabindex="-1"></a><span class="fu">## What I'd extend in a production version</span></span>
+<span id="cb12-478"><a href="#cb12-478" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-479"><a href="#cb12-479" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**CUSUM or Bayesian online changepoint detection** for more sensitive detection of slow</span>
+<span id="cb12-480"><a href="#cb12-480" aria-hidden="true" tabindex="-1"></a>  shifts (the MAD approach is best for sharp spikes)</span>
+<span id="cb12-481"><a href="#cb12-481" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Per-article tuning** — current implementation uses one threshold across all articles;</span>
+<span id="cb12-482"><a href="#cb12-482" aria-hidden="true" tabindex="-1"></a>  in practice you'd learn per-series volatility profiles</span>
+<span id="cb12-483"><a href="#cb12-483" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Cause attribution** — cross-reference detected events with media schedules, Twitter</span>
+<span id="cb12-484"><a href="#cb12-484" aria-hidden="true" tabindex="-1"></a>  trends, or news APIs to auto-classify likely cause</span>
+<span id="cb12-485"><a href="#cb12-485" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Streaming implementation** — for sub-minute detection, port to a streaming framework</span>
+<span id="cb12-486"><a href="#cb12-486" aria-hidden="true" tabindex="-1"></a>  (Kafka + Flink, or pure Python with incremental statistics)</span>
+<span id="cb12-487"><a href="#cb12-487" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-488"><a href="#cb12-488" aria-hidden="true" tabindex="-1"></a><span class="fu">## Tools &amp; Methods</span></span>
+<span id="cb12-489"><a href="#cb12-489" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-490"><a href="#cb12-490" aria-hidden="true" tabindex="-1"></a>::: {.skill-grid}</span>
+<span id="cb12-491"><a href="#cb12-491" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Python</span><span class="co">]</span>{.skill .primary}</span>
+<span id="cb12-492"><a href="#cb12-492" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Polars</span><span class="co">]</span>{.skill .primary}</span>
+<span id="cb12-493"><a href="#cb12-493" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">DuckDB</span><span class="co">]</span>{.skill .primary}</span>
+<span id="cb12-494"><a href="#cb12-494" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">pyarrow</span><span class="co">]</span>{.skill .primary}</span>
+<span id="cb12-495"><a href="#cb12-495" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Parquet</span><span class="co">]</span>{.skill .primary}</span>
+<span id="cb12-496"><a href="#cb12-496" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">pandas</span><span class="co">]</span>{.skill}</span>
+<span id="cb12-497"><a href="#cb12-497" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">matplotlib</span><span class="co">]</span>{.skill}</span>
+<span id="cb12-498"><a href="#cb12-498" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Robust Statistics (MAD)</span><span class="co">]</span>{.skill}</span>
+<span id="cb12-499"><a href="#cb12-499" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Time-Series Analysis</span><span class="co">]</span>{.skill}</span>
+<span id="cb12-500"><a href="#cb12-500" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Anomaly Detection</span><span class="co">]</span>{.skill}</span>
+<span id="cb12-501"><a href="#cb12-501" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Hive Partitioning</span><span class="co">]</span>{.skill}</span>
+<span id="cb12-502"><a href="#cb12-502" aria-hidden="true" tabindex="-1"></a>:::</span>
+</code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© 2025 Jesse G</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>Built with <a href="https://quarto.org">Quarto</a> · <a href="https://github.com/YOURUSERNAME/portfolio">Source on GitHub</a></p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

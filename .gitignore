@@ -1,0 +1,49 @@
+# Quarto build artifacts
+/.quarto/
+/_freeze/
+/_site/
+
+# Render output (GitHub Pages serves from docs/, but keep it local-only until you want to commit)
+# Uncomment the next line if you want to keep docs/ out of git and rely on `quarto publish gh-pages` instead:
+# /docs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*~
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# R
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+renv/library/
+renv/staging/
+
+# Local data and large outputs
+/data/raw/
+/data/cache/
+*.parquet.tmp
+/tmp/
+output/
+
+# Secrets — never commit
+.env
+.env.local
+*.key
+credentials.json
+
+**/*.quarto_ipynb

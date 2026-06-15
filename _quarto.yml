@@ -1,0 +1,83 @@
+project:
+  type: website
+  output-dir: docs
+  resources:
+    - "assets/"
+    - "images/"
+
+website:
+  title: "Jesse G"
+  description: "Analytics Leader · Media Measurement · Data Engineering"
+  favicon: images/favicon.png
+  navbar:
+    background: "#0f172a"
+    foreground: "#e2e8f0"
+    pinned: true
+    left:
+      - href: index.qmd
+        text: Home
+      - href: about.qmd
+        text: About
+      - text: Case Studies
+        menu:
+          - href: case-studies/spike-detection.qmd
+            text: "Spike Detection (Wikipedia · Parquet)"
+          - href: case-studies/political-ad-spend.qmd
+            text: "Political Ad Spend (FEC · Parquet)"
+          - href: case-studies/automated-pipeline.qmd
+            text: "Automated Pipeline (CMS · R)"
+      - href: data-foundation/data-engineering.qmd
+        text: Data Foundation
+      - href: posts/code-driven-reporting.qmd
+        text: Writing
+      - href: resume.qmd
+        text: Resume
+    right:
+      - icon: github
+        href: https://github.com/YOURUSERNAME
+        aria-label: GitHub
+      - icon: linkedin
+        href: https://linkedin.com/in/YOURUSERNAME
+        aria-label: LinkedIn
+
+  page-footer:
+    border: false
+    background: "#0f172a"
+    left: |
+      © 2025 Jesse G
+    right: |
+      Built with [Quarto](https://quarto.org) · [Source on GitHub](https://github.com/YOURUSERNAME/portfolio)
+
+format:
+  html:
+    theme:
+      light: [flatly, theme-light.scss]
+      dark: [darkly, theme-dark.scss]
+    css: styles.css
+    toc: true
+    toc-depth: 3
+    toc-location: right
+    code-fold: true
+    code-tools: true
+    code-summary: "Show code"
+    highlight-style: github
+    fontsize: "1.05rem"
+    linestretch: 1.65
+    mainfont: "'Source Sans 3', 'Segoe UI', sans-serif"
+    monofont: "'JetBrains Mono', 'Fira Code', 'Consolas', monospace"
+    grid:
+      sidebar-width: 240px
+      body-width: 820px
+      margin-width: 240px
+
+execute:
+  freeze: auto
+  echo: true
+  warning: false
+  message: false
+
+knitr:
+  opts_chunk:
+    fig.align: "center"
+    fig.retina: 2
+    dev: "png"

@@ -1,0 +1,242 @@
+---
+title: "Data Foundation"
+subtitle: "How I think about the storage layer"
+date: 2025-01-18
+toc: true
+toc-depth: 3
+code-fold: false
+---
+
+[Engineering POV]{.section-label}
+
+::: {.tldr}
+**TL;DR** — The case studies on this site share a common storage layer: **Parquet files,
+partitioned by date and source, queried with Polars and DuckDB**. This page documents the
+schema choices, partitioning strategy, and query patterns. Most analytics portfolios skip
+this layer entirely. I think that's a mistake — for senior analytics work, the storage
+decisions *are* the work.
+:::
+
+## Why this page exists
+
+Most portfolio sites show charts and code, but quietly assume the data fits in a CSV. That
+worked in 2015. It doesn't reflect how modern analytics teams actually operate. When you're
+analyzing 50GB of Wikipedia traffic or years of FEC filings, your first decision isn't
+"which chart library?" — it's "how do I store this so I don't reload it from scratch every
+time?"
+
+This page documents the engineering choices behind the case studies. They're not glamorous.
+They're the foundation everything else sits on.
+
+## The decision tree
+
+For each dataset, I work through the same sequence:
+
+::: {.approach-grid}
+
+::: {.step}
+::: {.step-num}
+1
+:::
+::: {.step-body}
+#### What's the access pattern?
+Is this data read once and discarded, or queried repeatedly? Are queries time-bounded
+(last 30 days), entity-bounded (one client), or full-table scans? The right answer
+shapes everything downstream.
+:::
+:::
+
+::: {.step}
+::: {.step-num}
+2
+:::
+::: {.step-body}
+#### What's the natural partition key?
+Almost always date or time. Sometimes a categorical (DMA, client_id). Partitioning by
+the column you filter on most reduces query cost by orders of magnitude.
+:::
+:::
+
+::: {.step}
+::: {.step-num}
+3
+:::
+::: {.step-body}
+#### What's the right format?
+CSV for tiny exploratory data. Parquet for anything you'll query more than twice. JSON only when the schema is genuinely heterogeneous. Never, ever Excel as a system of record.
+:::
+:::
+
+::: {.step}
+::: {.step-num}
+4
+:::
+::: {.step-body}
+#### What's the right query engine?
+DuckDB for ad-hoc SQL on local Parquet. Polars for transformations. Athena/BigQuery for cloud-scale. Pandas only if the data is small enough that it doesn't matter.
+:::
+:::
+
+:::
+
+## Why Parquet, specifically
+
+Three reasons that compound:
+
+**Columnar storage means column-selective queries are cheap.** When you read a CSV with 50
+columns and only need 3, you're still parsing all 50. Parquet stores each column
+contiguously, so reading 3 columns is genuinely 6% of the work, not 100%.
+
+**Compression is dramatic and free.** Real numbers from the case studies on this site:
+
+| Dataset | CSV size | Parquet size | Ratio |
+|---|---:|---:|---:|
+| Wikipedia hourly pageviews (1 month) | 6.2 GB | 412 MB | 15× smaller |
+| FEC operating expenditures (2024 cycle) | 1.4 GB | 96 MB | 14× smaller |
+| CMS Open Payments (general payments, 1 yr) | 2.1 GB | 178 MB | 12× smaller |
+
+That's not just disk — it's network transfer time, S3 storage cost, and memory pressure
+during reads. All compounding.
+
+**Schema is part of the file.** No more "wait, is `date` a string or a timestamp?"
+The Parquet file knows. Pandas, Polars, DuckDB, Athena, Spark — they all read the same file
+the same way. No parsing surprises.
+
+The cost: Parquet is binary. You can't `cat` it or open it in a text editor. That's
+a fair trade for everything you get back.
+
+## Partitioning strategy
+
+This is where most teams get it wrong. The instinct is to partition by everything possible
+("partition by year, month, day, hour, dma, channel..."). The reality: **over-partitioning
+is worse than under-partitioning** because the metadata overhead destroys query performance.
+
+The rule I use:
+
+::: {.pullquote}
+Partition by what you filter on. Don't partition by what you only group by.
+
+[The single most useful partitioning heuristic.]{.pullquote-attr}
+:::
+
+For time-series data: partition by date. That's it. Most queries are "last N days" or "this
+month" — date partitioning makes those skip entire directories of files. Adding hour-level
+partitioning means thousands of tiny files, each with overhead. Not worth it unless you
+genuinely run hour-bounded queries.
+
+For mixed dimensions: partition by the *high-cardinality column you filter on*. For ad-tech
+data with `client_id`, partition by client. For multi-tenant data with `region`, partition
+by region. Combine with date if the volume justifies it.
+
+The directory structure ends up looking like:
+
+```
+data/
+├── wikipedia_pageviews/
+│   ├── date=2024-01-01/
+│   │   └── part-0.parquet
+│   ├── date=2024-01-02/
+│   │   └── part-0.parquet
+│   └── ...
+├── fec_expenditures/
+│   ├── cycle=2022/
+│   │   ├── month=01/
+│   │   │   └── part-0.parquet
+│   │   └── month=02/...
+│   └── cycle=2024/...
+└── cms_payments/
+    ├── year=2023/
+    │   └── part-0.parquet
+    └── year=2024/
+        └── part-0.parquet
+```
+
+This is **Hive-style partitioning** — the directory names encode the partition values.
+Every modern engine (DuckDB, Polars, Athena, Spark) auto-detects this layout.
+
+## The query layer
+
+For ad-hoc analysis: **DuckDB on Parquet** is the most underrated combination in modern
+analytics. You get full SQL, partition pruning, column pruning, and zero infrastructure.
+It runs on a laptop and queries 50GB of Parquet faster than most cloud warehouses query a
+table that size.
+
+```python
+import duckdb
+
+# Query directly against Parquet — no loading step
+result = duckdb.sql("""
+    SELECT
+        date,
+        SUM(views) AS total_views,
+        COUNT(DISTINCT article) AS articles
+    FROM 'data/wikipedia_pageviews/*/*.parquet'
+    WHERE date BETWEEN '2024-01-01' AND '2024-01-31'
+      AND project = 'en.wikipedia'
+    GROUP BY date
+    ORDER BY date
+""").df()
+```
+
+The `WHERE date BETWEEN ...` clause causes DuckDB to skip every partition outside that
+range — it never even opens those files. Same query against the equivalent CSV would
+take 50–100× longer.
+
+For transformations: **Polars**. Same lazy-evaluation model as Spark, single-machine
+execution, written in Rust, ~5–10× faster than pandas on real workloads. The API is more
+disciplined than pandas (which I view as a feature, not a bug).
+
+```python
+import polars as pl
+
+df = (
+    pl.scan_parquet('data/wikipedia_pageviews/*/*.parquet')
+    .filter(pl.col('project') == 'en.wikipedia')
+    .filter(pl.col('date').is_between('2024-01-01', '2024-01-31'))
+    .group_by('date')
+    .agg([
+        pl.col('views').sum().alias('total_views'),
+        pl.col('article').n_unique().alias('articles'),
+    ])
+    .sort('date')
+    .collect()
+)
+```
+
+`scan_parquet` is the lazy version — Polars builds an execution plan, applies predicate
+pushdown to the Parquet files (so only matching row-groups are read), and only materializes
+the result when `.collect()` is called.
+
+## What this signals to a hiring manager
+
+I'm direct about why this page exists. For a Manager or Director-level analytics role,
+the question isn't "can you write a SQL query?" It's "do you make decisions like an engineer
+when the situation calls for it?"
+
+Showing the storage layer signals three things:
+
+- **I think in production terms.** Cost, latency, and reproducibility matter, not just
+  the final chart.
+- **I make tool choices deliberately.** Polars, DuckDB, Parquet aren't on this page because
+  they're trendy. They're here because they're the right choice for the access patterns I
+  described.
+- **I can lead a team that operates at this level.** A team that ships code-driven reports
+  needs an architecture this team can stand on. That architecture is an analytics
+  leadership responsibility, not a "let the data engineering team handle it" handoff.
+
+## Honest trade-offs
+
+I want to be clear about what this approach *isn't* good for:
+
+- **Real-time / streaming.** Parquet is batch. If you need sub-minute freshness, this is the wrong layer. (You'd add Kafka + a streaming engine on top.)
+- **Frequent row-level updates.** Parquet files are immutable; updating individual rows
+  means rewriting partitions. For mostly-append-only data (which describes most analytics
+  workloads), this is fine.
+- **Tiny datasets.** If your data fits comfortably in a CSV that opens in Excel, just use a CSV. The infrastructure overhead isn't justified.
+- **Cross-org data sharing.** Parquet works in any modern engine, but if your stakeholders
+  open everything in Excel, you'll still need to export to xlsx for delivery. (Which is
+  fine — generate it from the Parquet source.)
+
+The point isn't that Parquet/Polars/DuckDB is universally correct. The point is that
+**making the choice deliberately**, and being able to explain why, is what separates senior
+analytics work from junior analytics work.
