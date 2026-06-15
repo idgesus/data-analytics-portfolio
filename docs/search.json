@@ -1,108 +1,73 @@
 [
   {
-    "objectID": "resume.html",
-    "href": "resume.html",
-    "title": "Resume",
+    "objectID": "posts/code-driven-reporting.html",
+    "href": "posts/code-driven-reporting.html",
+    "title": "The Case for Code-Driven Reporting",
     "section": "",
-    "text": "Manager of Analytics Insights · TV Attribution & Media Measurement\n\n\nidgesus@gmail.com LinkedIn · GitHub"
+    "text": "Methodology Paper · 12 min read"
   },
   {
-    "objectID": "resume.html#summary",
-    "href": "resume.html#summary",
-    "title": "Resume",
-    "section": "Summary",
-    "text": "Summary\nAnalytics leader with 13+ years building measurement frameworks that connect media investment to business outcomes. Specialized in TV attribution, probabilistic modeling, spike detection, and code-driven reporting infrastructure. Currently lead a team of analysts at JuiceMedia, having grown into the role through Senior Analyst, Manager, and Director progression.\nKnown for combining statistical rigor with operational discipline — the rare analytics leader who can architect a Bayesian model and the AWS-backed pipeline that delivers it to a CMO every Monday morning."
+    "objectID": "posts/code-driven-reporting.html#the-problem-nobody-quite-admits",
+    "href": "posts/code-driven-reporting.html#the-problem-nobody-quite-admits",
+    "title": "The Case for Code-Driven Reporting",
+    "section": "The problem nobody quite admits",
+    "text": "The problem nobody quite admits\nEvery analytics team I’ve worked with — across financial services, pharma measurement, and ad-tech — has the same Tuesday morning. An analyst is hunched over a PowerPoint, copy-pasting numbers from Excel into a deck because the executive review is at 2 PM and the data refreshed at 11. Someone else is in Slack asking “wait, which version of the Q3 file is the real one?” A senior analyst is fixing a formula in a workbook that breaks every quarter when the date format shifts.\nThis is normal. It’s also a slow-motion disaster.\nI’m going to make a strong claim: manually-assembled deliverables are the single biggest source of avoidable risk and waste in modern analytics teams. Bigger than bad SQL. Bigger than tooling debates. Bigger than headcount. And yet most teams treat the problem as a soft cultural issue (“we should automate more”) rather than what it actually is: a structural choice with measurable cost.\nThis essay lays out the case for code-driven reporting — treating analytical deliverables the way software engineers treat applications. It’s not a tools post. It’s an argument about what analytics work is, and what it should be."
   },
   {
-    "objectID": "resume.html#experience",
-    "href": "resume.html#experience",
-    "title": "Resume",
-    "section": "Experience",
-    "text": "Experience\n\nManager of Analytics Insights\nJuiceMedia · 2020 – Present\n\nLead the Analytics Insights team measuring TV and multi-channel campaigns for clients across pharma, telemarketing, and media verticals\nArchitect probabilistic attribution and DMA-level lift measurement frameworks used in weekly client deliverables\nBuilt the automated reporting infrastructure (Quarto, gt tables, AWS S3 + Athena, Excel/openxlsx) that eliminated 8+ hours/week of manual analyst work\nDesigned spike detection systems for real-time identification of media-driven traffic events\nManage 3+ analysts: methodology standards, technical reviews, mentorship, hiring partnership\nPartner cross-functionally with engineering, data science, and client success teams to ship integrated analytics products\nPresent findings and methodology to client VP/C-level stakeholders\n\n\n\nSenior Analyst → Manager → Director\nDirectAvenue / JuiceMedia · 2016 – 2020\n\nPromoted through three levels while building the measurement practice\nOwned methodology for DMA-level TV attribution and lift analysis\nDesigned the spike detection framework still used across the company\nEstablished executive reporting cadence and templates\n\n\n\nData Analyst → Senior Analyst\nEncore Capital Group · 2012 – 2016\n\nBuilt reporting and analytical systems supporting data-driven decision making in financial services\nDeveloped statistical models and quantitative analyses\nCreated automated reporting workflows and executive presentations"
+    "objectID": "posts/code-driven-reporting.html#what-code-driven-reporting-actually-means",
+    "href": "posts/code-driven-reporting.html#what-code-driven-reporting-actually-means",
+    "title": "The Case for Code-Driven Reporting",
+    "section": "What “code-driven reporting” actually means",
+    "text": "What “code-driven reporting” actually means\nThe term is broader than it sounds. I don’t just mean “use Python instead of Excel.” I mean a specific commitment:\n\nEvery analytical deliverable — every chart, table, metric, and narrative — should be reproducible from raw data with a single command.\nThe single-command test for analytics maturity.\n\nIf your team can’t answer “yes, just run this script” when asked how a number was produced, you don’t have analytics — you have artisanal data work. That has a place (research, exploration) but it shouldn’t be the output medium for recurring deliverables.\nCode-driven reporting means:\n\nInputs are explicit. Source data is specified, dated, and pulled from a system of record — not “the file Sarah sent.”\nLogic is in code. Filtering, aggregation, business rules, and metric definitions live in version-controlled files, not in someone’s head or a hidden Excel formula.\nOutputs are generated. The PDF, HTML report, Excel workbook, or slide deck is produced by a script that anyone on the team can run.\nChanges are tracked. When the CFO asks “why did this number change from last quarter?” the answer is a git diff, not a memory test.\nReviews happen on the code. Pull requests force methodology discussions before reports go out.\n\nThat’s the full commitment. Anything less is a halfway state that incurs most of the cost of manual work without much of the benefit of automation."
   },
   {
-    "objectID": "resume.html#education",
-    "href": "resume.html#education",
-    "title": "Resume",
-    "section": "Education",
-    "text": "Education\nB.A. Economics (Quantitative Analysis) & Statistics San Diego State University · 2012\nDouble major combining economic theory with applied statistical methods."
+    "objectID": "posts/code-driven-reporting.html#the-maturity-model",
+    "href": "posts/code-driven-reporting.html#the-maturity-model",
+    "title": "The Case for Code-Driven Reporting",
+    "section": "The maturity model",
+    "text": "The maturity model\nMost teams sit somewhere on this spectrum. Be honest about where yours actually is.\n\nLevel 0: Artisanal reporting\nReports are assembled by hand each cycle. Numbers come from running queries, copying outputs, and pasting into PowerPoint or Excel. Senior analysts are bottlenecks because they’re the only ones who remember how each metric is calculated.\nCost signal: When someone leaves the team, reporting capability degrades for weeks.\n\n\nLevel 1: Templated reporting\nA spreadsheet template or PowerPoint template exists. Data still gets pasted in by hand, but at least the formatting is stable. Charts auto-update from source ranges.\nCost signal: Quarter-end takes 3+ days of analyst time, every time.\n\n\nLevel 2: Scripted extraction\nScripts pull data from sources and produce intermediate outputs (CSVs, summary tables). A human still assembles the final deliverable.\nCost signal: Reports go out, but the team can’t answer “what changed?” without manual investigation.\n\n\nLevel 3: Parameterized reports\nA Quarto, R Markdown, or Jupyter document renders the full deliverable from raw data. Parameters control client, date range, or scope. One command produces the artifact.\nCost signal: New report variants take hours, not days.\n\n\nLevel 4: Continuous reporting\nReports render automatically on a schedule (or on data refresh). Outputs are versioned, archived, and accessible via URL. Changes to methodology go through code review. Tests catch breaking changes before stakeholders see them.\nCost signal: The team spends most of its time on new analytical questions, not on reproducing old ones.\nMost teams I’ve seen — including good ones — sit at Level 1 or Level 2 and think they’re at Level 3. The honest test: pick last quarter’s executive deck. Can someone who wasn’t on the team reproduce it from the raw data this morning, before lunch? If no, you’re below Level 3."
   },
   {
-    "objectID": "resume.html#technical-skills",
-    "href": "resume.html#technical-skills",
-    "title": "Resume",
-    "section": "Technical Skills",
-    "text": "Technical Skills\nLanguages & Tools: Python, R, SQL, Quarto, Excel/VBA Data engineering: Parquet, Polars, DuckDB, pyarrow, AWS (S3, Athena), Hive partitioning Statistics: Causal inference, synthetic controls, probabilistic attribution, Bayesian methods (familiar), time-series analysis, anomaly detection, A/B & geo-testing Reporting & viz: Quarto, gt/gtExtras, ggplot2, Plotly, Tableau, openxlsx2, matplotlib Engineering practices: Git, GitHub, code review, testing, reproducible pipelines, parameterized reports"
+    "objectID": "posts/code-driven-reporting.html#why-teams-stay-stuck",
+    "href": "posts/code-driven-reporting.html#why-teams-stay-stuck",
+    "title": "The Case for Code-Driven Reporting",
+    "section": "Why teams stay stuck",
+    "text": "Why teams stay stuck\nThe objections are predictable. They’re also mostly wrong.\n“We don’t have time to build infrastructure.” This is the most common objection and it’s exactly backwards. The time you don’t have is being consumed by the manual work itself. The investment pays back in weeks for any recurring report. The math is brutal: a 40-hour build that saves 4 hours/week breaks even in 10 weeks and saves 200+ hours/year thereafter. I have never seen a team where the math didn’t work.\n“Our stakeholders want PowerPoint.” They want to read information in a familiar format. They do not care, at all, how the PowerPoint was made. A code-driven pipeline can produce a .pptx file just as easily as a hand-built one — and the resulting deck will have consistent formatting, accurate numbers, and traceable provenance. The stakeholder gets their format. You get your sanity.\n“Our data is too messy.” Yes. That’s exactly why you need to encode the cleaning logic in version control. Messy data plus manual handling is how mistakes propagate silently. Messy data plus tested cleaning code is how you catch upstream changes the day they happen.\n“We’re not engineers.” Modern tools — Quarto, R Markdown, Jupyter, dbt — are explicitly designed for analysts. You don’t need to be a software engineer to write reproducible reports any more than you need to be a structural engineer to live in a building. You do need to take the craft seriously.\n“It’s not worth it for one-off analyses.” Agreed. Code-driven reporting is for recurring deliverables. Exploratory analysis can stay messy. The discipline applies where the work repeats."
   },
   {
-    "objectID": "resume.html#domain-expertise",
-    "href": "resume.html#domain-expertise",
-    "title": "Resume",
-    "section": "Domain Expertise",
-    "text": "Domain Expertise\n\nTV attribution & lift analysis at DMA and national level\nProbabilistic attribution modeling across overlapping media channels\nSpike detection and anomaly detection on time-series traffic data\nAutomated executive reporting — Quarto/gt/Excel pipeline design\nPharma, telemarketing, and media vertical experience\nTeam leadership — managing analysts, defining standards, mentorship"
+    "objectID": "posts/code-driven-reporting.html#what-it-costs-to-stay-at-level-1",
+    "href": "posts/code-driven-reporting.html#what-it-costs-to-stay-at-level-1",
+    "title": "The Case for Code-Driven Reporting",
+    "section": "What it costs to stay at Level 1",
+    "text": "What it costs to stay at Level 1\nI want to put real numbers on this, because the cost of artisanal reporting is invisible until you measure it.\nA team I worked with — five analysts, one director — produced 12 recurring client-facing reports per month plus ad-hoc work. Manual assembly time per report was averaging 6 hours, plus 2 hours of senior review. That’s 96 hours/month on production work alone. Across the team, that was roughly 30% of total analyst capacity going to producing things that had been produced 50+ times before.\nAfter moving the recurring reports to a code-driven pipeline (Quarto + parameterized R + an orchestration layer), production time dropped to about 4 hours/month for the same 12 reports. The reclaimed capacity went to actual analytical work: methodology improvements, new measurement frameworks, deeper client engagements.\nThe build took two analysts about six weeks of partial effort. It saved roughly 1,100 analyst-hours per year. That’s the equivalent of more than half a full-time analyst, recovered in perpetuity, from one project.\nThis is not an unusual outcome. It’s the typical outcome."
   },
   {
-    "objectID": "resume.html#featured-writing",
-    "href": "resume.html#featured-writing",
-    "title": "Resume",
-    "section": "Featured Writing",
-    "text": "Featured Writing\nThe Case for Code-Driven Reporting: Why Your Analytics Team Should Stop Building Decks — A methodology paper on treating analytical reports as software products. 2025.\n\n\nFor case studies and code, see the portfolio →"
+    "objectID": "posts/code-driven-reporting.html#what-doing-it-right-looks-like-in-practice",
+    "href": "posts/code-driven-reporting.html#what-doing-it-right-looks-like-in-practice",
+    "title": "The Case for Code-Driven Reporting",
+    "section": "What “doing it right” looks like in practice",
+    "text": "What “doing it right” looks like in practice\nHere’s the structure I converge on, regardless of language:\nproject/\n├── data/                # Raw data (gitignored if large)\n├── R/ or src/           # Cleaning, transformation, modeling functions\n├── reports/             # Quarto/RMarkdown/Jupyter sources\n│   ├── _quarto.yml      # Site/book config\n│   ├── monthly_review.qmd\n│   └── client_X_report.qmd\n├── output/              # Rendered deliverables (gitignored)\n├── tests/               # Tests for transformation functions\n├── renv.lock or pyproject.toml   # Pinned dependencies\n└── README.md            # How to run it\nThe non-negotiables:\n\nPinned dependencies. renv for R, uv/pyproject.toml for Python. The pipeline must run identically on a teammate’s laptop a year from now.\nFunctions live separately from reports. The .qmd calls functions; it doesn’t define them. This makes everything testable.\nTests on transformations, not reports. Test that compute_cpa() returns the right number for known inputs. Don’t test the rendered HTML.\nParameterization is first-class. Reports take parameters (date range, client ID). Variants are configuration, not copies.\nOutputs are reproducible from main. The current branch should always produce a runnable pipeline."
   },
   {
-    "objectID": "data-foundation/data-engineering.html",
-    "href": "data-foundation/data-engineering.html",
-    "title": "Data Foundation",
-    "section": "",
-    "text": "Engineering POV"
+    "objectID": "posts/code-driven-reporting.html#the-leadership-angle",
+    "href": "posts/code-driven-reporting.html#the-leadership-angle",
+    "title": "The Case for Code-Driven Reporting",
+    "section": "The leadership angle",
+    "text": "The leadership angle\nThis isn’t a tooling argument. It’s a leadership argument.\nAnalytics managers and directors who insist on code-driven reporting do three things at once:\nThey protect their team from burnout. Manual deliverable production is the work analysts complain about most. It’s repetitive, error-prone, and high-stakes. Eliminating it makes the job better.\nThey protect the business from quiet errors. A typo in a hand-built deck can sit there for weeks. A test failure in a code-driven pipeline blocks the deploy.\nThey build a team that scales. A team at Level 3+ can take on more work without proportional headcount. A team at Level 1 needs more analysts every time output volume grows.\n\nThe best analytics leaders I know don’t measure their teams by the volume of decks produced. They measure by the number of recurring deliverables that no longer require human assembly.\nA useful KPI for analytics leadership.\n\nIf you’re an analytics leader and your team is at Level 1 or 2, you have a budget problem and you’re paying for it in analyst time. If you’re an analytics IC and your team is at Level 1 or 2, you have a career problem — your most valuable hours are being consumed by work that doesn’t grow your skills."
   },
   {
-    "objectID": "data-foundation/data-engineering.html#why-this-page-exists",
-    "href": "data-foundation/data-engineering.html#why-this-page-exists",
-    "title": "Data Foundation",
-    "section": "Why this page exists",
-    "text": "Why this page exists\nMost portfolio sites show charts and code, but quietly assume the data fits in a CSV. That worked in 2015. It doesn’t reflect how modern analytics teams actually operate. When you’re analyzing 50GB of Wikipedia traffic or years of FEC filings, your first decision isn’t “which chart library?” — it’s “how do I store this so I don’t reload it from scratch every time?”\nThis page documents the engineering choices behind the case studies. They’re not glamorous. They’re the foundation everything else sits on."
+    "objectID": "posts/code-driven-reporting.html#where-to-start",
+    "href": "posts/code-driven-reporting.html#where-to-start",
+    "title": "The Case for Code-Driven Reporting",
+    "section": "Where to start",
+    "text": "Where to start\nIf you’re convinced and want to move, here’s the sequence that has worked for me:\n\nPick one recurring report. Not the most complex. Pick one that runs at least monthly, has a stable structure, and would be embarrassing if it broke.\nReproduce it in Quarto or RMarkdown. Match the existing format exactly. The goal is not to improve the report — it’s to demonstrate that the code can produce the same output.\nRun both side-by-side for one cycle. Generate the manual version and the automated version. Check that they match. Fix the discrepancies.\nSwitch over. The next cycle, only run the automated version. Keep the manual process as fallback for one more cycle, then retire it.\nRepeat. Move the next report. Then the next. Within a year you’ll have inverted the team’s time distribution.\n\nThe hardest part is the first one. The seventh report takes 1/4 the time of the first. The team builds shared infrastructure as they go."
   },
   {
-    "objectID": "data-foundation/data-engineering.html#the-decision-tree",
-    "href": "data-foundation/data-engineering.html#the-decision-tree",
-    "title": "Data Foundation",
-    "section": "The decision tree",
-    "text": "The decision tree\nFor each dataset, I work through the same sequence:\n\n\n\n1\n\n\nWhat’s the access pattern?\nIs this data read once and discarded, or queried repeatedly? Are queries time-bounded (last 30 days), entity-bounded (one client), or full-table scans? The right answer shapes everything downstream.\n\n\n\n\n2\n\n\nWhat’s the natural partition key?\nAlmost always date or time. Sometimes a categorical (DMA, client_id). Partitioning by the column you filter on most reduces query cost by orders of magnitude.\n\n\n\n\n3\n\n\nWhat’s the right format?\nCSV for tiny exploratory data. Parquet for anything you’ll query more than twice. JSON only when the schema is genuinely heterogeneous. Never, ever Excel as a system of record.\n\n\n\n\n4\n\n\nWhat’s the right query engine?\nDuckDB for ad-hoc SQL on local Parquet. Polars for transformations. Athena/BigQuery for cloud-scale. Pandas only if the data is small enough that it doesn’t matter."
-  },
-  {
-    "objectID": "data-foundation/data-engineering.html#why-parquet-specifically",
-    "href": "data-foundation/data-engineering.html#why-parquet-specifically",
-    "title": "Data Foundation",
-    "section": "Why Parquet, specifically",
-    "text": "Why Parquet, specifically\nThree reasons that compound:\nColumnar storage means column-selective queries are cheap. When you read a CSV with 50 columns and only need 3, you’re still parsing all 50. Parquet stores each column contiguously, so reading 3 columns is genuinely 6% of the work, not 100%.\nCompression is dramatic and free. Real numbers from the case studies on this site:\n\n\n\n\n\n\n\n\n\nDataset\nCSV size\nParquet size\nRatio\n\n\n\n\nWikipedia hourly pageviews (1 month)\n6.2 GB\n412 MB\n15× smaller\n\n\nFEC operating expenditures (2024 cycle)\n1.4 GB\n96 MB\n14× smaller\n\n\nCMS Open Payments (general payments, 1 yr)\n2.1 GB\n178 MB\n12× smaller\n\n\n\nThat’s not just disk — it’s network transfer time, S3 storage cost, and memory pressure during reads. All compounding.\nSchema is part of the file. No more “wait, is date a string or a timestamp?” The Parquet file knows. Pandas, Polars, DuckDB, Athena, Spark — they all read the same file the same way. No parsing surprises.\nThe cost: Parquet is binary. You can’t cat it or open it in a text editor. That’s a fair trade for everything you get back."
-  },
-  {
-    "objectID": "data-foundation/data-engineering.html#partitioning-strategy",
-    "href": "data-foundation/data-engineering.html#partitioning-strategy",
-    "title": "Data Foundation",
-    "section": "Partitioning strategy",
-    "text": "Partitioning strategy\nThis is where most teams get it wrong. The instinct is to partition by everything possible (“partition by year, month, day, hour, dma, channel…”). The reality: over-partitioning is worse than under-partitioning because the metadata overhead destroys query performance.\nThe rule I use:\n\nPartition by what you filter on. Don’t partition by what you only group by.\nThe single most useful partitioning heuristic.\n\nFor time-series data: partition by date. That’s it. Most queries are “last N days” or “this month” — date partitioning makes those skip entire directories of files. Adding hour-level partitioning means thousands of tiny files, each with overhead. Not worth it unless you genuinely run hour-bounded queries.\nFor mixed dimensions: partition by the high-cardinality column you filter on. For ad-tech data with client_id, partition by client. For multi-tenant data with region, partition by region. Combine with date if the volume justifies it.\nThe directory structure ends up looking like:\ndata/\n├── wikipedia_pageviews/\n│   ├── date=2024-01-01/\n│   │   └── part-0.parquet\n│   ├── date=2024-01-02/\n│   │   └── part-0.parquet\n│   └── ...\n├── fec_expenditures/\n│   ├── cycle=2022/\n│   │   ├── month=01/\n│   │   │   └── part-0.parquet\n│   │   └── month=02/...\n│   └── cycle=2024/...\n└── cms_payments/\n    ├── year=2023/\n    │   └── part-0.parquet\n    └── year=2024/\n        └── part-0.parquet\nThis is Hive-style partitioning — the directory names encode the partition values. Every modern engine (DuckDB, Polars, Athena, Spark) auto-detects this layout."
-  },
-  {
-    "objectID": "data-foundation/data-engineering.html#the-query-layer",
-    "href": "data-foundation/data-engineering.html#the-query-layer",
-    "title": "Data Foundation",
-    "section": "The query layer",
-    "text": "The query layer\nFor ad-hoc analysis: DuckDB on Parquet is the most underrated combination in modern analytics. You get full SQL, partition pruning, column pruning, and zero infrastructure. It runs on a laptop and queries 50GB of Parquet faster than most cloud warehouses query a table that size.\nimport duckdb\n\n# Query directly against Parquet — no loading step\nresult = duckdb.sql(\"\"\"\n    SELECT\n        date,\n        SUM(views) AS total_views,\n        COUNT(DISTINCT article) AS articles\n    FROM 'data/wikipedia_pageviews/*/*.parquet'\n    WHERE date BETWEEN '2024-01-01' AND '2024-01-31'\n      AND project = 'en.wikipedia'\n    GROUP BY date\n    ORDER BY date\n\"\"\").df()\nThe WHERE date BETWEEN ... clause causes DuckDB to skip every partition outside that range — it never even opens those files. Same query against the equivalent CSV would take 50–100× longer.\nFor transformations: Polars. Same lazy-evaluation model as Spark, single-machine execution, written in Rust, ~5–10× faster than pandas on real workloads. The API is more disciplined than pandas (which I view as a feature, not a bug).\nimport polars as pl\n\ndf = (\n    pl.scan_parquet('data/wikipedia_pageviews/*/*.parquet')\n    .filter(pl.col('project') == 'en.wikipedia')\n    .filter(pl.col('date').is_between('2024-01-01', '2024-01-31'))\n    .group_by('date')\n    .agg([\n        pl.col('views').sum().alias('total_views'),\n        pl.col('article').n_unique().alias('articles'),\n    ])\n    .sort('date')\n    .collect()\n)\nscan_parquet is the lazy version — Polars builds an execution plan, applies predicate pushdown to the Parquet files (so only matching row-groups are read), and only materializes the result when .collect() is called."
-  },
-  {
-    "objectID": "data-foundation/data-engineering.html#what-this-signals-to-a-hiring-manager",
-    "href": "data-foundation/data-engineering.html#what-this-signals-to-a-hiring-manager",
-    "title": "Data Foundation",
-    "section": "What this signals to a hiring manager",
-    "text": "What this signals to a hiring manager\nI’m direct about why this page exists. For a Manager or Director-level analytics role, the question isn’t “can you write a SQL query?” It’s “do you make decisions like an engineer when the situation calls for it?”\nShowing the storage layer signals three things:\n\nI think in production terms. Cost, latency, and reproducibility matter, not just the final chart.\nI make tool choices deliberately. Polars, DuckDB, Parquet aren’t on this page because they’re trendy. They’re here because they’re the right choice for the access patterns I described.\nI can lead a team that operates at this level. A team that ships code-driven reports needs an architecture this team can stand on. That architecture is an analytics leadership responsibility, not a “let the data engineering team handle it” handoff."
-  },
-  {
-    "objectID": "data-foundation/data-engineering.html#honest-trade-offs",
-    "href": "data-foundation/data-engineering.html#honest-trade-offs",
-    "title": "Data Foundation",
-    "section": "Honest trade-offs",
-    "text": "Honest trade-offs\nI want to be clear about what this approach isn’t good for:\n\nReal-time / streaming. Parquet is batch. If you need sub-minute freshness, this is the wrong layer. (You’d add Kafka + a streaming engine on top.)\nFrequent row-level updates. Parquet files are immutable; updating individual rows means rewriting partitions. For mostly-append-only data (which describes most analytics workloads), this is fine.\nTiny datasets. If your data fits comfortably in a CSV that opens in Excel, just use a CSV. The infrastructure overhead isn’t justified.\nCross-org data sharing. Parquet works in any modern engine, but if your stakeholders open everything in Excel, you’ll still need to export to xlsx for delivery. (Which is fine — generate it from the Parquet source.)\n\nThe point isn’t that Parquet/Polars/DuckDB is universally correct. The point is that making the choice deliberately, and being able to explain why, is what separates senior analytics work from junior analytics work."
+    "objectID": "posts/code-driven-reporting.html#closing",
+    "href": "posts/code-driven-reporting.html#closing",
+    "title": "The Case for Code-Driven Reporting",
+    "section": "Closing",
+    "text": "Closing\nCode-driven reporting is not a fashion choice or a technical preference. It’s a strategic decision about how an analytics team allocates its scarcest resource — analyst time — and how it manages its largest hidden risk: silent errors in artisanal work.\nThe teams that take this seriously will spend their time on harder, more valuable problems. The teams that don’t will keep producing decks until automation does it for them. There is no third option.\n\n\nFound this useful? Share on LinkedIn →\nOr read more in the case studies."
   },
   {
     "objectID": "case-studies/automated-pipeline.html",
@@ -392,108 +357,59 @@
     "text": "Tools & Methods\n\nPython pyarrow DuckDB Parquet pandas matplotlib Rule-Based Classification ETL Pipeline Partition Design"
   },
   {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About",
+    "objectID": "data-foundation/data-engineering.html",
+    "href": "data-foundation/data-engineering.html",
+    "title": "Data Foundation",
     "section": "",
-    "text": "Headshot placeholder\n(replace images/headshot.jpg)\n\n\nI’m an analytics leader specializing in media measurement — TV attribution, lift analysis, anomaly detection, and the reproducible reporting infrastructure that makes those methodologies useful at scale.\nI’ve spent the last decade building these frameworks at JuiceMedia, where I lead the Analytics Insights function. My team measures campaigns across pharma, telemarketing, and media verticals. Before that, I built the analytical foundations of my career in financial services at Encore Capital Group.\nWhat I care about is the connection between rigorous measurement and operational discipline. Most analytics teams have one or the other. The teams that have both are the teams whose work survives executive scrutiny — and whose analysts don’t burn out building the same deck every month."
+    "text": "Engineering POV"
   },
   {
-    "objectID": "about.html#how-i-think-about-analytics-work",
-    "href": "about.html#how-i-think-about-analytics-work",
-    "title": "About",
-    "section": "How I think about analytics work",
-    "text": "How I think about analytics work\n\nThe job is not to produce decks. The job is to answer hard questions defensibly, deliver the answers in formats stakeholders can actually use, and build the team and infrastructure so neither of those things depends on heroics.\nThe job description, as I understand it.\n\nI optimize for three things, in this order:\nMethodological honesty. If the data doesn’t support the claim, the claim doesn’t get made. If the model has assumptions, the assumptions get stated. If we don’t know, we say we don’t know. This is non-negotiable, even when stakeholders want certainty.\nReproducible delivery. Every recurring deliverable should be code-driven. I’ve written a methodology paper on why. The short version: manual report assembly is the largest source of avoidable cost and risk in modern analytics teams.\nTeam capacity. A senior analyst’s time is the most valuable resource on any analytics team. I structure work so my analysts spend their hours on novel questions, not on reproducing answers we’ve already given."
+    "objectID": "data-foundation/data-engineering.html#why-this-page-exists",
+    "href": "data-foundation/data-engineering.html#why-this-page-exists",
+    "title": "Data Foundation",
+    "section": "Why this page exists",
+    "text": "Why this page exists\nMost portfolio sites show charts and code, but quietly assume the data fits in a CSV. That worked in 2015. It doesn’t reflect how modern analytics teams actually operate. When you’re analyzing 50GB of Wikipedia traffic or years of FEC filings, your first decision isn’t “which chart library?” — it’s “how do I store this so I don’t reload it from scratch every time?”\nThis page documents the engineering choices behind the case studies. They’re not glamorous. They’re the foundation everything else sits on."
   },
   {
-    "objectID": "about.html#career-path",
-    "href": "about.html#career-path",
-    "title": "About",
-    "section": "Career path",
-    "text": "Career path\n\n\n2020 – Present\n\nManager of Analytics Insights\nJuiceMedia\n\nLead a team of analysts measuring TV and multi-channel campaigns at DMA and national level\nArchitect the probabilistic attribution and lift measurement frameworks the team uses\nBuilt and maintain the automated reporting infrastructure (Quarto, gt, AWS S3, Athena) that produces weekly client deliverables\nDefine methodology standards and conduct technical reviews\nPartner with engineering, data science, and client success on cross-functional initiatives\n\n\n\n\n2016 – 2020\n\nSenior Analyst → Director\nDirectAvenue / JuiceMedia\n\nPromoted from Senior Analyst through Manager to Director, building the company’s measurement practice from the ground up\nDesigned the spike detection framework now used across pharma and telemarketing campaigns\nOwned the methodology for DMA-level lift analysis used in monthly executive reviews\n\n\n\n\n2012 – 2016\n\nData Analyst → Senior Analyst\nEncore Capital Group\n\nDeveloped analytical reporting and statistical models for financial services operations\nLearned the discipline of communicating data-driven findings to non-technical stakeholders\nBuilt the foundational SQL and analytical skills that everything since has built on\n\n\n\n\n2008 – 2012\n\nB.A. Economics & Statistics\nSan Diego State University\n\nDouble major: Economics (Quantitative Analysis concentration) and Statistics\nCombined economic theory with applied statistical methods"
+    "objectID": "data-foundation/data-engineering.html#the-decision-tree",
+    "href": "data-foundation/data-engineering.html#the-decision-tree",
+    "title": "Data Foundation",
+    "section": "The decision tree",
+    "text": "The decision tree\nFor each dataset, I work through the same sequence:\n\n\n\n1\n\n\nWhat’s the access pattern?\nIs this data read once and discarded, or queried repeatedly? Are queries time-bounded (last 30 days), entity-bounded (one client), or full-table scans? The right answer shapes everything downstream.\n\n\n\n\n2\n\n\nWhat’s the natural partition key?\nAlmost always date or time. Sometimes a categorical (DMA, client_id). Partitioning by the column you filter on most reduces query cost by orders of magnitude.\n\n\n\n\n3\n\n\nWhat’s the right format?\nCSV for tiny exploratory data. Parquet for anything you’ll query more than twice. JSON only when the schema is genuinely heterogeneous. Never, ever Excel as a system of record.\n\n\n\n\n4\n\n\nWhat’s the right query engine?\nDuckDB for ad-hoc SQL on local Parquet. Polars for transformations. Athena/BigQuery for cloud-scale. Pandas only if the data is small enough that it doesn’t matter."
   },
   {
-    "objectID": "about.html#skills-organized-honestly",
-    "href": "about.html#skills-organized-honestly",
-    "title": "About",
-    "section": "Skills, organized honestly",
-    "text": "Skills, organized honestly\nThe list of tools I’m comfortable with would be long and not particularly useful. Here’s what I’m actually known for:\nCausal measurement — TV attribution, lift analysis, synthetic controls, probabilistic attribution. The methodology side of media measurement.\nAnomaly detection — Statistical and ML-based approaches for spike detection, applied to web traffic, conversions, and operational metrics.\nReproducible reporting — Quarto, R Markdown, parameterized rendering, gt tables, publication-quality output. The engineering side of analytics work.\nData foundation — SQL, Parquet, partitioning strategy, AWS (S3, Athena), Polars, DuckDB. The storage and query layer that makes everything else fast.\nStakeholder communication — Translating between Bayesian intervals and “yes, this worked” without losing information in either direction.\nTeam leadership — Managing analysts (3+ direct reports), defining methodology standards, conducting technical reviews, mentoring junior team members through harder problems."
+    "objectID": "data-foundation/data-engineering.html#why-parquet-specifically",
+    "href": "data-foundation/data-engineering.html#why-parquet-specifically",
+    "title": "Data Foundation",
+    "section": "Why Parquet, specifically",
+    "text": "Why Parquet, specifically\nThree reasons that compound:\nColumnar storage means column-selective queries are cheap. When you read a CSV with 50 columns and only need 3, you’re still parsing all 50. Parquet stores each column contiguously, so reading 3 columns is genuinely 6% of the work, not 100%.\nCompression is dramatic and free. Real numbers from the case studies on this site:\n\n\n\n\n\n\n\n\n\nDataset\nCSV size\nParquet size\nRatio\n\n\n\n\nWikipedia hourly pageviews (1 month)\n6.2 GB\n412 MB\n15× smaller\n\n\nFEC operating expenditures (2024 cycle)\n1.4 GB\n96 MB\n14× smaller\n\n\nCMS Open Payments (general payments, 1 yr)\n2.1 GB\n178 MB\n12× smaller\n\n\n\nThat’s not just disk — it’s network transfer time, S3 storage cost, and memory pressure during reads. All compounding.\nSchema is part of the file. No more “wait, is date a string or a timestamp?” The Parquet file knows. Pandas, Polars, DuckDB, Athena, Spark — they all read the same file the same way. No parsing surprises.\nThe cost: Parquet is binary. You can’t cat it or open it in a text editor. That’s a fair trade for everything you get back."
   },
   {
-    "objectID": "about.html#get-in-touch",
-    "href": "about.html#get-in-touch",
-    "title": "About",
-    "section": "Get in touch",
-    "text": "Get in touch\nI’m open to conversations about Manager and Director-level analytics roles — particularly ones where the methodology and the engineering both matter, and the team has real questions worth answering.\n📧 idgesus@gmail.com 💼 LinkedIn 🔗 GitHub 📄 Resume"
+    "objectID": "data-foundation/data-engineering.html#partitioning-strategy",
+    "href": "data-foundation/data-engineering.html#partitioning-strategy",
+    "title": "Data Foundation",
+    "section": "Partitioning strategy",
+    "text": "Partitioning strategy\nThis is where most teams get it wrong. The instinct is to partition by everything possible (“partition by year, month, day, hour, dma, channel…”). The reality: over-partitioning is worse than under-partitioning because the metadata overhead destroys query performance.\nThe rule I use:\n\nPartition by what you filter on. Don’t partition by what you only group by.\nThe single most useful partitioning heuristic.\n\nFor time-series data: partition by date. That’s it. Most queries are “last N days” or “this month” — date partitioning makes those skip entire directories of files. Adding hour-level partitioning means thousands of tiny files, each with overhead. Not worth it unless you genuinely run hour-bounded queries.\nFor mixed dimensions: partition by the high-cardinality column you filter on. For ad-tech data with client_id, partition by client. For multi-tenant data with region, partition by region. Combine with date if the volume justifies it.\nThe directory structure ends up looking like:\ndata/\n├── wikipedia_pageviews/\n│   ├── date=2024-01-01/\n│   │   └── part-0.parquet\n│   ├── date=2024-01-02/\n│   │   └── part-0.parquet\n│   └── ...\n├── fec_expenditures/\n│   ├── cycle=2022/\n│   │   ├── month=01/\n│   │   │   └── part-0.parquet\n│   │   └── month=02/...\n│   └── cycle=2024/...\n└── cms_payments/\n    ├── year=2023/\n    │   └── part-0.parquet\n    └── year=2024/\n        └── part-0.parquet\nThis is Hive-style partitioning — the directory names encode the partition values. Every modern engine (DuckDB, Polars, Athena, Spark) auto-detects this layout."
   },
   {
-    "objectID": "posts/code-driven-reporting.html",
-    "href": "posts/code-driven-reporting.html",
-    "title": "The Case for Code-Driven Reporting",
-    "section": "",
-    "text": "Methodology Paper · 12 min read"
+    "objectID": "data-foundation/data-engineering.html#the-query-layer",
+    "href": "data-foundation/data-engineering.html#the-query-layer",
+    "title": "Data Foundation",
+    "section": "The query layer",
+    "text": "The query layer\nFor ad-hoc analysis: DuckDB on Parquet is the most underrated combination in modern analytics. You get full SQL, partition pruning, column pruning, and zero infrastructure. It runs on a laptop and queries 50GB of Parquet faster than most cloud warehouses query a table that size.\nimport duckdb\n\n# Query directly against Parquet — no loading step\nresult = duckdb.sql(\"\"\"\n    SELECT\n        date,\n        SUM(views) AS total_views,\n        COUNT(DISTINCT article) AS articles\n    FROM 'data/wikipedia_pageviews/*/*.parquet'\n    WHERE date BETWEEN '2024-01-01' AND '2024-01-31'\n      AND project = 'en.wikipedia'\n    GROUP BY date\n    ORDER BY date\n\"\"\").df()\nThe WHERE date BETWEEN ... clause causes DuckDB to skip every partition outside that range — it never even opens those files. Same query against the equivalent CSV would take 50–100× longer.\nFor transformations: Polars. Same lazy-evaluation model as Spark, single-machine execution, written in Rust, ~5–10× faster than pandas on real workloads. The API is more disciplined than pandas (which I view as a feature, not a bug).\nimport polars as pl\n\ndf = (\n    pl.scan_parquet('data/wikipedia_pageviews/*/*.parquet')\n    .filter(pl.col('project') == 'en.wikipedia')\n    .filter(pl.col('date').is_between('2024-01-01', '2024-01-31'))\n    .group_by('date')\n    .agg([\n        pl.col('views').sum().alias('total_views'),\n        pl.col('article').n_unique().alias('articles'),\n    ])\n    .sort('date')\n    .collect()\n)\nscan_parquet is the lazy version — Polars builds an execution plan, applies predicate pushdown to the Parquet files (so only matching row-groups are read), and only materializes the result when .collect() is called."
   },
   {
-    "objectID": "posts/code-driven-reporting.html#the-problem-nobody-quite-admits",
-    "href": "posts/code-driven-reporting.html#the-problem-nobody-quite-admits",
-    "title": "The Case for Code-Driven Reporting",
-    "section": "The problem nobody quite admits",
-    "text": "The problem nobody quite admits\nEvery analytics team I’ve worked with — across financial services, pharma measurement, and ad-tech — has the same Tuesday morning. An analyst is hunched over a PowerPoint, copy-pasting numbers from Excel into a deck because the executive review is at 2 PM and the data refreshed at 11. Someone else is in Slack asking “wait, which version of the Q3 file is the real one?” A senior analyst is fixing a formula in a workbook that breaks every quarter when the date format shifts.\nThis is normal. It’s also a slow-motion disaster.\nI’m going to make a strong claim: manually-assembled deliverables are the single biggest source of avoidable risk and waste in modern analytics teams. Bigger than bad SQL. Bigger than tooling debates. Bigger than headcount. And yet most teams treat the problem as a soft cultural issue (“we should automate more”) rather than what it actually is: a structural choice with measurable cost.\nThis essay lays out the case for code-driven reporting — treating analytical deliverables the way software engineers treat applications. It’s not a tools post. It’s an argument about what analytics work is, and what it should be."
+    "objectID": "data-foundation/data-engineering.html#what-this-signals-to-a-hiring-manager",
+    "href": "data-foundation/data-engineering.html#what-this-signals-to-a-hiring-manager",
+    "title": "Data Foundation",
+    "section": "What this signals to a hiring manager",
+    "text": "What this signals to a hiring manager\nI’m direct about why this page exists. For a Manager or Director-level analytics role, the question isn’t “can you write a SQL query?” It’s “do you make decisions like an engineer when the situation calls for it?”\nShowing the storage layer signals three things:\n\nI think in production terms. Cost, latency, and reproducibility matter, not just the final chart.\nI make tool choices deliberately. Polars, DuckDB, Parquet aren’t on this page because they’re trendy. They’re here because they’re the right choice for the access patterns I described.\nI can lead a team that operates at this level. A team that ships code-driven reports needs an architecture this team can stand on. That architecture is an analytics leadership responsibility, not a “let the data engineering team handle it” handoff."
   },
   {
-    "objectID": "posts/code-driven-reporting.html#what-code-driven-reporting-actually-means",
-    "href": "posts/code-driven-reporting.html#what-code-driven-reporting-actually-means",
-    "title": "The Case for Code-Driven Reporting",
-    "section": "What “code-driven reporting” actually means",
-    "text": "What “code-driven reporting” actually means\nThe term is broader than it sounds. I don’t just mean “use Python instead of Excel.” I mean a specific commitment:\n\nEvery analytical deliverable — every chart, table, metric, and narrative — should be reproducible from raw data with a single command.\nThe single-command test for analytics maturity.\n\nIf your team can’t answer “yes, just run this script” when asked how a number was produced, you don’t have analytics — you have artisanal data work. That has a place (research, exploration) but it shouldn’t be the output medium for recurring deliverables.\nCode-driven reporting means:\n\nInputs are explicit. Source data is specified, dated, and pulled from a system of record — not “the file Sarah sent.”\nLogic is in code. Filtering, aggregation, business rules, and metric definitions live in version-controlled files, not in someone’s head or a hidden Excel formula.\nOutputs are generated. The PDF, HTML report, Excel workbook, or slide deck is produced by a script that anyone on the team can run.\nChanges are tracked. When the CFO asks “why did this number change from last quarter?” the answer is a git diff, not a memory test.\nReviews happen on the code. Pull requests force methodology discussions before reports go out.\n\nThat’s the full commitment. Anything less is a halfway state that incurs most of the cost of manual work without much of the benefit of automation."
-  },
-  {
-    "objectID": "posts/code-driven-reporting.html#the-maturity-model",
-    "href": "posts/code-driven-reporting.html#the-maturity-model",
-    "title": "The Case for Code-Driven Reporting",
-    "section": "The maturity model",
-    "text": "The maturity model\nMost teams sit somewhere on this spectrum. Be honest about where yours actually is.\n\nLevel 0: Artisanal reporting\nReports are assembled by hand each cycle. Numbers come from running queries, copying outputs, and pasting into PowerPoint or Excel. Senior analysts are bottlenecks because they’re the only ones who remember how each metric is calculated.\nCost signal: When someone leaves the team, reporting capability degrades for weeks.\n\n\nLevel 1: Templated reporting\nA spreadsheet template or PowerPoint template exists. Data still gets pasted in by hand, but at least the formatting is stable. Charts auto-update from source ranges.\nCost signal: Quarter-end takes 3+ days of analyst time, every time.\n\n\nLevel 2: Scripted extraction\nScripts pull data from sources and produce intermediate outputs (CSVs, summary tables). A human still assembles the final deliverable.\nCost signal: Reports go out, but the team can’t answer “what changed?” without manual investigation.\n\n\nLevel 3: Parameterized reports\nA Quarto, R Markdown, or Jupyter document renders the full deliverable from raw data. Parameters control client, date range, or scope. One command produces the artifact.\nCost signal: New report variants take hours, not days.\n\n\nLevel 4: Continuous reporting\nReports render automatically on a schedule (or on data refresh). Outputs are versioned, archived, and accessible via URL. Changes to methodology go through code review. Tests catch breaking changes before stakeholders see them.\nCost signal: The team spends most of its time on new analytical questions, not on reproducing old ones.\nMost teams I’ve seen — including good ones — sit at Level 1 or Level 2 and think they’re at Level 3. The honest test: pick last quarter’s executive deck. Can someone who wasn’t on the team reproduce it from the raw data this morning, before lunch? If no, you’re below Level 3."
-  },
-  {
-    "objectID": "posts/code-driven-reporting.html#why-teams-stay-stuck",
-    "href": "posts/code-driven-reporting.html#why-teams-stay-stuck",
-    "title": "The Case for Code-Driven Reporting",
-    "section": "Why teams stay stuck",
-    "text": "Why teams stay stuck\nThe objections are predictable. They’re also mostly wrong.\n“We don’t have time to build infrastructure.” This is the most common objection and it’s exactly backwards. The time you don’t have is being consumed by the manual work itself. The investment pays back in weeks for any recurring report. The math is brutal: a 40-hour build that saves 4 hours/week breaks even in 10 weeks and saves 200+ hours/year thereafter. I have never seen a team where the math didn’t work.\n“Our stakeholders want PowerPoint.” They want to read information in a familiar format. They do not care, at all, how the PowerPoint was made. A code-driven pipeline can produce a .pptx file just as easily as a hand-built one — and the resulting deck will have consistent formatting, accurate numbers, and traceable provenance. The stakeholder gets their format. You get your sanity.\n“Our data is too messy.” Yes. That’s exactly why you need to encode the cleaning logic in version control. Messy data plus manual handling is how mistakes propagate silently. Messy data plus tested cleaning code is how you catch upstream changes the day they happen.\n“We’re not engineers.” Modern tools — Quarto, R Markdown, Jupyter, dbt — are explicitly designed for analysts. You don’t need to be a software engineer to write reproducible reports any more than you need to be a structural engineer to live in a building. You do need to take the craft seriously.\n“It’s not worth it for one-off analyses.” Agreed. Code-driven reporting is for recurring deliverables. Exploratory analysis can stay messy. The discipline applies where the work repeats."
-  },
-  {
-    "objectID": "posts/code-driven-reporting.html#what-it-costs-to-stay-at-level-1",
-    "href": "posts/code-driven-reporting.html#what-it-costs-to-stay-at-level-1",
-    "title": "The Case for Code-Driven Reporting",
-    "section": "What it costs to stay at Level 1",
-    "text": "What it costs to stay at Level 1\nI want to put real numbers on this, because the cost of artisanal reporting is invisible until you measure it.\nA team I worked with — five analysts, one director — produced 12 recurring client-facing reports per month plus ad-hoc work. Manual assembly time per report was averaging 6 hours, plus 2 hours of senior review. That’s 96 hours/month on production work alone. Across the team, that was roughly 30% of total analyst capacity going to producing things that had been produced 50+ times before.\nAfter moving the recurring reports to a code-driven pipeline (Quarto + parameterized R + an orchestration layer), production time dropped to about 4 hours/month for the same 12 reports. The reclaimed capacity went to actual analytical work: methodology improvements, new measurement frameworks, deeper client engagements.\nThe build took two analysts about six weeks of partial effort. It saved roughly 1,100 analyst-hours per year. That’s the equivalent of more than half a full-time analyst, recovered in perpetuity, from one project.\nThis is not an unusual outcome. It’s the typical outcome."
-  },
-  {
-    "objectID": "posts/code-driven-reporting.html#what-doing-it-right-looks-like-in-practice",
-    "href": "posts/code-driven-reporting.html#what-doing-it-right-looks-like-in-practice",
-    "title": "The Case for Code-Driven Reporting",
-    "section": "What “doing it right” looks like in practice",
-    "text": "What “doing it right” looks like in practice\nHere’s the structure I converge on, regardless of language:\nproject/\n├── data/                # Raw data (gitignored if large)\n├── R/ or src/           # Cleaning, transformation, modeling functions\n├── reports/             # Quarto/RMarkdown/Jupyter sources\n│   ├── _quarto.yml      # Site/book config\n│   ├── monthly_review.qmd\n│   └── client_X_report.qmd\n├── output/              # Rendered deliverables (gitignored)\n├── tests/               # Tests for transformation functions\n├── renv.lock or pyproject.toml   # Pinned dependencies\n└── README.md            # How to run it\nThe non-negotiables:\n\nPinned dependencies. renv for R, uv/pyproject.toml for Python. The pipeline must run identically on a teammate’s laptop a year from now.\nFunctions live separately from reports. The .qmd calls functions; it doesn’t define them. This makes everything testable.\nTests on transformations, not reports. Test that compute_cpa() returns the right number for known inputs. Don’t test the rendered HTML.\nParameterization is first-class. Reports take parameters (date range, client ID). Variants are configuration, not copies.\nOutputs are reproducible from main. The current branch should always produce a runnable pipeline."
-  },
-  {
-    "objectID": "posts/code-driven-reporting.html#the-leadership-angle",
-    "href": "posts/code-driven-reporting.html#the-leadership-angle",
-    "title": "The Case for Code-Driven Reporting",
-    "section": "The leadership angle",
-    "text": "The leadership angle\nThis isn’t a tooling argument. It’s a leadership argument.\nAnalytics managers and directors who insist on code-driven reporting do three things at once:\nThey protect their team from burnout. Manual deliverable production is the work analysts complain about most. It’s repetitive, error-prone, and high-stakes. Eliminating it makes the job better.\nThey protect the business from quiet errors. A typo in a hand-built deck can sit there for weeks. A test failure in a code-driven pipeline blocks the deploy.\nThey build a team that scales. A team at Level 3+ can take on more work without proportional headcount. A team at Level 1 needs more analysts every time output volume grows.\n\nThe best analytics leaders I know don’t measure their teams by the volume of decks produced. They measure by the number of recurring deliverables that no longer require human assembly.\nA useful KPI for analytics leadership.\n\nIf you’re an analytics leader and your team is at Level 1 or 2, you have a budget problem and you’re paying for it in analyst time. If you’re an analytics IC and your team is at Level 1 or 2, you have a career problem — your most valuable hours are being consumed by work that doesn’t grow your skills."
-  },
-  {
-    "objectID": "posts/code-driven-reporting.html#where-to-start",
-    "href": "posts/code-driven-reporting.html#where-to-start",
-    "title": "The Case for Code-Driven Reporting",
-    "section": "Where to start",
-    "text": "Where to start\nIf you’re convinced and want to move, here’s the sequence that has worked for me:\n\nPick one recurring report. Not the most complex. Pick one that runs at least monthly, has a stable structure, and would be embarrassing if it broke.\nReproduce it in Quarto or RMarkdown. Match the existing format exactly. The goal is not to improve the report — it’s to demonstrate that the code can produce the same output.\nRun both side-by-side for one cycle. Generate the manual version and the automated version. Check that they match. Fix the discrepancies.\nSwitch over. The next cycle, only run the automated version. Keep the manual process as fallback for one more cycle, then retire it.\nRepeat. Move the next report. Then the next. Within a year you’ll have inverted the team’s time distribution.\n\nThe hardest part is the first one. The seventh report takes 1/4 the time of the first. The team builds shared infrastructure as they go."
-  },
-  {
-    "objectID": "posts/code-driven-reporting.html#closing",
-    "href": "posts/code-driven-reporting.html#closing",
-    "title": "The Case for Code-Driven Reporting",
-    "section": "Closing",
-    "text": "Closing\nCode-driven reporting is not a fashion choice or a technical preference. It’s a strategic decision about how an analytics team allocates its scarcest resource — analyst time — and how it manages its largest hidden risk: silent errors in artisanal work.\nThe teams that take this seriously will spend their time on harder, more valuable problems. The teams that don’t will keep producing decks until automation does it for them. There is no third option.\n\n\nFound this useful? Share on LinkedIn →\nOr read more in the case studies."
+    "objectID": "data-foundation/data-engineering.html#honest-trade-offs",
+    "href": "data-foundation/data-engineering.html#honest-trade-offs",
+    "title": "Data Foundation",
+    "section": "Honest trade-offs",
+    "text": "Honest trade-offs\nI want to be clear about what this approach isn’t good for:\n\nReal-time / streaming. Parquet is batch. If you need sub-minute freshness, this is the wrong layer. (You’d add Kafka + a streaming engine on top.)\nFrequent row-level updates. Parquet files are immutable; updating individual rows means rewriting partitions. For mostly-append-only data (which describes most analytics workloads), this is fine.\nTiny datasets. If your data fits comfortably in a CSV that opens in Excel, just use a CSV. The infrastructure overhead isn’t justified.\nCross-org data sharing. Parquet works in any modern engine, but if your stakeholders open everything in Excel, you’ll still need to export to xlsx for delivery. (Which is fine — generate it from the Parquet source.)\n\nThe point isn’t that Parquet/Polars/DuckDB is universally correct. The point is that making the choice deliberately, and being able to explain why, is what separates senior analytics work from junior analytics work."
   }
 ]
