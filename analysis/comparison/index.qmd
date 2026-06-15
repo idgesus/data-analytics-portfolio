@@ -1,0 +1,26 @@
+---
+title: "Comparison"
+subtitle: "Share shift, mix effects, and before/after reads"
+page-layout: full
+toc: false
+listing:
+  id: patterns-listing
+  contents: "*.qmd"
+  type: grid
+  sort: "date desc"
+  fields: [image, title, categories, description]
+---
+
+::: {.section-label}
+Analysis Playbook · Comparison
+:::
+
+Comparing groups, periods, and segments without letting the comparison itself mislead —
+mix effects, denominators that move, and the charts that make a fair comparison obvious.
+
+::: {.callout-note appearance="simple"}
+**🚧 In progress** — entries coming soon.
+:::
+
+::: {#patterns-listing}
+:::

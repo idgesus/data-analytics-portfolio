@@ -1,5 +1,5 @@
 ---
-title: "Political Ad Spend Patterns in FEC Data"
+title: "Political Media Spend Patterns in FEC Data"
 subtitle: "Real campaign finance data, partitioned Parquet, executive-ready analysis"
 date: 2026-06-13
 categories: [Media Spend, Real Public Data, Parquet, DuckDB]
@@ -31,12 +31,12 @@ publicly available**. Federal political committees must disclose every disbursem
 including ad buys, to the FEC. The bulk data files contain millions of records spanning
 decades.
 
-For a media measurement professional, this is gold — but the format is gnarly. Files are
+For a media measurement professional, this is gold, but the format is gnarly and very messy. Files are
 pipe-delimited, the schema is dense and described in a separate header file, encoding is
 latin-1 (older filings have non-UTF8 bytes), and the historical archive runs to many GB.
 
 The challenge: **build a workflow that turns this raw data into something a media analyst
-or executive can actually use** — and do it in a way that scales to the full archive.
+or executive can actually use**...and do it in a way that scales to the full archive.
 
 ## The Approach
 
@@ -120,69 +120,75 @@ oppexp_raw["transaction_dt"] = pd.to_datetime(oppexp_raw["transaction_dt"])
 oppexp_raw["transaction_amt"] = pd.to_numeric(oppexp_raw["transaction_amt"], errors="coerce")
 oppexp_raw["cycle"] = pd.to_numeric(oppexp_raw["cycle"], errors="coerce").astype("Int64")
 
-print(f"Loaded {len(oppexp_raw):,} real expenditure records")
-print(f"Cycles: {sorted(oppexp_raw['cycle'].unique())}")
-print(f"Total spend: ${oppexp_raw['transaction_amt'].sum():,.0f}")
-print(f"\nSample rows (FEC bulk format, post-join):")
+print(f"loaded {len(oppexp_raw):,} real expenditure records")
+print(f"cycles: {sorted(oppexp_raw['cycle'].unique())}")
+print(f"total spend: ${oppexp_raw['transaction_amt'].sum():,.0f}")
+print(f"\nsample rows (FEC bulk format, post-join):")
 print(oppexp_raw[['cmte_nm', 'name', 'transaction_dt', 'transaction_amt', 'purpose']]
       .head().to_string(index=False))
 ```
 
 ## Step 2: Categorize free-text spend purposes
 
-The FEC schema has a `purpose` field, but it's free-text — entered by committee
+The FEC schema has a `purpose` field, but it's free-text entered by the committee
 treasurers with no standardization. Real FEC data has things like "MEDIA," "MEDIA BUY,"
 "TELEVISION ADS," and "BROADCAST" all meaning the same thing.
 
 A rule-based classifier handles this reliably without ML overhead:
 
 ```{python}
-#| label: categorize-spend
+#| label: categorize-spend-cleaned
 #| code-summary: "Rule-based spend categorization"
 
 import re
 
-# Categorization rules: (regex pattern, category)
-# Order matters — more specific rules first
+### categorization rules: (regex pattern, category)
+### Order matters — more specific rules first
 CATEGORY_RULES = [
-    (r'\b(TV|TELEVISION|BROADCAST|CABLE|MEDIA BUY)\b', 'TV/Broadcast'),
-    (r'\b(DIGITAL|ONLINE|SOCIAL MEDIA|WEBSITE|FACEBOOK|GOOGLE)\b', 'Digital'),
-    (r'\b(DIRECT MAIL|POSTAGE|PRINTING|MAIL PRODUCTION)\b', 'Direct Mail'),
-    (r'\b(POLLING|SURVEY|FOCUS GROUP|RESEARCH)\b', 'Polling/Research'),
-    (r'\b(CONSULT)\w*', 'Consulting'),
-    (r'\b(PAYROLL|SALARY|OFFICE|RENT|TRAVEL|EVENT)\b', 'Operations'),
-]
+    (r'(?<![A-Z0-9])(?:TV|T\.V\.|T\.V|TELEVISION|BROADCAST|CABLE|MEDIA\s+BUY)(?![A-Z0-9])','TV/Broadcast'),
+    (r'(?<![A-Z0-9])(?:DIGITAL|ONLINE|SOCIAL\s+MEDIA|WEBSITE|FACEBOOK|GOOGLE)(?![A-Z0-9])', 'Digital'),
+    (r'(?<![A-Z0-9])(?:DIRECT\s+MAIL|POSTAGE|PRINTING|MAIL\s+PRODUCTION)(?![A-Z0-9])', 'Direct Mail'),
+    (r'(?<![A-Z0-9])(?:POLLING|SURVEY|FOCUS\s+GROUP|RESEARCH)(?![A-Z0-9])', 'Polling/Research'),
+    (r'(?<![A-Z0-9])CONSULT\w*','Consulting'),
+    (r'(?<![A-Z0-9])(?:PAYROLL|SALARY|OFFICE|RENT|TRAVEL|EVENT)(?![A-Z0-9])','Operations')]
+
 
 def categorize(text):
     text = str(text).upper()
+
     for pattern, category in CATEGORY_RULES:
         if re.search(pattern, text):
             return category
+
     return 'Other'
+
 
 oppexp_raw['category'] = oppexp_raw['purpose'].fillna('').apply(categorize)
 
-# Real data means no ground-truth label — but we can sanity-check by spot-reading
-# the distribution. Most rows fall into 'Operations' or 'Other' because most
-# disbursements are payroll/rent, not media. The interesting story is in the
-# paid-media subset (TV/Broadcast, Digital, Direct Mail).
-print("Category distribution across real FEC operating expenditures:")
-print(oppexp_raw['category'].value_counts().to_string())
+## honest coverage numbers, the key results section reads these at render time
+rec_cov = (oppexp_raw['category'] != 'Other').mean() * 100
+named = oppexp_raw.loc[oppexp_raw['category'] != 'Other', 'transaction_amt'].sum()
+dol_cov = named / oppexp_raw['transaction_amt'].sum() * 100
 
-print("\nExample purpose strings the classifier saw (sample of 5 per category):")
+print("category distribution across real FEC operating expenditures:")
+print(oppexp_raw['category'].value_counts().to_string())
+print(f"\ncoverage: {rec_cov:.0f}% of records and {dol_cov:.0f}% of dollars get a named category")
+
+print("\n example purpose strings the classifier saw (sample of 5 per category):")
 for cat in ['TV/Broadcast', 'Digital', 'Direct Mail']:
     sample = (
         oppexp_raw[oppexp_raw['category'] == cat]
         ['purpose'].dropna().unique()[:5]
     )
-    print(f"  {cat:<15} → {list(sample)}")
+    print(f"  {cat:<15} -> {list(sample)}")
 ```
+
 
 ## Step 3: The partitioned Parquet warehouse
 
 The right partitioning here is **cycle** (queries are almost always cycle-bounded) plus
 **month within cycle** (supports time-series analysis without too many tiny files). The
-fetch script already lays the cache out this way — let's quantify what we got.
+fetch script already lays the cache out this way, let's quantify what we got.
 
 ```{python}
 #| label: parquet-stats
@@ -198,16 +204,20 @@ all_files = [
 ]
 total_size = sum(os.path.getsize(f) for f in all_files)
 
-# Compare against the row-equivalent CSV size for the same data
+## compare against the row-equivalent CSV size for the same data
 csv_path = '/tmp/fec_oppexp.csv'
 oppexp_raw.to_csv(csv_path, index=False)
 csv_size = os.path.getsize(csv_path)
 
+## key results reads this at render time too
+compression_ratio = csv_size / max(total_size, 1)
+
 print(f"Parquet warehouse: {PARQUET_ROOT}")
-print(f"  Partitions:     {len(all_files)} files (cycle × month)")
-print(f"  Total size:     {total_size / 1024**2:.2f} MB")
-print(f"  CSV equivalent: {csv_size / 1024**2:.2f} MB")
-print(f"  Compression:    {csv_size / max(total_size, 1):.1f}× smaller")
+print(f"  partitions:     {len(all_files)} files (cycle × month)")
+print(f"  total size:     {total_size / 1024**2:.2f} MB")
+print(f"  csv equivalent: {csv_size / 1024**2:.2f} MB")
+print(f"  compression:    {compression_ratio:.1f}× smaller")
+
 ```
 
 ## Step 4: Query with DuckDB
@@ -221,10 +231,9 @@ Notice how queries that filter on `cycle` skip entire directories of files.
 
 import duckdb
 
-# DuckDB's killer feature: register the in-memory pandas frame (which carries
-# our derived `category` column) and query it as a SQL table. Same engine
-# pattern that scales to terabytes of partitioned Parquet — we just point it
-# at a different source here because the categorization layer is in pandas.
+### DuckDB's killer feature: register the in-memory pandas frame (which carries our derived `category` column) and query it as a SQL table. Same engine
+### pattern that scales to terabytes of partitioned Parquet — we just point it
+### at a different source here because the categorization layer is in pandas.
 con = duckdb.connect()
 con.register("oppexp", oppexp_raw)
 
@@ -256,15 +265,30 @@ print(display.to_string(index=False))
 #| label: top-vendors
 #| code-summary: "Top vendors by category — the kind of question stakeholders ask"
 
+## light entity resolution before ranking. raw FEC names split the same firm
+## into multiple rows: "RWT PRODUCTION LLC" vs "RWT PRODUCTION, LLC" vs
+## "MEDIA BUYING & ANALYTICS" vs "MEDIA BUYING & ANALYTICS LLC"
+### kill commas and periods, collapse space runs, drop trailing LLC / INC / etc,
+### then title case. has to happen BEFORE the group by so the dollars combine
+v = oppexp_raw['name'].fillna('').str.upper()
+v = (v.str.replace(r'[.,]', ' ', regex=True)
+      .str.replace(r'\s+', ' ', regex=True)
+      .str.strip())
+v = v.str.replace(r'(?:\s+(?:LLC|L L C|INC|LTD|LLP|CORP|CO|PC))+$', '', regex=True)
+oppexp_raw['vendor_clean'] = v.str.title()
+
+## re-register so duckdb sees the new column
+con.register("oppexp", oppexp_raw)
+
 top_vendors = con.sql("""
     SELECT
         category,
-        name AS vendor,
+        vendor_clean AS vendor,
         SUM(transaction_amt) AS total_spend,
         COUNT(*) AS n_transactions
     FROM oppexp
     WHERE category IN ('TV/Broadcast', 'Digital', 'Direct Mail')
-    GROUP BY category, name
+    GROUP BY category, vendor_clean
     QUALIFY ROW_NUMBER() OVER (PARTITION BY category ORDER BY total_spend DESC) <= 3
     ORDER BY category, total_spend DESC
 """).df()
@@ -279,179 +303,144 @@ print(display_vendors.to_string(index=False))
 
 ## Step 5: Executive-ready visualization
 
-Now the analysis layer. Two views: spend evolution across cycles (the trend) and the
-channel mix shift (the story).
+Now the part stakeholders actually see. A chart is exec ready when the title states the
+finding, the labels sit on the data instead of in a legend box, and each chart makes
+exactly one point. Everything below follows those three rules.
 
 ```{python}
-#| label: spend-trends
-#| code-summary: "Spend trends and channel mix evolution"
-#| fig-cap: "Top: channel-level spend by election cycle. Bottom: channel mix as a percentage of total — showing the multi-cycle shift in media allocation patterns."
-#| fig-width: 12
-#| fig-height: 8
+#| label: chart-style
+#| code-summary: "Shared chart style and helpers"
 
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mtick
 
-# Filter to paid media for cleaner story
+## one palette for the whole piece. navy carries TV, blue is digital,
+## slate fades mail into the background. red is reserved for election day
+## so it always means the same thing
+NAVY, BLUE, SLATE, RED, GRAY = '#0f172a', '#2563eb', '#94a3b8', '#dc2626', '#64748b'
+colors = {'TV/Broadcast': NAVY, 'Digital': BLUE, 'Direct Mail': SLATE}
+
+plt.rcParams.update({
+    'axes.spines.top': False,
+    'axes.spines.right': False,
+    'figure.facecolor': 'white',
+    'font.size': 10,
+})
+
+def fmt_dollars(v):
+    ### $1.2B above a billion, $850M below
+    return f'${v/1e9:.1f}B' if v >= 1e9 else f'${v/1e6:.0f}M'
+
+def headline(ax, title, sub):
+    ### takeaway goes big and bold, the literal description goes small and gray
+    ax.set_title(title, fontsize=14, fontweight='bold', loc='left', pad=30, color=NAVY)
+    ax.text(0, 1.06, sub, transform=ax.transAxes, fontsize=9.5, color=GRAY)
+```
+
+First view: the size of the pie. Every bar gets a dollar label so the y axis can go away
+entirely, nobody has to squint and interpolate.
+
+```{python}
+#| label: spend-by-cycle
+#| code-summary: "Total paid media spend by cycle"
+#| fig-cap: "Paid media disbursements by election cycle. TV holds the top spot in all three cycles despite a decade of digital growth headlines."
+
+## filter to paid media for a cleaner story
 paid_media = ['TV/Broadcast', 'Digital', 'Direct Mail']
 plot_data = channel_by_cycle[channel_by_cycle['category'].isin(paid_media)].copy()
 
-# Calculate share of paid media within each cycle
+## share of paid media within each cycle, the slope chart uses this too
 totals = plot_data.groupby('cycle')['total_spend'].transform('sum')
 plot_data['share'] = plot_data['total_spend'] / totals * 100
-
-# fig, axes = plt.subplots(2, 1, figsize=(12, 8))
-
-fig, axes = plt.subplots(2, 1, figsize=(8, 6))
-
-# Top: absolute spend
-ax1 = axes[0]
-colors = {'TV/Broadcast': '#0f172a', 'Digital': '#2563eb', 'Direct Mail': '#94a3b8'}
 
 cycles = sorted(plot_data['cycle'].unique())
 x = np.arange(len(cycles))
 width = 0.27
 
+fig, ax = plt.subplots(figsize=(8, 4.6))
+
 for i, cat in enumerate(paid_media):
-    cat_data = plot_data[plot_data['category'] == cat].set_index('cycle').reindex(cycles)
-    ax1.bar(x + (i - 1) * width, cat_data['total_spend'].values / 1e6,
-            width, label=cat, color=colors[cat])
+    vals = (plot_data[plot_data['category'] == cat]
+            .set_index('cycle').reindex(cycles)['total_spend'])
+    bars = ax.bar(x + (i - 1) * width, vals / 1e6, width,
+                  label=cat, color=colors[cat])
+    ## dollar label on every bar
+    for rect, v in zip(bars, vals):
+        ax.text(rect.get_x() + rect.get_width() / 2, rect.get_height() + 45,
+                fmt_dollars(v), ha='center', fontsize=9.5,
+                fontweight='bold', color=colors[cat])
 
-ax1.set_xticks(x)
-ax1.set_xticklabels([f"{c} cycle" for c in cycles])
-ax1.set_ylabel('Total spend ($M)', fontsize=10)
-ax1.set_title('Paid media spend by election cycle',
-              fontsize=12, fontweight='bold', loc='left')
-# ax1.yaxis.set_major_formatter(mtick.FuncFormatter(lambda x, p: f'${x:.1f}M'))
-ax1.yaxis.set_major_formatter(mtick.FuncFormatter(lambda x, p: f'${x:.0f}M'))
-# ax1.legend(fontsize=9, loc='upper right', frameon=False)
-ax1.legend(fontsize=9,loc='upper left',
-    bbox_to_anchor=(0.08, 1.02),  # x moves right, y moves up/down
-    ncol=3,                       # 3 legend items in one row
-    frameon=False, columnspacing=1.2, handlelength=2.0, borderaxespad=0
-)
-ax1.spines['top'].set_visible(False)
-ax1.spines['right'].set_visible(False)
-ax1.grid(axis='y', linestyle=':', alpha=0.5)
+ax.set_xticks(x)
+ax.set_xticklabels([f"{c}\n{'midterm' if c % 4 else 'presidential'}" for c in cycles])
 
-# Bottom: channel mix share
-ax2 = axes[1]
-mix_pivot = plot_data.pivot(index='cycle', columns='category', values='share')[paid_media]
-mix_pivot.plot.barh(stacked=True, ax=ax2,
-                    color=[colors[c] for c in paid_media],
-                    width=0.55, edgecolor='white', linewidth=1.5)
+### labels carry the values, so the whole y axis can go
+ax.yaxis.set_visible(False)
+ax.spines['left'].set_visible(False)
+ax.margins(y=0.12)
 
-ax2.set_yticklabels([f"{c} cycle" for c in mix_pivot.index])
-ax2.set_xlabel('Share of paid media spend (%)', fontsize=10)
-ax2.set_ylabel('')
-ax2.set_title('Channel mix as % of paid media',
-              fontsize=12, fontweight='bold', loc='left')
-ax2.xaxis.set_major_formatter(mtick.PercentFormatter())
-# ax2.legend(fontsize=9, loc='lower right', frameon=False)
-# ax2.legend(fontsize=9, loc='upper left', bbox_to_anchor=(0.0, 1.0), frameon=False)
-ax2.legend(fontsize=9,loc='upper left',
-    bbox_to_anchor=(0.03, 1.02),  # x moves right, y moves up/down
-    ncol=3,                       # 3 legend items in one row
-    frameon=False, columnspacing=1.2, handlelength=2.0, borderaxespad=0
-)
+ax.legend(fontsize=9, loc='upper right', frameon=False, ncol=1)
 
-ax2.spines['top'].set_visible(False)
-ax2.spines['right'].set_visible(False)
-ax2.invert_yaxis()
-
-# Add percentage labels
-for i, cycle in enumerate(mix_pivot.index):
-    cumulative = 0
-    for cat in paid_media:
-        val = mix_pivot.loc[cycle, cat]
-        if val > 5:
-            ax2.text(cumulative + val / 2, i, f'{val:.0f}%',
-                     ha='center', va='center', fontsize=9,
-                     color='white' if cat == 'TV/Broadcast' else '#0f172a',
-                     fontweight='bold')
-        cumulative += val
+headline(ax, 'TV is still the biggest line item, every cycle',
+         'total paid media disbursements by election cycle, FEC operating expenditures')
 
 plt.tight_layout()
 plt.show()
 ```
 
-## Spend timing within a cycle
-
-A more interesting analytical view: how does spend ramp toward election day?
+Second view: the mix. The stacked bar version of this chart made readers do arithmetic
+to see movement. A slope chart shows the movement directly, and the midterm anomaly
+becomes the headline.
 
 ```{python}
-#| label: spend-timing
-#| code-summary: "Weekly spend pattern leading up to election day"
-#| fig-cap: "Weekly paid media spend by days-to-election. The classic hockey-stick acceleration in the final 8 weeks is visible across all channels."
-#| fig-width: 11
-#| fig-height: 5.5
+#| label: channel-mix-slope
+#| code-summary: "Channel mix shift across cycles, slope chart"
+#| fig-cap: "Channel share of paid media across cycles. Direct mail nearly doubles its share in the midterm, then gives most of it back in 2024."
 
-# Compute days to election day for each cycle
-election_days = {2020: '2020-11-03', 2022: '2022-11-08', 2024: '2024-11-05'}
+mix = plot_data.pivot(index='cycle', columns='category', values='share')[paid_media]
 
-oppexp_raw['election_day'] = oppexp_raw['cycle'].map(lambda c: pd.Timestamp(election_days[c]))
-oppexp_raw['days_to_election'] = (oppexp_raw['election_day'] - oppexp_raw['transaction_dt']).dt.days
-oppexp_raw['weeks_to_election'] = (oppexp_raw['days_to_election'] // 7)
+fig, ax = plt.subplots(figsize=(8, 4.6))
 
-# Aggregate to weekly spend by category, focusing on last 30 weeks before election
-recent = oppexp_raw[
-    (oppexp_raw['weeks_to_election'].between(0, 30)) &
-    (oppexp_raw['category'].isin(paid_media))
-].copy()
+## soft band behind the midterm column, that's where the action is
+ax.axvspan(2021.7, 2022.3, color='#f1f5f9', zorder=0)
 
-weekly = (
-    recent.groupby(['weeks_to_election', 'category'])['transaction_amt']
-    .sum().reset_index()
-)
-
-fig, ax = plt.subplots(figsize=(11, 5))
+## value labels go above the line for TV and digital, below for mail,
+## otherwise the 2022 numbers pile up on each other
+offset = {'TV/Broadcast': 2.2, 'Digital': 2.2, 'Direct Mail': -3.6}
 
 for cat in paid_media:
-    cat_data = weekly[weekly['category'] == cat].sort_values('weeks_to_election')
-    ax.plot(-cat_data['weeks_to_election'], cat_data['transaction_amt'] / 1e6,
-            marker='o', markersize=4, linewidth=2, label=cat, color=colors[cat])
+    ax.plot(mix.index, mix[cat], marker='o', markersize=7, linewidth=2.5,
+            color=colors[cat], markerfacecolor='white', markeredgewidth=2.5)
+    for cyc in mix.index:
+        v = mix.loc[cyc, cat]
+        ax.text(cyc, v + offset[cat], f'{v:.0f}%', ha='center',
+                fontsize=10, fontweight='bold', color=colors[cat])
+    ## channel name rides at the end of its own line, no legend needed
+    ax.text(2024.25, mix.loc[2024, cat], cat, va='center',
+            fontsize=10, fontweight='bold', color=colors[cat])
 
-ax.axvline(x=0, color='#dc2626', linestyle='--', linewidth=1.5, alpha=0.6)
-# ax.text(0.3, ax.get_ylim()[1] * 0.92, 'Election day', color='#dc2626', fontsize=14, fontweight='bold')
-ax.text(0.3, ax.get_ylim()[1] * 0.05, 'Election day', color='#dc2626', fontsize=14, fontweight='bold')
+ax.set_xticks([2020, 2022, 2024])
+ax.set_xlim(2019.5, 2025.9)
+ax.set_ylim(5, 56)
+ax.yaxis.set_visible(False)
+ax.spines['left'].set_visible(False)
 
-ax.set_xlabel('Weeks to election (0 = election week)', fontsize=10)
-ax.set_ylabel('Weekly spend ($M, all cycles combined)', fontsize=10)
-# ax.set_title('Spend acceleration toward election day', fontsize=12, fontweight='bold', loc='left')
-ax.set_title('Spend acceleration toward election day', fontsize=12, fontweight='bold', loc='left', pad=28)
-
-# ax.yaxis.set_major_formatter(mtick.FuncFormatter(lambda x, p: f'${x:.1f}M'))
-ax.yaxis.set_major_formatter(mtick.FuncFormatter(lambda x, p: f'${x:.0f}M'))
-# ax.legend(fontsize=9, loc='upper left', frameon=False)
-# ax.legend(fontsize=9, loc='upper left', bbox_to_anchor=(0.0, 1.0), frameon=False)
-### adding padding since lengend interferes with chart plot 
-ax.margins(y=0.15)
-ax.legend(fontsize=9,loc='upper left',
-    bbox_to_anchor=(0.03, 1.02),  # x moves right, y moves up/down
-    ncol=3,                       # 3 legend items in one row
-    frameon=False, columnspacing=1.2, handlelength=2.0, borderaxespad=0
-)
-
-ax.spines['top'].set_visible(False)
-ax.spines['right'].set_visible(False)
-ax.grid(axis='y', linestyle=':', alpha=0.5)
-ax.invert_xaxis()
+headline(ax, 'Midterm money moves to the mailbox',
+         'channel share of paid media spend by cycle')
 
 plt.tight_layout()
 plt.show()
 ```
 
+## How spend ramps to election day
 
-## Updated Spend Cycle view
-
-A more interesting analytical view: how does spend ramp toward election day?
+A more interesting analytical view: how does spend ramp toward election day? The hockey
+stick is the expected part. The detail worth an annotation is what happens in election
+week itself, TV falls off a cliff while digital keeps buying right through it.
 
 ```{python}
 #| label: spend-timing-cleaner
 #| code-summary: "Weekly spend pattern leading up to election day"
-#| fig-cap: "Weekly paid media spend by days-to-election. The classic hockey-stick acceleration in the final 8 weeks is visible across all channels."
-#| fig-width: 6
-#| fig-height: 4.5
+#| fig-cap: "Weekly paid media spend by weeks to election, all three cycles combined. The shaded zone marks the final 8 weeks."
 
 # Compute days to election day for each cycle
 election_days = {2020: '2020-11-03', 2022: '2022-11-08', 2024: '2024-11-05'}
@@ -460,61 +449,130 @@ oppexp_raw['election_day'] = oppexp_raw['cycle'].map(lambda c: pd.Timestamp(elec
 oppexp_raw['days_to_election'] = (oppexp_raw['election_day'] - oppexp_raw['transaction_dt']).dt.days
 oppexp_raw['weeks_to_election'] = (oppexp_raw['days_to_election'] // 7)
 
-# Aggregate to weekly spend by category, focusing on last 30 weeks before election
-# update window to last 32 weeks before election
+## last 32 weeks before election, paid media only
 recent = oppexp_raw[
     (oppexp_raw['weeks_to_election'].between(0, 32)) &
     (oppexp_raw['category'].isin(paid_media))
 ].copy()
 
-
-
 weekly = (
     recent.groupby(['weeks_to_election', 'category'])['transaction_amt']
     .sum().reset_index()
 )
+
+## the number that earns the headline: how much of the 32 week window
+## lands in the final 8 weeks
+last8 = weekly.loc[weekly['weeks_to_election'] <= 8, 'transaction_amt'].sum()
+pct_last8 = last8 / weekly['transaction_amt'].sum() * 100
+
 fig, ax = plt.subplots(figsize=(8, 5))
+
+## shade the home stretch so the eye goes there first
+ax.axvspan(0, 8, color='#fef2f2', zorder=0)
 
 for cat in paid_media:
     cat_data = weekly[weekly['category'] == cat].sort_values('weeks_to_election')
+    ax.plot(cat_data['weeks_to_election'], cat_data['transaction_amt'] / 1e6,
+            marker='o', markersize=4, linewidth=2, label=cat, color=colors[cat])
 
-    ax.plot(cat_data['weeks_to_election'], cat_data['transaction_amt'] / 1e6, marker='o',markersize=4, linewidth=2, label=cat,color=colors[cat])
+ax.axvline(x=0, color=RED, linestyle='--', linewidth=2, alpha=0.7)
 
-ax.axvline(x=0, color='#dc2626', linestyle='--', linewidth=2, alpha=0.7)
+## digital is the only channel still peaking in election week, call it out
+dig_final = weekly.loc[
+    (weekly['category'] == 'Digital') & (weekly['weeks_to_election'] == 0),
+    'transaction_amt'
+].iloc[0] / 1e6
+ax.annotate('digital keeps buying\nthrough election week',
+            xy=(0.4, dig_final), xytext=(13, dig_final + 55),
+            fontsize=9.5, color=BLUE, fontweight='bold',
+            arrowprops=dict(arrowstyle='->', color=BLUE, lw=1.2,
+                            connectionstyle='arc3,rad=-0.2'))
 
-# ax.text(0.6, ax.get_ylim()[1] * 0.05,'Election day', color='#dc2626',fontsize=14,fontweight='bold', alpha=0.6)
-ax.text(0.6, ax.get_ylim()[1] * 0.905,'Election day', color='#dc2626',fontsize=14,fontweight='bold', alpha=0.7)
+ax.text(6, ax.get_ylim()[1] * 0.97, 'final 8 weeks', ha='center', va='top',
+        fontsize=9.5, color=RED, alpha=0.8, fontweight='bold')
+ax.text(1.1, 12, 'election day', rotation=90, va='bottom',
+        fontsize=9, color=RED, alpha=0.8)
 
 ax.set_xlabel('Weeks to election', fontsize=10)
 ax.set_ylabel('Weekly spend ($M, all cycles combined)', fontsize=10)
-
-ax.set_title('Spend acceleration toward election day', fontsize=12, fontweight='bold', loc='left', pad=28)
-
 ax.yaxis.set_major_formatter(mtick.FuncFormatter(lambda x, p: f'${x:.0f}M'))
 
-### show 32 weeks out through election week
+### show 32 weeks out through election week, more tick detail near the end
 ax.set_xlim(32, 0)
-
-### monthly-ish spacing, with more detail in the final 4 weeks
-xticks = [32, 28, 24, 20, 16, 12, 8, 4, 3, 2, 1, 0]
+xticks = [32, 28, 24, 20, 16, 12, 8, 4, 2, 0]
 ax.set_xticks(xticks)
-
-### optional, but helps make the spacing easier to read
 ax.set_xticklabels([str(x) for x in xticks])
-
-### add padding since legend interferes with chart plot
-# ax.margins(y=0.15)
 ax.margins(y=0.08)
 
-ax.legend( fontsize=9,loc='upper left',bbox_to_anchor=(0.03, 1.01), ncol=3, frameon=False, columnspacing=1.2, handlelength=2.0, borderaxespad=0)
+ax.legend(fontsize=9, loc='upper left', bbox_to_anchor=(0.03, 1.01), ncol=3,
+          frameon=False, columnspacing=1.2, handlelength=2.0, borderaxespad=0)
+ax.grid(axis='y', linestyle=':', alpha=0.4)
 
-ax.spines['top'].set_visible(False)
-ax.spines['right'].set_visible(False)
-ax.grid(axis='y', linestyle=':', alpha=0.5)
+headline(ax, f'{pct_last8:.0f}% of the money moves in the final 8 weeks',
+         'weekly paid media spend by weeks to election, 2020 + 2022 + 2024 combined')
 
 plt.tight_layout()
 plt.show()
 ```
+
+## Who actually gets the checks
+
+The vendor table from Step 4 answers the question, but a chart makes the concentration
+visible. A handful of firms clear most of the paid media money.
+
+```{python}
+#| label: top-vendors-viz
+#| code-summary: "Top vendors per channel, lollipop chart"
+#| fig-cap: "Top three vendors by total spend within each paid media channel, all cycles combined."
+
+## lollipops read better than bars when the labels are long vendor names
+## names arrive already cleaned and title cased from the step 4 query
+vend = top_vendors.copy()
+
+fig, ax = plt.subplots(figsize=(8, 5.4))
+
+y = 0
+yticks, ylabels = [], []
+for cat in paid_media:
+    grp = vend[vend['category'] == cat].sort_values('total_spend')
+    ## channel name sits above its group, colored to match
+    ax.text(0, y + len(grp) - 0.45, cat, fontsize=10.5,
+            fontweight='bold', color=colors[cat])
+    for _, r in grp.iterrows():
+        v = r['total_spend'] / 1e6
+        ax.hlines(y, 0, v, color=colors[cat], linewidth=2, alpha=0.55)
+        ax.plot(v, y, 'o', markersize=8, color=colors[cat])
+        ax.text(v + vend['total_spend'].max() / 1e6 * 0.02, y,
+                fmt_dollars(r['total_spend']), va='center',
+                fontsize=9.5, fontweight='bold', color=colors[cat])
+        yticks.append(y)
+        ylabels.append(r['vendor'])
+        y += 1
+    y += 1.6   ## gap between channel groups
+
+ax.set_yticks(yticks)
+ax.set_yticklabels(ylabels, fontsize=9.5)
+ax.set_xlim(0, vend['total_spend'].max() / 1e6 * 1.15)
+
+### the dollar labels carry the values, x axis adds nothing
+ax.xaxis.set_visible(False)
+ax.spines['left'].set_visible(False)
+ax.spines['bottom'].set_visible(False)
+ax.tick_params(left=False)
+
+headline(ax, 'A short list of firms clears most of the money',
+         'top 3 vendors per paid media channel, 2020 + 2022 + 2024 combined')
+
+plt.tight_layout()
+plt.show()
+```
+
+An earlier draft of this chart made the case for entity resolution by accident. "Rwt
+Production Llc" and "Rwt Production, Llc" showed up as two separate vendors, split by
+nothing but a comma, and Media Buying & Analytics appeared with and without its "LLC."
+The normalization in Step 4 (strip punctuation, collapse spacing, drop corporate
+suffixes) merges those rows before ranking, which changes the standings. Harder cases
+like "AND" vs "&" still need the fuzzy matching described in the production section.
 
 
 
@@ -524,21 +582,21 @@ plt.show()
 ::: {.metrics-row}
 
 ::: {.metric}
-[14×]{.metric-value}
+[`{python} f"{compression_ratio:.1f}×"`]{.metric-value}
 [Storage compression]{.metric-label}
-[Parquet vs CSV]{.metric-detail}
+[Parquet vs CSV, measured at render]{.metric-detail}
 :::
 
 ::: {.metric}
-[~99%]{.metric-value}
-[Categorization accuracy]{.metric-label}
-[Rule-based classifier]{.metric-detail}
+[`{python} f"{dol_cov:.0f}%"`]{.metric-value}
+[Dollars auto-categorized]{.metric-label}
+[`{python} f"{rec_cov:.0f}% of records, rule based"`]{.metric-detail}
 :::
 
 ::: {.metric}
-[3 cycles]{.metric-value}
-[Comparable analysis]{.metric-label}
-[2020 / 2022 / 2024]{.metric-detail}
+[`{python} f"{len(oppexp_raw)/1e6:.1f}M"`]{.metric-value}
+[Records analyzed]{.metric-label}
+[2020 / 2022 / 2024 cycles]{.metric-detail}
 :::
 
 ::: {.metric}
@@ -552,24 +610,25 @@ plt.show()
 ## What this demonstrates
 
 **Real public data, end-to-end.** From raw FEC bulk file format through partitioned
-storage to executive-ready visualizations. No synthetic shortcuts.
+storage to executive ready visualizations. No synthetic shortcuts.
 
-**Pragmatic categorization.** The free-text purpose field is messy. Rule-based
-classification handles ~99% of common cases reliably without the operational overhead
-of an ML model. The remaining 1% gets flagged for manual review. This is the right
-trade-off for stable taxonomy work.
+**Pragmatic categorization.** The free text purpose field is messy. Six rules name a
+category for `{python} f"{rec_cov:.0f}%"` of records and `{python} f"{dol_cov:.0f}%"` of
+dollars, and everything else stays in an honest Other bucket instead of getting force
+fitted. The rules have known rough edges too, the CABLE pattern pulls in some office
+utility bills alongside actual cable buys. The production path is widening the rule set
+against the biggest Other purposes by dollar volume, not reaching for an ML model.
 
 **Partition discipline.** Cycle and month are the columns queries actually filter on.
-Partitioning by anything else would create thousands of tiny files with no upside.
+Partitioning by anything else would create thousands of tiny files with no upside. This goes to show to know you're data and what you're analyzing. 
 
 ## What I'd extend in production
 
 - **Incremental ingestion** — schedule weekly pulls of the latest filings rather than
-  re-downloading everything
+  re-downloading everything (crontab, task scheduler, jenkins, js7, aws event bridge, google cloud scheduler)
 - **Entity resolution on vendors** — same media buyer often appears under slightly different
   names across filings ("AKPD MESSAGE & MEDIA" vs. "AKPD MESSAGE AND MEDIA")
-- **Cross-reference with FCC public files** — for political TV ads, the FCC requires station-level disclosure of buyers, dates, and spot counts. Joining FEC + FCC gives a much richer
-  picture
+- **Cross-reference with FCC public files** — for political TV ads, the FCC requires station-level disclosure of buyers, dates, and spot counts. Joining FEC + FCC gives a much richer picture
 - **State-level rollups** — currently no geographic dimension; FEC files include payee
   state which would enable DMA-level aggregation
 

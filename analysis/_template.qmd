@@ -1,0 +1,59 @@
+---
+title: "PATTERN TITLE — e.g., Reading a Geo Test Without Fooling Yourself"
+description: "One-sentence hook shown on the listing card."
+date: 2026-06-11
+categories: [Experiment Readouts]
+# To start an entry: copy this file into the matching category folder
+# (trends/, comparison/, distributions/, experiments/, kpis/),
+# rename it, set the category, and remove `draft: true`.
+# image: optional — listing auto-uses the first rendered chart if omitted
+draft: true
+toc: true
+---
+
+::: {.section-label}
+Analysis Playbook · CATEGORY
+:::
+
+## The business question
+
+What does leadership actually ask? Frame the scenario in one or two sentences.
+
+```{r}
+#| label: synthetic-data
+#| code-summary: "Show the data setup"
+library(ggplot2)
+library(dplyr)
+
+set.seed(2026)
+# Build the synthetic dataset that demonstrates this pattern.
+# Engineer the exact effect the entry is about (trend break, mix shift, etc.).
+```
+
+## The wrong chart
+
+Show the chart people usually reach for, and say what it hides or distorts.
+
+```{r}
+#| label: wrong-chart
+#| fig-cap: "Why this misleads: ..."
+# ggplot(...) ...
+```
+
+## The right chart
+
+```{r}
+#| label: right-chart
+#| fig-cap: "What to look at: ..."
+# ggplot(...) ...
+```
+
+## How to read it
+
+The statistical read — what conclusion the chart supports, what it doesn't,
+and the test or interval that backs it up.
+
+## When to use it (and when not)
+
+- **Use when:** ...
+- **Avoid when:** ...

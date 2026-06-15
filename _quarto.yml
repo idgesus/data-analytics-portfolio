@@ -16,16 +16,28 @@ website:
     left:
       - href: index.qmd
         text: Home
-      # - href: about.qmd
-      #   text: About
       - text: Case Studies
         menu:
           - href: case-studies/spike-detection.qmd
             text: "Spike Detection (Wikipedia · Parquet)"
           - href: case-studies/political-ad-spend.qmd
-            text: "Political Ad Spend (FEC · Parquet)"
+            text: "Political Media Spend (FEC · Parquet)"
           - href: case-studies/automated-pipeline.qmd
             text: "Automated Pipeline (CMS · R)"
+      - text: Analysis Playbook
+        menu:
+          - href: analysis/index.qmd
+            text: "Overview"
+          - href: analysis/trends/index.qmd
+            text: "Trends & Time Series"
+          - href: analysis/comparison/index.qmd
+            text: "Comparison"
+          - href: analysis/distributions/index.qmd
+            text: "Distributions & Uncertainty"
+          - href: analysis/experiments/index.qmd
+            text: "Experiment Readouts"
+          - href: analysis/kpis/index.qmd
+            text: "KPIs & Metrics"
       - href: data-foundation/data-engineering.qmd
         text: Data Foundation
       - href: posts/code-driven-reporting.qmd

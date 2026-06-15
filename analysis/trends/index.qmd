@@ -1,0 +1,27 @@
+---
+title: "Trends & Time Series"
+subtitle: "Trend breaks, seasonality, baselines, and anomalies"
+page-layout: full
+toc: false
+listing:
+  id: patterns-listing
+  contents: "*.qmd"
+  type: grid
+  sort: "date desc"
+  fields: [image, title, categories, description]
+---
+
+::: {.section-label}
+Analysis Playbook · Trends & Time Series
+:::
+
+How to show whether a trajectory actually changed — dynamic baselines that respect
+seasonality, trend breaks you can defend, and the difference between an anomaly and
+ordinary variance.
+
+::: {.callout-note appearance="simple"}
+**🚧 In progress** — entries coming soon.
+:::
+
+::: {#patterns-listing}
+:::

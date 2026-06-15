@@ -311,11 +311,42 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>  
         <li>
     <a class="dropdown-item" href="../case-studies/political-ad-spend.html">
- <span class="dropdown-text">Political Ad Spend (FEC · Parquet)</span></a>
+ <span class="dropdown-text">Political Media Spend (FEC · Parquet)</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../case-studies/automated-pipeline.html">
  <span class="dropdown-text">Automated Pipeline (CMS · R)</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-analysis-playbook" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Analysis Playbook</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-analysis-playbook">    
+        <li>
+    <a class="dropdown-item" href="../analysis/index.html">
+ <span class="dropdown-text">Overview</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../analysis/trends/index.html">
+ <span class="dropdown-text">Trends &amp; Time Series</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../analysis/comparison/index.html">
+ <span class="dropdown-text">Comparison</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../analysis/distributions/index.html">
+ <span class="dropdown-text">Distributions &amp; Uncertainty</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../analysis/experiments/index.html">
+ <span class="dropdown-text">Experiment Readouts</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../analysis/kpis/index.html">
+ <span class="dropdown-text">KPIs &amp; Metrics</span></a>
   </li>  
     </ul>
   </li>
@@ -416,28 +447,28 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <p><span class="section-label">Methodology Paper · 12 min read</span></p>
 <div class="tldr">
-<p><strong>TL;DR</strong> — Most analytics teams drown in manually-assembled deliverables: PowerPoints, Excel files, ad-hoc dashboards. This is technical debt disguised as productivity. The fix is to treat reports as software products — version-controlled, parameterized, reproducible, and tested. This essay argues the case, lays out the maturity model, and walks through what it actually looks like in practice.</p>
+<p><strong>TL;DR</strong> — Most analytics teams drown in manually assembled deliverables: PowerPoints, Excel files, ad-hoc dashboards. This is technical debt disguised as productivity. The fix is to treat reports as software products — version-controlled, parameterized, reproducible, and tested. This essay argues the case, lays out the maturity model, and walks through what it actually looks like in practice.</p>
 </div>
 <hr>
 <section id="the-problem-nobody-quite-admits" class="level2">
 <h2 class="anchored" data-anchor-id="the-problem-nobody-quite-admits">The problem nobody quite admits</h2>
-<p>Every analytics team I’ve worked with — across financial services, pharma measurement, and ad-tech — has the same Tuesday morning. An analyst is hunched over a PowerPoint, copy-pasting numbers from Excel into a deck because the executive review is at 2 PM and the data refreshed at 11. Someone else is in Slack asking “wait, which version of the Q3 file is the real one?” A senior analyst is fixing a formula in a workbook that breaks every quarter when the date format shifts.</p>
+<p>Every analytics team I’ve worked, across financial services, pharma measurement, and ad-tech — has the a similar weekly routine. An analyst is hunched over a PowerPoint, copy-pasting numbers from Excel into a deck because the executive review is at 2 PM and the data refreshed at 11. Someone else is in Slack asking “wait, which version of the Q3 file is the real one?” A senior analyst is fixing a formula in a workbook that breaks every quarter when the date format shifts.</p>
 <p>This is normal. It’s also a slow-motion disaster.</p>
-<p>I’m going to make a strong claim: <strong>manually-assembled deliverables are the single biggest source of avoidable risk and waste in modern analytics teams.</strong> Bigger than bad SQL. Bigger than tooling debates. Bigger than headcount. And yet most teams treat the problem as a soft cultural issue (“we should automate more”) rather than what it actually is: a structural choice with measurable cost.</p>
+<p>I’m going to make a strong claim: <strong>manually assembled deliverables are the single biggest source of avoidable risk and waste in modern analytics teams.</strong> Bigger than bad SQL. Bigger than tooling debates. Bigger than headcount. And yet most teams treat the problem as a soft cultural issue (“we should automate more”) rather than what it actually is: a structural choice with measurable cost.</p>
 <p>This essay lays out the case for <strong>code-driven reporting</strong> — treating analytical deliverables the way software engineers treat applications. It’s not a tools post. It’s an argument about what analytics work <em>is</em>, and what it should be.</p>
 </section>
 <section id="what-code-driven-reporting-actually-means" class="level2">
 <h2 class="anchored" data-anchor-id="what-code-driven-reporting-actually-means">What “code-driven reporting” actually means</h2>
 <p>The term is broader than it sounds. I don’t just mean “use Python instead of Excel.” I mean a specific commitment:</p>
 <div class="pullquote">
-<p>Every analytical deliverable — every chart, table, metric, and narrative — should be reproducible from raw data with a single command.</p>
+<p>Every analytical deliverable, every chart, table, metric, and narrative - should be reproducible from raw data with a single command.</p>
 <p><span class="pullquote-attr">The single-command test for analytics maturity.</span></p>
 </div>
-<p>If your team can’t answer “yes, just run this script” when asked how a number was produced, you don’t have analytics — you have artisanal data work. That has a place (research, exploration) but it shouldn’t be the <em>output medium</em> for recurring deliverables.</p>
+<p>If your team cannot explain where a number came from, what logic was applied, and how to reproduce it through a defined script or workflow, then the process is not mature analytics. It is handcrafted reporting. That has a place (research, exploration) but it shouldn’t be the <em>output medium</em> for recurring deliverables.</p>
 <p>Code-driven reporting means:</p>
 <ul>
-<li><strong>Inputs are explicit.</strong> Source data is specified, dated, and pulled from a system of record — not “the file Sarah sent.”</li>
-<li><strong>Logic is in code.</strong> Filtering, aggregation, business rules, and metric definitions live in version-controlled files, not in someone’s head or a hidden Excel formula.</li>
+<li><strong>Inputs are explicit.</strong> Source data is specified, dated, and pulled from a system of record, not “the file Sarah sent.”</li>
+<li><strong>Logic is in code.</strong> Filtering, aggregation, business rules, and metric definitions live in version controlled files, not in someone’s head or a hidden Excel formula.</li>
 <li><strong>Outputs are generated.</strong> The PDF, HTML report, Excel workbook, or slide deck is produced by a script that anyone on the team can run.</li>
 <li><strong>Changes are tracked.</strong> When the CFO asks “why did this number change from last quarter?” the answer is a git diff, not a memory test.</li>
 <li><strong>Reviews happen on the code.</strong> Pull requests force methodology discussions before reports go out.</li>
@@ -447,63 +478,79 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="the-maturity-model" class="level2">
 <h2 class="anchored" data-anchor-id="the-maturity-model">The maturity model</h2>
 <p>Most teams sit somewhere on this spectrum. Be honest about where yours actually is.</p>
-<section id="level-0-artisanal-reporting" class="level3">
-<h3 class="anchored" data-anchor-id="level-0-artisanal-reporting">Level 0: Artisanal reporting</h3>
-<p>Reports are assembled by hand each cycle. Numbers come from running queries, copying outputs, and pasting into PowerPoint or Excel. Senior analysts are bottlenecks because they’re the only ones who remember how each metric is calculated.</p>
+<section id="level-0-manualartisanal-reporting" class="level3">
+<h3 class="anchored" data-anchor-id="level-0-manualartisanal-reporting">Level 0: Manual/Artisanal reporting</h3>
+<p>Reports are assembled by hand each cycle. Numbers come from running queries, copying outputs, screenshots, and pasting into PowerPoint or Excel. Senior analysts become bottlenecks because they are often the only ones who know how each metric is calculated.</p>
 <p><strong>Cost signal:</strong> When someone leaves the team, reporting capability degrades for weeks.</p>
 </section>
 <section id="level-1-templated-reporting" class="level3">
 <h3 class="anchored" data-anchor-id="level-1-templated-reporting">Level 1: Templated reporting</h3>
-<p>A spreadsheet template or PowerPoint template exists. Data still gets pasted in by hand, but at least the formatting is stable. Charts auto-update from source ranges.</p>
-<p><strong>Cost signal:</strong> Quarter-end takes 3+ days of analyst time, every time.</p>
+<p>A spreadsheet or PowerPoint template exists. Data still gets pasted in manually, but at least the formatting is consistent. Charts may update from source ranges, but the process still depends on someone moving the data into place.</p>
+<p><strong>Cost signal:</strong> Quarter end still takes three or more days of analyst time, every time.</p>
 </section>
 <section id="level-2-scripted-extraction" class="level3">
 <h3 class="anchored" data-anchor-id="level-2-scripted-extraction">Level 2: Scripted extraction</h3>
-<p>Scripts pull data from sources and produce intermediate outputs (CSVs, summary tables). A human still assembles the final deliverable.</p>
-<p><strong>Cost signal:</strong> Reports go out, but the team can’t answer “what changed?” without manual investigation.</p>
+<p>Scripts pull data from source systems and produce intermediate outputs like CSVs, summary tables, or refreshed datasets. This is progress, but a human still has to assemble, validate, and explain the final deliverable.</p>
+<p><strong>Cost signal:</strong> Reports go out, but the team still has to manually investigate what changed and why.</p>
 </section>
-<section id="level-3-parameterized-reports" class="level3">
-<h3 class="anchored" data-anchor-id="level-3-parameterized-reports">Level 3: Parameterized reports</h3>
-<p>A Quarto, R Markdown, or Jupyter document renders the full deliverable from raw data. Parameters control client, date range, or scope. One command produces the artifact.</p>
-<p><strong>Cost signal:</strong> New report variants take hours, not days.</p>
+<section id="level-3-parameterized-reporting" class="level3">
+<h3 class="anchored" data-anchor-id="level-3-parameterized-reporting">Level 3: Parameterized reporting</h3>
+<p>A Quarto, R Markdown, Python, Jupyter notebook, or similar workflow can render the full deliverable from raw data. Parameters control the client, date range, market, channel, or scope. One clear process produces the final artifact.</p>
+<p><strong>Cost signal:</strong> New report versions take hours, not days.</p>
 </section>
 <section id="level-4-continuous-reporting" class="level3">
 <h3 class="anchored" data-anchor-id="level-4-continuous-reporting">Level 4: Continuous reporting</h3>
-<p>Reports render automatically on a schedule (or on data refresh). Outputs are versioned, archived, and accessible via URL. Changes to methodology go through code review. Tests catch breaking changes before stakeholders see them.</p>
-<p><strong>Cost signal:</strong> The team spends most of its time on <em>new</em> analytical questions, not on reproducing old ones.</p>
-<p>Most teams I’ve seen — including good ones — sit at Level 1 or Level 2 and <em>think</em> they’re at Level 3. The honest test: pick last quarter’s executive deck. Can someone who wasn’t on the team reproduce it from the raw data this morning, before lunch? If no, you’re below Level 3.</p>
+<p>Reports run automatically on a schedule or when the data refreshes. Outputs are versioned, archived, and easy to access. Methodology changes go through review. Basic checks catch broken logic, missing data, or unexpected changes before stakeholders see the output.</p>
+<p><strong>Cost signal:</strong> The team spends most of its time answering <em>new</em> analytical questions, not recreating the same reports over and over.</p>
+<p>Most teams I have seen, including good ones, sit at Level 1 or Level 2 and <em>think</em> they are at Level 3.</p>
+<p>The honest test is simple: pick last quarter’s executive deck. Can someone who was not involved in the original work reproduce it from the raw data this morning and explain where the numbers came from before lunch?</p>
+<p>If the answer is no, the team is below Level 3.</p>
 </section>
 </section>
 <section id="why-teams-stay-stuck" class="level2">
 <h2 class="anchored" data-anchor-id="why-teams-stay-stuck">Why teams stay stuck</h2>
 <p>The objections are predictable. They’re also mostly wrong.</p>
 <p><strong>“We don’t have time to build infrastructure.”</strong> This is the most common objection and it’s exactly backwards. The time you don’t have is being consumed by the manual work itself. The investment pays back in weeks for any recurring report. The math is brutal: a 40-hour build that saves 4 hours/week breaks even in 10 weeks and saves 200+ hours/year thereafter. I have never seen a team where the math didn’t work.</p>
-<p><strong>“Our stakeholders want PowerPoint.”</strong> They want to read information in a familiar format. They do not care, at all, how the PowerPoint was made. A code-driven pipeline can produce a <code>.pptx</code> file just as easily as a hand-built one — and the resulting deck will have consistent formatting, accurate numbers, and traceable provenance. The stakeholder gets their format. You get your sanity.</p>
-<p><strong>“Our data is too messy.”</strong> Yes. That’s exactly why you need to encode the cleaning logic in version control. Messy data plus manual handling is how mistakes propagate silently. Messy data plus tested cleaning code is how you catch upstream changes the day they happen.</p>
-<p><strong>“We’re not engineers.”</strong> Modern tools — Quarto, R Markdown, Jupyter, dbt — are explicitly designed for analysts. You don’t need to be a software engineer to write reproducible reports any more than you need to be a structural engineer to live in a building. You do need to take the craft seriously.</p>
-<p><strong>“It’s not worth it for one-off analyses.”</strong> Agreed. Code-driven reporting is for <strong>recurring deliverables</strong>. Exploratory analysis can stay messy. The discipline applies where the work repeats.</p>
+<p><strong>“Our stakeholders want PowerPoint.”</strong> They want the information in a format they know how to read. They do not care how the PowerPoint was made.</p>
+<p>A scripted workflow can still produce a PowerPoint file. The difference is that the deck can have consistent formatting, accurate numbers, and a clear trail back to the source data and logic.</p>
+<p>The stakeholder gets the format they want. The analytics team gets a process that does not depend on manual rebuilding every cycle.</p>
+<p><strong>“Our data is too messy.”</strong> Yes. That is exactly why the cleaning logic needs to be documented and stored in code.</p>
+<p>Messy data handled manually is where mistakes spread quietly. Messy data handled through repeatable logic is where upstream issues get caught earlier.</p>
+<p>The point is not that the data has to be perfect. The point is that the logic should not live only in someone’s memory.</p>
+<p><strong>“We’re not engineers.”</strong> You do not need to be a software engineer to make reporting reproducible.</p>
+<p>Tools like Quarto, R Markdown, Jupyter, dbt, Python, R, and SQL are built for this kind of work. Analysts do not need to turn into engineers, but they do need to take the process seriously.</p>
+<p>If a report goes out every week, every month, or every quarter, the workflow should be treated like something the business depends on, because it does.</p>
+<p><strong>“It’s not worth it for one-off analyses.”</strong> Agreed.</p>
+<p>Not every analysis needs a full process around it. Exploration can be messy. Research can be flexible. Not every question deserves a pipeline.</p>
+<p>The discipline applies for <strong>reacurrent deliverables</strong>.</p>
+<p>If the same report, metric, deck, or analysis keeps coming back, then it should not keep being rebuilt from scratch.</p>
 </section>
 <section id="what-it-costs-to-stay-at-level-1" class="level2">
 <h2 class="anchored" data-anchor-id="what-it-costs-to-stay-at-level-1">What it costs to stay at Level 1</h2>
-<p>I want to put real numbers on this, because the cost of artisanal reporting is invisible until you measure it.</p>
-<p>A team I worked with — five analysts, one director — produced 12 recurring client-facing reports per month plus ad-hoc work. Manual assembly time per report was averaging 6 hours, plus 2 hours of senior review. That’s 96 hours/month on production work alone. Across the team, that was roughly <strong>30% of total analyst capacity</strong> going to producing things that had been produced 50+ times before.</p>
-<p>After moving the recurring reports to a code-driven pipeline (Quarto + parameterized R + an orchestration layer), production time dropped to about 4 hours/month for the same 12 reports. The reclaimed capacity went to actual analytical work: methodology improvements, new measurement frameworks, deeper client engagements.</p>
-<p>The build took two analysts about six weeks of partial effort. It saved roughly 1,100 analyst-hours per year. That’s the equivalent of more than half a full-time analyst, recovered in perpetuity, from one project.</p>
-<p>This is not an unusual outcome. It’s the typical outcome.</p>
+<p>I want to put real numbers around this because the cost of manual reporting is easy to ignore until someone measures it.</p>
+<p>A team I worked with had five analysts and one director. Each month, the team produced 12 recurring client reports plus ad hoc work. Manual assembly took about 6 hours per report, plus another 2 hours of senior review.</p>
+<p>That is 96 hours per month spent on production work alone.Across the team, that was roughly <strong>30% of total analyst capacity</strong> going to producing things that had been produced 50+ times before</p>
+<p>For the people most involved in the reporting cycle, that represented a meaningful share of available reporting capacity. Time that could have gone toward actual analysis was being spent rebuilding deliverables that had already been produced dozens of times before.</p>
+<p>After moving the recurring reports to a code driven pipeline using Quarto, parameterized R, and a scheduler, production time dropped to about 4 hours per month for the same 12 reports.</p>
+<p>The reclaimed time went back into actual analytical work: improving methodology, building better measurement frameworks, investigating performance changes, and having deeper client conversations.</p>
+<p>The build took two analysts about six weeks of partial effort.</p>
+<p>It saved roughly 1,100 analyst hours per year.</p>
+<p>That is more than half of a full time analyst recovered from one project, with the savings continuing every year after.</p>
+<p>This is not some rare outcome. For recurring reporting, this is usually what happens when the process is rebuilt the right way.</p>
 </section>
 <section id="what-doing-it-right-looks-like-in-practice" class="level2">
 <h2 class="anchored" data-anchor-id="what-doing-it-right-looks-like-in-practice">What “doing it right” looks like in practice</h2>
 <p>Here’s the structure I converge on, regardless of language:</p>
 <pre><code>project/
 ├── data/                # Raw data (gitignored if large)
-├── R/ or src/           # Cleaning, transformation, modeling functions
+├── Python/R/ or src/    # Cleaning, transformation, modeling functions
 ├── reports/             # Quarto/RMarkdown/Jupyter sources
 │   ├── _quarto.yml      # Site/book config
 │   ├── monthly_review.qmd
 │   └── client_X_report.qmd
 ├── output/              # Rendered deliverables (gitignored)
 ├── tests/               # Tests for transformation functions
-├── renv.lock or pyproject.toml   # Pinned dependencies
+├── .venv/renv.lock or pyproject.toml   # Pinned dependencies
 └── README.md            # How to run it</code></pre>
 <p>The non-negotiables:</p>
 <ol type="1">
@@ -519,13 +566,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>This isn’t a tooling argument. It’s a leadership argument.</p>
 <p>Analytics managers and directors who insist on code-driven reporting do three things at once:</p>
 <p><strong>They protect their team from burnout.</strong> Manual deliverable production is the work analysts complain about most. It’s repetitive, error-prone, and high-stakes. Eliminating it makes the job better.</p>
-<p><strong>They protect the business from quiet errors.</strong> A typo in a hand-built deck can sit there for weeks. A test failure in a code-driven pipeline blocks the deploy.</p>
-<p><strong>They build a team that scales.</strong> A team at Level 3+ can take on more work without proportional headcount. A team at Level 1 needs more analysts every time output volume grows.</p>
+<p><strong>They protect the business from quiet errors.</strong></p>
+<p>A mistake in a manually built deck can sit there for weeks before anyone notices. A copied number, a stale chart, or a missed filter can make its way into a client meeting or executive review.</p>
+<p>A repeatable workflow does not remove every risk, but it gives the team a better chance to catch issues earlier. Logic can be reviewed. Outputs can be checked. Changes can be traced back to the source.</p>
+<p><strong>They build a team that scales.</strong> A team at Level 3 or higher can take on more work without needing headcount to grow at the same rate. A team stuck at Level 1 needs more analyst time every time the reporting volume increases.</p>
+<p>That is not a sustainable operating model. It turns talented analysts into report producers instead of problem solvers.</p>
 <div class="pullquote">
-<p>The best analytics leaders I know don’t measure their teams by the volume of decks produced. They measure by the number of recurring deliverables that no longer require human assembly.</p>
+<p>The best analytics leaders I know do not measure their teams by the number of decks produced. They measure by the number of recurring deliverables that no longer require manual assembly.</p>
 <p><span class="pullquote-attr">A useful KPI for analytics leadership.</span></p>
 </div>
-<p>If you’re an analytics leader and your team is at Level 1 or 2, you have a budget problem and you’re paying for it in analyst time. If you’re an analytics IC and your team is at Level 1 or 2, you have a career problem — your most valuable hours are being consumed by work that doesn’t grow your skills.</p>
+<p>If you are an analytics leader and your team is at Level 1 or Level 2, you have a budget problem. You are paying for it in analyst time.</p>
+<p>If you are an analytics individual contributor and your team is at Level 1 or Level 2, you have a career problem. Your most valuable hours are being spent on work that does not build your skills, improve the business, or compound over time.</p>
 </section>
 <section id="where-to-start" class="level2">
 <h2 class="anchored" data-anchor-id="where-to-start">Where to start</h2>
@@ -545,8 +596,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>The teams that take this seriously will spend their time on harder, more valuable problems. The teams that don’t will keep producing decks until automation does it for them. There is no third option.</p>
 <hr>
 <div style="text-align: center; color: var(--ink-muted); font-size: 0.9rem; margin-top: 3rem;">
-<p>Found this useful? <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://idgesus.github.io/data-analytics-portfolio/posts/code-driven-reporting.html">Share on LinkedIn →</a></p>
-<p>Or read more in the <a href="../index.html#case-studies">case studies</a>.</p>
+<p>Found this useful? Read more in the <a href="../index.html#case-studies">case studies</a>.</p>
 </div>
 
 
@@ -1031,179 +1081,223 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="an">reading-time:</span><span class="co"> true</span></span>
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Methodology Paper · 12 min read</span><span class="co">]</span>{.section-label}</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>::: {.tldr}</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>**TL;DR** — Most analytics teams drown in manually-assembled deliverables: PowerPoints, Excel files, ad-hoc dashboards. This is technical debt disguised as productivity. The fix is to treat reports as software products — version-controlled, parameterized, reproducible, and tested. This essay argues the case, lays out the maturity model, and walks through what it actually looks like in practice.</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="fu">## The problem nobody quite admits</span></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>Every analytics team I've worked with — across financial services, pharma measurement, and ad-tech — has the same Tuesday morning. An analyst is hunched over a PowerPoint, copy-pasting numbers from Excel into a deck because the executive review is at 2 PM and the data refreshed at 11. Someone else is in Slack asking "wait, which version of the Q3 file is the real one?" A senior analyst is fixing a formula in a workbook that breaks every quarter when the date format shifts.</span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>This is normal. It's also a slow-motion disaster.</span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>I'm going to make a strong claim: **manually-assembled deliverables are the single biggest source of avoidable risk and waste in modern analytics teams.** Bigger than bad SQL. Bigger than tooling debates. Bigger than headcount. And yet most teams treat the problem as a soft cultural issue ("we should automate more") rather than what it actually is: a structural choice with measurable cost.</span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>This essay lays out the case for **code-driven reporting** — treating analytical deliverables the way software engineers treat applications. It's not a tools post. It's an argument about what analytics work *is*, and what it should be.</span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="fu">## What "code-driven reporting" actually means</span></span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>The term is broader than it sounds. I don't just mean "use Python instead of Excel." I mean a specific commitment:</span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>::: {.pullquote}</span>
-<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>Every analytical deliverable — every chart, table, metric, and narrative — should be reproducible from raw data with a single command.</span>
-<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">The single-command test for analytics maturity.</span><span class="co">]</span>{.pullquote-attr}</span>
-<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>If your team can't answer "yes, just run this script" when asked how a number was produced, you don't have analytics — you have artisanal data work. That has a place (research, exploration) but it shouldn't be the *output medium* for recurring deliverables.</span>
-<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>Code-driven reporting means:</span>
-<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Inputs are explicit.** Source data is specified, dated, and pulled from a system of record — not "the file Sarah sent."</span>
-<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Logic is in code.** Filtering, aggregation, business rules, and metric definitions live in version-controlled files, not in someone's head or a hidden Excel formula.</span>
-<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Outputs are generated.** The PDF, HTML report, Excel workbook, or slide deck is produced by a script that anyone on the team can run.</span>
-<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Changes are tracked.** When the CFO asks "why did this number change from last quarter?" the answer is a git diff, not a memory test.</span>
-<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Reviews happen on the code.** Pull requests force methodology discussions before reports go out.</span>
-<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>That's the full commitment. Anything less is a halfway state that incurs most of the cost of manual work without much of the benefit of automation.</span>
-<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a><span class="fu">## The maturity model</span></span>
-<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>Most teams sit somewhere on this spectrum. Be honest about where yours actually is.</span>
-<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a><span class="fu">### Level 0: Artisanal reporting</span></span>
-<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>Reports are assembled by hand each cycle. Numbers come from running queries, copying outputs, and pasting into PowerPoint or Excel. Senior analysts are bottlenecks because they're the only ones who remember how each metric is calculated.</span>
-<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>**Cost signal:** When someone leaves the team, reporting capability degrades for weeks.</span>
-<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a><span class="fu">### Level 1: Templated reporting</span></span>
-<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a>A spreadsheet template or PowerPoint template exists. Data still gets pasted in by hand, but at least the formatting is stable. Charts auto-update from source ranges.</span>
-<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a>**Cost signal:** Quarter-end takes 3+ days of analyst time, every time.</span>
-<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a><span class="fu">### Level 2: Scripted extraction</span></span>
-<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a>Scripts pull data from sources and produce intermediate outputs (CSVs, summary tables). A human still assembles the final deliverable.</span>
-<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a>**Cost signal:** Reports go out, but the team can't answer "what changed?" without manual investigation.</span>
-<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a><span class="fu">### Level 3: Parameterized reports</span></span>
-<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a>A Quarto, R Markdown, or Jupyter document renders the full deliverable from raw data. Parameters control client, date range, or scope. One command produces the artifact.</span>
-<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a>**Cost signal:** New report variants take hours, not days.</span>
-<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a><span class="fu">### Level 4: Continuous reporting</span></span>
-<span id="cb2-82"><a href="#cb2-82" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-83"><a href="#cb2-83" aria-hidden="true" tabindex="-1"></a>Reports render automatically on a schedule (or on data refresh). Outputs are versioned, archived, and accessible via URL. Changes to methodology go through code review. Tests catch breaking changes before stakeholders see them.</span>
-<span id="cb2-84"><a href="#cb2-84" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-85"><a href="#cb2-85" aria-hidden="true" tabindex="-1"></a>**Cost signal:** The team spends most of its time on *new* analytical questions, not on reproducing old ones.</span>
-<span id="cb2-86"><a href="#cb2-86" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-87"><a href="#cb2-87" aria-hidden="true" tabindex="-1"></a>Most teams I've seen — including good ones — sit at Level 1 or Level 2 and *think* they're at Level 3. The honest test: pick last quarter's executive deck. Can someone who wasn't on the team reproduce it from the raw data this morning, before lunch? If no, you're below Level 3.</span>
-<span id="cb2-88"><a href="#cb2-88" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-89"><a href="#cb2-89" aria-hidden="true" tabindex="-1"></a><span class="fu">## Why teams stay stuck</span></span>
-<span id="cb2-90"><a href="#cb2-90" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-91"><a href="#cb2-91" aria-hidden="true" tabindex="-1"></a>The objections are predictable. They're also mostly wrong.</span>
-<span id="cb2-92"><a href="#cb2-92" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-93"><a href="#cb2-93" aria-hidden="true" tabindex="-1"></a>**"We don't have time to build infrastructure."** This is the most common objection and it's exactly backwards. The time you don't have is being consumed by the manual work itself. The investment pays back in weeks for any recurring report. The math is brutal: a 40-hour build that saves 4 hours/week breaks even in 10 weeks and saves 200+ hours/year thereafter. I have never seen a team where the math didn't work.</span>
-<span id="cb2-94"><a href="#cb2-94" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-95"><a href="#cb2-95" aria-hidden="true" tabindex="-1"></a>**"Our stakeholders want PowerPoint."** They want to read information in a familiar format. They do not care, at all, how the PowerPoint was made. A code-driven pipeline can produce a <span class="in">`.pptx`</span> file just as easily as a hand-built one — and the resulting deck will have consistent formatting, accurate numbers, and traceable provenance. The stakeholder gets their format. You get your sanity.</span>
-<span id="cb2-96"><a href="#cb2-96" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-97"><a href="#cb2-97" aria-hidden="true" tabindex="-1"></a>**"Our data is too messy."** Yes. That's exactly why you need to encode the cleaning logic in version control. Messy data plus manual handling is how mistakes propagate silently. Messy data plus tested cleaning code is how you catch upstream changes the day they happen.</span>
-<span id="cb2-98"><a href="#cb2-98" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-99"><a href="#cb2-99" aria-hidden="true" tabindex="-1"></a>**"We're not engineers."** Modern tools — Quarto, R Markdown, Jupyter, dbt — are explicitly designed for analysts. You don't need to be a software engineer to write reproducible reports any more than you need to be a structural engineer to live in a building. You do need to take the craft seriously.</span>
-<span id="cb2-100"><a href="#cb2-100" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-101"><a href="#cb2-101" aria-hidden="true" tabindex="-1"></a>**"It's not worth it for one-off analyses."** Agreed. Code-driven reporting is for **recurring deliverables**. Exploratory analysis can stay messy. The discipline applies where the work repeats.</span>
-<span id="cb2-102"><a href="#cb2-102" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-103"><a href="#cb2-103" aria-hidden="true" tabindex="-1"></a><span class="fu">## What it costs to stay at Level 1</span></span>
-<span id="cb2-104"><a href="#cb2-104" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-105"><a href="#cb2-105" aria-hidden="true" tabindex="-1"></a>I want to put real numbers on this, because the cost of artisanal reporting is invisible until you measure it.</span>
-<span id="cb2-106"><a href="#cb2-106" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-107"><a href="#cb2-107" aria-hidden="true" tabindex="-1"></a>A team I worked with — five analysts, one director — produced 12 recurring client-facing reports per month plus ad-hoc work. Manual assembly time per report was averaging 6 hours, plus 2 hours of senior review. That's 96 hours/month on production work alone. Across the team, that was roughly **30% of total analyst capacity** going to producing things that had been produced 50+ times before.</span>
-<span id="cb2-108"><a href="#cb2-108" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-109"><a href="#cb2-109" aria-hidden="true" tabindex="-1"></a>After moving the recurring reports to a code-driven pipeline (Quarto + parameterized R + an orchestration layer), production time dropped to about 4 hours/month for the same 12 reports. The reclaimed capacity went to actual analytical work: methodology improvements, new measurement frameworks, deeper client engagements.</span>
-<span id="cb2-110"><a href="#cb2-110" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-111"><a href="#cb2-111" aria-hidden="true" tabindex="-1"></a>The build took two analysts about six weeks of partial effort. It saved roughly 1,100 analyst-hours per year. That's the equivalent of more than half a full-time analyst, recovered in perpetuity, from one project.</span>
-<span id="cb2-112"><a href="#cb2-112" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-113"><a href="#cb2-113" aria-hidden="true" tabindex="-1"></a>This is not an unusual outcome. It's the typical outcome.</span>
-<span id="cb2-114"><a href="#cb2-114" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-115"><a href="#cb2-115" aria-hidden="true" tabindex="-1"></a><span class="fu">## What "doing it right" looks like in practice</span></span>
-<span id="cb2-116"><a href="#cb2-116" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-117"><a href="#cb2-117" aria-hidden="true" tabindex="-1"></a>Here's the structure I converge on, regardless of language:</span>
-<span id="cb2-118"><a href="#cb2-118" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-119"><a href="#cb2-119" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb2-120"><a href="#cb2-120" aria-hidden="true" tabindex="-1"></a><span class="in">project/</span></span>
-<span id="cb2-121"><a href="#cb2-121" aria-hidden="true" tabindex="-1"></a><span class="in">├── data/                # Raw data (gitignored if large)</span></span>
-<span id="cb2-122"><a href="#cb2-122" aria-hidden="true" tabindex="-1"></a><span class="in">├── R/ or src/           # Cleaning, transformation, modeling functions</span></span>
-<span id="cb2-123"><a href="#cb2-123" aria-hidden="true" tabindex="-1"></a><span class="in">├── reports/             # Quarto/RMarkdown/Jupyter sources</span></span>
-<span id="cb2-124"><a href="#cb2-124" aria-hidden="true" tabindex="-1"></a><span class="in">│   ├── _quarto.yml      # Site/book config</span></span>
-<span id="cb2-125"><a href="#cb2-125" aria-hidden="true" tabindex="-1"></a><span class="in">│   ├── monthly_review.qmd</span></span>
-<span id="cb2-126"><a href="#cb2-126" aria-hidden="true" tabindex="-1"></a><span class="in">│   └── client_X_report.qmd</span></span>
-<span id="cb2-127"><a href="#cb2-127" aria-hidden="true" tabindex="-1"></a><span class="in">├── output/              # Rendered deliverables (gitignored)</span></span>
-<span id="cb2-128"><a href="#cb2-128" aria-hidden="true" tabindex="-1"></a><span class="in">├── tests/               # Tests for transformation functions</span></span>
-<span id="cb2-129"><a href="#cb2-129" aria-hidden="true" tabindex="-1"></a><span class="in">├── renv.lock or pyproject.toml   # Pinned dependencies</span></span>
-<span id="cb2-130"><a href="#cb2-130" aria-hidden="true" tabindex="-1"></a><span class="in">└── README.md            # How to run it</span></span>
-<span id="cb2-131"><a href="#cb2-131" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Methodology Paper · 12 min read</span><span class="co">]</span>{.section-label}</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>::: {.tldr}</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>**TL;DR** — Most analytics teams drown in manually assembled deliverables: PowerPoints, Excel files, ad-hoc dashboards. This is technical debt disguised as productivity. The fix is to treat reports as software products — version-controlled, parameterized, reproducible, and tested. This essay argues the case, lays out the maturity model, and walks through what it actually looks like in practice.</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="fu">## The problem nobody quite admits</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>Every analytics team I've worked, across financial services, pharma measurement, and ad-tech — has the a similar weekly routine. An analyst is hunched over a PowerPoint, copy-pasting numbers from Excel into a deck because the executive review is at 2 PM and the data refreshed at 11. Someone else is in Slack asking "wait, which version of the Q3 file is the real one?" A senior analyst is fixing a formula in a workbook that breaks every quarter when the date format shifts.</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>This is normal. It's also a slow-motion disaster.</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>I'm going to make a strong claim: **manually assembled deliverables are the single biggest source of avoidable risk and waste in modern analytics teams.** Bigger than bad SQL. Bigger than tooling debates. Bigger than headcount. And yet most teams treat the problem as a soft cultural issue ("we should automate more") rather than what it actually is: a structural choice with measurable cost.</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>This essay lays out the case for **code-driven reporting** — treating analytical deliverables the way software engineers treat applications. It's not a tools post. It's an argument about what analytics work *is*, and what it should be.</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="fu">## What "code-driven reporting" actually means</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>The term is broader than it sounds. I don't just mean "use Python instead of Excel." I mean a specific commitment:</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>::: {.pullquote}</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>Every analytical deliverable, every chart, table, metric, and narrative - should be reproducible from raw data with a single command.</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">The single-command test for analytics maturity.</span><span class="co">]</span>{.pullquote-attr}</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>If your team cannot explain where a number came from, what logic was applied, and how to reproduce it through a defined script or workflow, then the process is not mature analytics. It is handcrafted reporting. That has a place (research, exploration) but it shouldn't be the *output medium* for recurring deliverables.</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>Code-driven reporting means:</span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Inputs are explicit.** Source data is specified, dated, and pulled from a system of record, not "the file Sarah sent."</span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Logic is in code.** Filtering, aggregation, business rules, and metric definitions live in version controlled files, not in someone's head or a hidden Excel formula.</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Outputs are generated.** The PDF, HTML report, Excel workbook, or slide deck is produced by a script that anyone on the team can run.</span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Changes are tracked.** When the CFO asks "why did this number change from last quarter?" the answer is a git diff, not a memory test.</span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Reviews happen on the code.** Pull requests force methodology discussions before reports go out.</span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>That's the full commitment. Anything less is a halfway state that incurs most of the cost of manual work without much of the benefit of automation.</span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a><span class="fu">## The maturity model</span></span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>Most teams sit somewhere on this spectrum. Be honest about where yours actually is.</span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a><span class="fu">### Level 0: Manual/Artisanal reporting</span></span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>Reports are assembled by hand each cycle. Numbers come from running queries, copying outputs, screenshots, and pasting into PowerPoint or Excel. Senior analysts become bottlenecks because they are often the only ones who know how each metric is calculated.</span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>**Cost signal:** When someone leaves the team, reporting capability degrades for weeks.</span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a><span class="fu">### Level 1: Templated reporting</span></span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a>A spreadsheet or PowerPoint template exists. Data still gets pasted in manually, but at least the formatting is consistent. Charts may update from source ranges, but the process still depends on someone moving the data into place.</span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a>**Cost signal:** Quarter end still takes three or more days of analyst time, every time.</span>
+<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a><span class="fu">### Level 2: Scripted extraction</span></span>
+<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a>Scripts pull data from source systems and produce intermediate outputs like CSVs, summary tables, or refreshed datasets. This is progress, but a human still has to assemble, validate, and explain the final deliverable.</span>
+<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a>**Cost signal:** Reports go out, but the team still has to manually investigate what changed and why.</span>
+<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a><span class="fu">### Level 3: Parameterized reporting</span></span>
+<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a>A Quarto, R Markdown, Python, Jupyter notebook, or similar workflow can render the full deliverable from raw data. Parameters control the client, date range, market, channel, or scope. One clear process produces the final artifact.</span>
+<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a>**Cost signal:** New report versions take hours, not days.</span>
+<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-82"><a href="#cb2-82" aria-hidden="true" tabindex="-1"></a><span class="fu">### Level 4: Continuous reporting</span></span>
+<span id="cb2-83"><a href="#cb2-83" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-84"><a href="#cb2-84" aria-hidden="true" tabindex="-1"></a>Reports run automatically on a schedule or when the data refreshes. Outputs are versioned, archived, and easy to access. Methodology changes go through review. Basic checks catch broken logic, missing data, or unexpected changes before stakeholders see the output.</span>
+<span id="cb2-85"><a href="#cb2-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-86"><a href="#cb2-86" aria-hidden="true" tabindex="-1"></a>**Cost signal:** The team spends most of its time answering *new* analytical questions, not recreating the same reports over and over.</span>
+<span id="cb2-87"><a href="#cb2-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-88"><a href="#cb2-88" aria-hidden="true" tabindex="-1"></a>Most teams I have seen, including good ones, sit at Level 1 or Level 2 and *think* they are at Level 3. </span>
+<span id="cb2-89"><a href="#cb2-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-90"><a href="#cb2-90" aria-hidden="true" tabindex="-1"></a>The honest test is simple: pick last quarter’s executive deck. Can someone who was not involved in the original work reproduce it from the raw data this morning and explain where the numbers came from before lunch? </span>
+<span id="cb2-91"><a href="#cb2-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-92"><a href="#cb2-92" aria-hidden="true" tabindex="-1"></a>If the answer is no, the team is below Level 3.</span>
+<span id="cb2-93"><a href="#cb2-93" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-94"><a href="#cb2-94" aria-hidden="true" tabindex="-1"></a><span class="fu">## Why teams stay stuck</span></span>
+<span id="cb2-95"><a href="#cb2-95" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-96"><a href="#cb2-96" aria-hidden="true" tabindex="-1"></a>The objections are predictable. They're also mostly wrong.</span>
+<span id="cb2-97"><a href="#cb2-97" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-98"><a href="#cb2-98" aria-hidden="true" tabindex="-1"></a>**"We don't have time to build infrastructure."** This is the most common objection and it's exactly backwards. The time you don't have is being consumed by the manual work itself. The investment pays back in weeks for any recurring report. The math is brutal: a 40-hour build that saves 4 hours/week breaks even in 10 weeks and saves 200+ hours/year thereafter. I have never seen a team where the math didn't work.</span>
+<span id="cb2-99"><a href="#cb2-99" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-100"><a href="#cb2-100" aria-hidden="true" tabindex="-1"></a>**"Our stakeholders want PowerPoint."** They want the information in a format they know how to read. They do not care how the PowerPoint was made.</span>
+<span id="cb2-101"><a href="#cb2-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-102"><a href="#cb2-102" aria-hidden="true" tabindex="-1"></a>A scripted workflow can still produce a PowerPoint file. The difference is that the deck can have consistent formatting, accurate numbers, and a clear trail back to the source data and logic.</span>
+<span id="cb2-103"><a href="#cb2-103" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-104"><a href="#cb2-104" aria-hidden="true" tabindex="-1"></a>The stakeholder gets the format they want. The analytics team gets a process that does not depend on manual rebuilding every cycle.</span>
+<span id="cb2-105"><a href="#cb2-105" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-106"><a href="#cb2-106" aria-hidden="true" tabindex="-1"></a>**"Our data is too messy."** Yes. That is exactly why the cleaning logic needs to be documented and stored in code.</span>
+<span id="cb2-107"><a href="#cb2-107" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-108"><a href="#cb2-108" aria-hidden="true" tabindex="-1"></a>Messy data handled manually is where mistakes spread quietly. Messy data handled through repeatable logic is where upstream issues get caught earlier.</span>
+<span id="cb2-109"><a href="#cb2-109" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-110"><a href="#cb2-110" aria-hidden="true" tabindex="-1"></a>The point is not that the data has to be perfect. The point is that the logic should not live only in someone’s memory.</span>
+<span id="cb2-111"><a href="#cb2-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-112"><a href="#cb2-112" aria-hidden="true" tabindex="-1"></a>**"We're not engineers."** You do not need to be a software engineer to make reporting reproducible.</span>
+<span id="cb2-113"><a href="#cb2-113" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-114"><a href="#cb2-114" aria-hidden="true" tabindex="-1"></a>Tools like Quarto, R Markdown, Jupyter, dbt, Python, R, and SQL are built for this kind of work. Analysts do not need to turn into engineers, but they do need to take the process seriously.</span>
+<span id="cb2-115"><a href="#cb2-115" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-116"><a href="#cb2-116" aria-hidden="true" tabindex="-1"></a>If a report goes out every week, every month, or every quarter, the workflow should be treated like something the business depends on, because it does.</span>
+<span id="cb2-117"><a href="#cb2-117" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-118"><a href="#cb2-118" aria-hidden="true" tabindex="-1"></a>**"It's not worth it for one-off analyses."** Agreed.</span>
+<span id="cb2-119"><a href="#cb2-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-120"><a href="#cb2-120" aria-hidden="true" tabindex="-1"></a>Not every analysis needs a full process around it. Exploration can be messy. Research can be flexible. Not every question deserves a pipeline.</span>
+<span id="cb2-121"><a href="#cb2-121" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-122"><a href="#cb2-122" aria-hidden="true" tabindex="-1"></a>The discipline applies for **reacurrent deliverables**.</span>
+<span id="cb2-123"><a href="#cb2-123" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-124"><a href="#cb2-124" aria-hidden="true" tabindex="-1"></a>If the same report, metric, deck, or analysis keeps coming back, then it should not keep being rebuilt from scratch.</span>
+<span id="cb2-125"><a href="#cb2-125" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-126"><a href="#cb2-126" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-127"><a href="#cb2-127" aria-hidden="true" tabindex="-1"></a><span class="fu">## What it costs to stay at Level 1</span></span>
+<span id="cb2-128"><a href="#cb2-128" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-129"><a href="#cb2-129" aria-hidden="true" tabindex="-1"></a>I want to put real numbers around this because the cost of manual reporting is easy to ignore until someone measures it.</span>
+<span id="cb2-130"><a href="#cb2-130" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-131"><a href="#cb2-131" aria-hidden="true" tabindex="-1"></a>A team I worked with had five analysts and one director. Each month, the team produced 12 recurring client reports plus ad hoc work. Manual assembly took about 6 hours per report, plus another 2 hours of senior review.</span>
 <span id="cb2-132"><a href="#cb2-132" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-133"><a href="#cb2-133" aria-hidden="true" tabindex="-1"></a>The non-negotiables:</span>
+<span id="cb2-133"><a href="#cb2-133" aria-hidden="true" tabindex="-1"></a>That is 96 hours per month spent on production work alone.Across the team, that was roughly **30% of total analyst capacity** going to producing things that had been produced 50+ times before</span>
 <span id="cb2-134"><a href="#cb2-134" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-135"><a href="#cb2-135" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Pinned dependencies.** <span class="in">`renv`</span> for R, <span class="in">`uv`</span>/<span class="in">`pyproject.toml`</span> for Python. The pipeline must run identically on a teammate's laptop a year from now.</span>
-<span id="cb2-136"><a href="#cb2-136" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Functions live separately from reports.** The <span class="in">`.qmd`</span> calls functions; it doesn't define them. This makes everything testable.</span>
-<span id="cb2-137"><a href="#cb2-137" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Tests on transformations, not reports.** Test that <span class="in">`compute_cpa()`</span> returns the right number for known inputs. Don't test the rendered HTML.</span>
-<span id="cb2-138"><a href="#cb2-138" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**Parameterization is first-class.** Reports take parameters (date range, client ID). Variants are configuration, not copies.</span>
-<span id="cb2-139"><a href="#cb2-139" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**Outputs are reproducible from `main`.** The current branch should always produce a runnable pipeline.</span>
+<span id="cb2-135"><a href="#cb2-135" aria-hidden="true" tabindex="-1"></a>For the people most involved in the reporting cycle, that represented a meaningful share of available reporting capacity. Time that could have gone toward actual analysis was being spent rebuilding deliverables that had already been produced dozens of times before.</span>
+<span id="cb2-136"><a href="#cb2-136" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-137"><a href="#cb2-137" aria-hidden="true" tabindex="-1"></a>After moving the recurring reports to a code driven pipeline using Quarto, parameterized R, and a scheduler, production time dropped to about 4 hours per month for the same 12 reports.</span>
+<span id="cb2-138"><a href="#cb2-138" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-139"><a href="#cb2-139" aria-hidden="true" tabindex="-1"></a>The reclaimed time went back into actual analytical work: improving methodology, building better measurement frameworks, investigating performance changes, and having deeper client conversations.</span>
 <span id="cb2-140"><a href="#cb2-140" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-141"><a href="#cb2-141" aria-hidden="true" tabindex="-1"></a><span class="fu">## The leadership angle</span></span>
+<span id="cb2-141"><a href="#cb2-141" aria-hidden="true" tabindex="-1"></a>The build took two analysts about six weeks of partial effort.</span>
 <span id="cb2-142"><a href="#cb2-142" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-143"><a href="#cb2-143" aria-hidden="true" tabindex="-1"></a>This isn't a tooling argument. It's a leadership argument.</span>
+<span id="cb2-143"><a href="#cb2-143" aria-hidden="true" tabindex="-1"></a>It saved roughly 1,100 analyst hours per year.</span>
 <span id="cb2-144"><a href="#cb2-144" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-145"><a href="#cb2-145" aria-hidden="true" tabindex="-1"></a>Analytics managers and directors who insist on code-driven reporting do three things at once:</span>
+<span id="cb2-145"><a href="#cb2-145" aria-hidden="true" tabindex="-1"></a>That is more than half of a full time analyst recovered from one project, with the savings continuing every year after.</span>
 <span id="cb2-146"><a href="#cb2-146" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-147"><a href="#cb2-147" aria-hidden="true" tabindex="-1"></a>**They protect their team from burnout.** Manual deliverable production is the work analysts complain about most. It's repetitive, error-prone, and high-stakes. Eliminating it makes the job better.</span>
+<span id="cb2-147"><a href="#cb2-147" aria-hidden="true" tabindex="-1"></a>This is not some rare outcome. For recurring reporting, this is usually what happens when the process is rebuilt the right way.</span>
 <span id="cb2-148"><a href="#cb2-148" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-149"><a href="#cb2-149" aria-hidden="true" tabindex="-1"></a>**They protect the business from quiet errors.** A typo in a hand-built deck can sit there for weeks. A test failure in a code-driven pipeline blocks the deploy.</span>
-<span id="cb2-150"><a href="#cb2-150" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-151"><a href="#cb2-151" aria-hidden="true" tabindex="-1"></a>**They build a team that scales.** A team at Level 3+ can take on more work without proportional headcount. A team at Level 1 needs more analysts every time output volume grows.</span>
-<span id="cb2-152"><a href="#cb2-152" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-153"><a href="#cb2-153" aria-hidden="true" tabindex="-1"></a>::: {.pullquote}</span>
-<span id="cb2-154"><a href="#cb2-154" aria-hidden="true" tabindex="-1"></a>The best analytics leaders I know don't measure their teams by the volume of decks produced. They measure by the number of recurring deliverables that no longer require human assembly.</span>
-<span id="cb2-155"><a href="#cb2-155" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-156"><a href="#cb2-156" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">A useful KPI for analytics leadership.</span><span class="co">]</span>{.pullquote-attr}</span>
-<span id="cb2-157"><a href="#cb2-157" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb2-158"><a href="#cb2-158" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-159"><a href="#cb2-159" aria-hidden="true" tabindex="-1"></a>If you're an analytics leader and your team is at Level 1 or 2, you have a budget problem and you're paying for it in analyst time. If you're an analytics IC and your team is at Level 1 or 2, you have a career problem — your most valuable hours are being consumed by work that doesn't grow your skills.</span>
-<span id="cb2-160"><a href="#cb2-160" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-161"><a href="#cb2-161" aria-hidden="true" tabindex="-1"></a><span class="fu">## Where to start</span></span>
-<span id="cb2-162"><a href="#cb2-162" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-163"><a href="#cb2-163" aria-hidden="true" tabindex="-1"></a>If you're convinced and want to move, here's the sequence that has worked for me:</span>
-<span id="cb2-164"><a href="#cb2-164" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-165"><a href="#cb2-165" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Pick one recurring report.** Not the most complex. Pick one that runs at least monthly, has a stable structure, and would be embarrassing if it broke.</span>
-<span id="cb2-166"><a href="#cb2-166" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Reproduce it in Quarto or RMarkdown.** Match the existing format exactly. The goal is not to improve the report — it's to demonstrate that the code can produce the same output.</span>
-<span id="cb2-167"><a href="#cb2-167" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Run both side-by-side for one cycle.** Generate the manual version *and* the automated version. Check that they match. Fix the discrepancies.</span>
-<span id="cb2-168"><a href="#cb2-168" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**Switch over.** The next cycle, only run the automated version. Keep the manual process as fallback for one more cycle, then retire it.</span>
-<span id="cb2-169"><a href="#cb2-169" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**Repeat.** Move the next report. Then the next. Within a year you'll have inverted the team's time distribution.</span>
-<span id="cb2-170"><a href="#cb2-170" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-171"><a href="#cb2-171" aria-hidden="true" tabindex="-1"></a>The hardest part is the first one. The seventh report takes 1/4 the time of the first. The team builds shared infrastructure as they go.</span>
-<span id="cb2-172"><a href="#cb2-172" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-173"><a href="#cb2-173" aria-hidden="true" tabindex="-1"></a><span class="fu">## Closing</span></span>
-<span id="cb2-174"><a href="#cb2-174" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-175"><a href="#cb2-175" aria-hidden="true" tabindex="-1"></a>Code-driven reporting is not a fashion choice or a technical preference. It's a strategic decision about how an analytics team allocates its scarcest resource — analyst time — and how it manages its largest hidden risk: silent errors in artisanal work.</span>
-<span id="cb2-176"><a href="#cb2-176" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-177"><a href="#cb2-177" aria-hidden="true" tabindex="-1"></a>The teams that take this seriously will spend their time on harder, more valuable problems. The teams that don't will keep producing decks until automation does it for them. There is no third option.</span>
-<span id="cb2-178"><a href="#cb2-178" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-179"><a href="#cb2-179" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb2-180"><a href="#cb2-180" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-181"><a href="#cb2-181" aria-hidden="true" tabindex="-1"></a>::: {style="text-align: center; color: var(--ink-muted); font-size: 0.9rem; margin-top: 3rem;"}</span>
-<span id="cb2-182"><a href="#cb2-182" aria-hidden="true" tabindex="-1"></a>Found this useful? <span class="co">[</span><span class="ot">Share on LinkedIn →</span><span class="co">](https://www.linkedin.com/sharing/share-offsite/?url=https://idgesus.github.io/data-analytics-portfolio/posts/code-driven-reporting.html)</span></span>
+<span id="cb2-149"><a href="#cb2-149" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-150"><a href="#cb2-150" aria-hidden="true" tabindex="-1"></a><span class="fu">## What "doing it right" looks like in practice</span></span>
+<span id="cb2-151"><a href="#cb2-151" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-152"><a href="#cb2-152" aria-hidden="true" tabindex="-1"></a>Here's the structure I converge on, regardless of language:</span>
+<span id="cb2-153"><a href="#cb2-153" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-154"><a href="#cb2-154" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb2-155"><a href="#cb2-155" aria-hidden="true" tabindex="-1"></a><span class="in">project/</span></span>
+<span id="cb2-156"><a href="#cb2-156" aria-hidden="true" tabindex="-1"></a><span class="in">├── data/                # Raw data (gitignored if large)</span></span>
+<span id="cb2-157"><a href="#cb2-157" aria-hidden="true" tabindex="-1"></a><span class="in">├── Python/R/ or src/    # Cleaning, transformation, modeling functions</span></span>
+<span id="cb2-158"><a href="#cb2-158" aria-hidden="true" tabindex="-1"></a><span class="in">├── reports/             # Quarto/RMarkdown/Jupyter sources</span></span>
+<span id="cb2-159"><a href="#cb2-159" aria-hidden="true" tabindex="-1"></a><span class="in">│   ├── _quarto.yml      # Site/book config</span></span>
+<span id="cb2-160"><a href="#cb2-160" aria-hidden="true" tabindex="-1"></a><span class="in">│   ├── monthly_review.qmd</span></span>
+<span id="cb2-161"><a href="#cb2-161" aria-hidden="true" tabindex="-1"></a><span class="in">│   └── client_X_report.qmd</span></span>
+<span id="cb2-162"><a href="#cb2-162" aria-hidden="true" tabindex="-1"></a><span class="in">├── output/              # Rendered deliverables (gitignored)</span></span>
+<span id="cb2-163"><a href="#cb2-163" aria-hidden="true" tabindex="-1"></a><span class="in">├── tests/               # Tests for transformation functions</span></span>
+<span id="cb2-164"><a href="#cb2-164" aria-hidden="true" tabindex="-1"></a><span class="in">├── .venv/renv.lock or pyproject.toml   # Pinned dependencies</span></span>
+<span id="cb2-165"><a href="#cb2-165" aria-hidden="true" tabindex="-1"></a><span class="in">└── README.md            # How to run it</span></span>
+<span id="cb2-166"><a href="#cb2-166" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb2-167"><a href="#cb2-167" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-168"><a href="#cb2-168" aria-hidden="true" tabindex="-1"></a>The non-negotiables:</span>
+<span id="cb2-169"><a href="#cb2-169" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-170"><a href="#cb2-170" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Pinned dependencies.**  <span class="in">`renv`</span> for R, <span class="in">`uv`</span>/<span class="in">`pyproject.toml`</span> for Python. The pipeline must run identically on a teammate's laptop a year from now.</span>
+<span id="cb2-171"><a href="#cb2-171" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Functions live separately from reports.** The <span class="in">`.qmd`</span> calls functions; it doesn't define them. This makes everything testable.</span>
+<span id="cb2-172"><a href="#cb2-172" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Tests on transformations, not reports.** Test that <span class="in">`compute_cpa()`</span> returns the right number for known inputs. Don't test the rendered HTML.</span>
+<span id="cb2-173"><a href="#cb2-173" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**Parameterization is first-class.** Reports take parameters (date range, client ID). Variants are configuration, not copies.</span>
+<span id="cb2-174"><a href="#cb2-174" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**Outputs are reproducible from `main`.** The current branch should always produce a runnable pipeline.</span>
+<span id="cb2-175"><a href="#cb2-175" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-176"><a href="#cb2-176" aria-hidden="true" tabindex="-1"></a><span class="fu">## The leadership angle</span></span>
+<span id="cb2-177"><a href="#cb2-177" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-178"><a href="#cb2-178" aria-hidden="true" tabindex="-1"></a>This isn't a tooling argument. It's a leadership argument.</span>
+<span id="cb2-179"><a href="#cb2-179" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-180"><a href="#cb2-180" aria-hidden="true" tabindex="-1"></a>Analytics managers and directors who insist on code-driven reporting do three things at once:</span>
+<span id="cb2-181"><a href="#cb2-181" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-182"><a href="#cb2-182" aria-hidden="true" tabindex="-1"></a>**They protect their team from burnout.** Manual deliverable production is the work analysts complain about most. It's repetitive, error-prone, and high-stakes. Eliminating it makes the job better.</span>
 <span id="cb2-183"><a href="#cb2-183" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-184"><a href="#cb2-184" aria-hidden="true" tabindex="-1"></a>Or read more in the <span class="co">[</span><span class="ot">case studies</span><span class="co">](/index.html#case-studies)</span>.</span>
-<span id="cb2-185"><a href="#cb2-185" aria-hidden="true" tabindex="-1"></a>:::</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+<span id="cb2-184"><a href="#cb2-184" aria-hidden="true" tabindex="-1"></a>**They protect the business from quiet errors.**</span>
+<span id="cb2-185"><a href="#cb2-185" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-186"><a href="#cb2-186" aria-hidden="true" tabindex="-1"></a>A mistake in a manually built deck can sit there for weeks before anyone notices. A copied number, a stale chart, or a missed filter can make its way into a client meeting or executive review.</span>
+<span id="cb2-187"><a href="#cb2-187" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-188"><a href="#cb2-188" aria-hidden="true" tabindex="-1"></a>A repeatable workflow does not remove every risk, but it gives the team a better chance to catch issues earlier. Logic can be reviewed. Outputs can be checked. Changes can be traced back to the source.</span>
+<span id="cb2-189"><a href="#cb2-189" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-190"><a href="#cb2-190" aria-hidden="true" tabindex="-1"></a>**They build a team that scales.** </span>
+<span id="cb2-191"><a href="#cb2-191" aria-hidden="true" tabindex="-1"></a>A team at Level 3 or higher can take on more work without needing headcount to grow at the same rate. A team stuck at Level 1 needs more analyst time every time the reporting volume increases.</span>
+<span id="cb2-192"><a href="#cb2-192" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-193"><a href="#cb2-193" aria-hidden="true" tabindex="-1"></a>That is not a sustainable operating model. It turns talented analysts into report producers instead of problem solvers.</span>
+<span id="cb2-194"><a href="#cb2-194" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-195"><a href="#cb2-195" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-196"><a href="#cb2-196" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-197"><a href="#cb2-197" aria-hidden="true" tabindex="-1"></a>::: {.pullquote}</span>
+<span id="cb2-198"><a href="#cb2-198" aria-hidden="true" tabindex="-1"></a>The best analytics leaders I know do not measure their teams by the number of decks produced. They measure by the number of recurring deliverables that no longer require manual assembly.</span>
+<span id="cb2-199"><a href="#cb2-199" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-200"><a href="#cb2-200" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">A useful KPI for analytics leadership.</span><span class="co">]</span>{.pullquote-attr}</span>
+<span id="cb2-201"><a href="#cb2-201" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb2-202"><a href="#cb2-202" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-203"><a href="#cb2-203" aria-hidden="true" tabindex="-1"></a>If you are an analytics leader and your team is at Level 1 or Level 2, you have a budget problem. You are paying for it in analyst time.</span>
+<span id="cb2-204"><a href="#cb2-204" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-205"><a href="#cb2-205" aria-hidden="true" tabindex="-1"></a>If you are an analytics individual contributor and your team is at Level 1 or Level 2, you have a career problem. Your most valuable hours are being spent on work that does not build your skills, improve the business, or compound over time.</span>
+<span id="cb2-206"><a href="#cb2-206" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-207"><a href="#cb2-207" aria-hidden="true" tabindex="-1"></a><span class="fu">## Where to start</span></span>
+<span id="cb2-208"><a href="#cb2-208" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-209"><a href="#cb2-209" aria-hidden="true" tabindex="-1"></a>If you're convinced and want to move, here's the sequence that has worked for me:</span>
+<span id="cb2-210"><a href="#cb2-210" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-211"><a href="#cb2-211" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Pick one recurring report.** Not the most complex. Pick one that runs at least monthly, has a stable structure, and would be embarrassing if it broke.</span>
+<span id="cb2-212"><a href="#cb2-212" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Reproduce it in Quarto or RMarkdown.** Match the existing format exactly. The goal is not to improve the report — it's to demonstrate that the code can produce the same output.</span>
+<span id="cb2-213"><a href="#cb2-213" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Run both side-by-side for one cycle.** Generate the manual version *and* the automated version. Check that they match. Fix the discrepancies.</span>
+<span id="cb2-214"><a href="#cb2-214" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**Switch over.** The next cycle, only run the automated version. Keep the manual process as fallback for one more cycle, then retire it.</span>
+<span id="cb2-215"><a href="#cb2-215" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**Repeat.** Move the next report. Then the next. Within a year you'll have inverted the team's time distribution.</span>
+<span id="cb2-216"><a href="#cb2-216" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-217"><a href="#cb2-217" aria-hidden="true" tabindex="-1"></a>The hardest part is the first one. The seventh report takes 1/4 the time of the first. The team builds shared infrastructure as they go.</span>
+<span id="cb2-218"><a href="#cb2-218" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-219"><a href="#cb2-219" aria-hidden="true" tabindex="-1"></a><span class="fu">## Closing</span></span>
+<span id="cb2-220"><a href="#cb2-220" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-221"><a href="#cb2-221" aria-hidden="true" tabindex="-1"></a>Code-driven reporting is not a fashion choice or a technical preference. It's a strategic decision about how an analytics team allocates its scarcest resource — analyst time — and how it manages its largest hidden risk: silent errors in artisanal work.</span>
+<span id="cb2-222"><a href="#cb2-222" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-223"><a href="#cb2-223" aria-hidden="true" tabindex="-1"></a>The teams that take this seriously will spend their time on harder, more valuable problems. The teams that don't will keep producing decks until automation does it for them. There is no third option.</span>
+<span id="cb2-224"><a href="#cb2-224" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-225"><a href="#cb2-225" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb2-226"><a href="#cb2-226" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-227"><a href="#cb2-227" aria-hidden="true" tabindex="-1"></a>::: {style="text-align: center; color: var(--ink-muted); font-size: 0.9rem; margin-top: 3rem;"}</span>
+<span id="cb2-228"><a href="#cb2-228" aria-hidden="true" tabindex="-1"></a>Found this useful? Read more in the <span class="co">[</span><span class="ot">case studies</span><span class="co">](/index.html#case-studies)</span>.</span>
+<span id="cb2-229"><a href="#cb2-229" aria-hidden="true" tabindex="-1"></a>:::</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">

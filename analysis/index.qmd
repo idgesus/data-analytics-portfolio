@@ -1,0 +1,93 @@
+---
+title: "Analysis Playbook"
+subtitle: "Business questions, answered with the right analysis, the right chart, and the correct read"
+page-layout: full
+toc: false
+---
+
+::: {.section-label}
+Visualization & Measurement Library
+:::
+
+Every entry in this playbook starts with a question someone actually asks in a business —
+*did the campaign change the trajectory? is this lift real or noise? which metric should
+we track?* — and pairs it with the analysis that answers it honestly, the R code that
+builds it, and the statistical read that goes with it. Where it's instructive, the wrong
+chart is shown next to the right one.
+
+All data is synthetic and seeded, engineered to demonstrate exactly the pattern each
+entry is about.
+
+::: {.callout-note appearance="simple"}
+**🚧 In progress** — entries are being added across the five categories below.
+:::
+
+::: {.featured-card}
+
+::: {.fc-row}
+[Category 01]{.fc-category}
+[In progress]{.fc-data}
+:::
+
+### [Trends & Time Series](trends/index.qmd){.stretched-link}
+
+Trend breaks, seasonality, dynamic baselines, and anomalies — how to show whether a
+trajectory actually changed, and how to separate signal from ordinary variance.
+
+:::
+
+::: {.featured-card}
+
+::: {.fc-row}
+[Category 02]{.fc-category}
+[In progress]{.fc-data}
+:::
+
+### [Comparison](comparison/index.qmd){.stretched-link}
+
+Share shift, mix effects, and before/after reads — comparing groups, periods, and
+segments without letting the comparison itself mislead.
+
+:::
+
+::: {.featured-card}
+
+::: {.fc-row}
+[Category 03]{.fc-category}
+[In progress]{.fc-data}
+:::
+
+### [Distributions & Uncertainty](distributions/index.qmd){.stretched-link}
+
+Why the average lies — showing variance honestly, when the mean hides the story, and
+how to put uncertainty on a chart without losing the room.
+
+:::
+
+::: {.featured-card}
+
+::: {.fc-row}
+[Category 04]{.fc-category}
+[In progress]{.fc-data}
+:::
+
+### [Experiment Readouts](experiments/index.qmd){.stretched-link}
+
+Test vs. control done right — lift with confidence intervals, significance reads, and
+the difference between "the test won" and "the test probably won."
+
+:::
+
+::: {.featured-card}
+
+::: {.fc-row}
+[Category 05]{.fc-category}
+[In progress]{.fc-data}
+:::
+
+### [KPIs & Metrics](kpis/index.qmd){.stretched-link}
+
+Leading vs. lagging indicators, vanity vs. trackable metrics — how to define a KPI
+that survives a quarter of scrutiny, and how to present it.
+
+:::

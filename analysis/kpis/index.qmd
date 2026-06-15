@@ -1,0 +1,26 @@
+---
+title: "KPIs & Metrics"
+subtitle: "Leading vs. lagging, vanity vs. trackable"
+page-layout: full
+toc: false
+listing:
+  id: patterns-listing
+  contents: "*.qmd"
+  type: grid
+  sort: "date desc"
+  fields: [image, title, categories, description]
+---
+
+::: {.section-label}
+Analysis Playbook · KPIs & Metrics
+:::
+
+How to define a KPI that survives a quarter of scrutiny — leading vs. lagging
+indicators, vanity vs. actionable metrics, and scorecards people actually read.
+
+::: {.callout-note appearance="simple"}
+**🚧 In progress** — entries coming soon.
+:::
+
+::: {#patterns-listing}
+:::

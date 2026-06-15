@@ -1,0 +1,65 @@
+---
+title: "TITLE: What You Built and What It Found"
+subtitle: "One-line subtitle: the technique + the data + the payoff"
+date: 2026-06-10
+categories: [AI, LLM, Python]
+toc: true
+toc-depth: 3
+code-fold: true
+---
+
+<!--
+DRAFT — excluded from the build by the leading underscore in the filename.
+
+To publish:
+  1. Fill in every section below and delete these comments.
+  2. Rename the file to drop the underscore (e.g. ai-project.qmd).
+  3. Add a navbar entry in _quarto.yml under the Case Studies menu.
+  4. Add a featured-card block to index.qmd (copy an existing one).
+  5. quarto render
+-->
+
+::: {.section-label}
+AI / LLM Engineering · Real Public Data
+:::
+
+::: {.tldr}
+**TL;DR** — Two or three sentences. What you built, what data it ran on, and the
+one number or finding a recruiter should remember. Same voice as the other case
+studies: concrete, measured, no hype.
+:::
+
+::: {.callout-data}
+**Data source:** Name the dataset, link the official source, state the license.
+If any part is synthetic or LLM-generated, label it explicitly — the rest of the
+site leans on "real public data" as a differentiator, so keep that promise here.
+:::
+
+## The Business Problem
+
+Frame the problem the way the other case studies do: a question an analytics
+leader actually faces, why doing it manually doesn't scale, and what a good
+solution must do (3–4 bullet criteria).
+
+## The Approach
+
+Walk through the pipeline step by step. For an AI project, recruiters care about
+the engineering around the model as much as the model itself:
+
+1. **Data ingestion** — fetch script, caching, Parquet (reuse the `data/fetch_*.py`
+   pattern so the data path is verifiable).
+2. **The AI component** — model choice and why, prompt/agent design, structured
+   outputs, evaluation. Show the code.
+3. **Guardrails** — cost controls, validation of model output against ground truth,
+   failure handling.
+4. **Delivery** — how results land somewhere useful (report, table, alert).
+
+## Results
+
+What it found, with a chart or table rendered from real code. Include an honest
+evaluation section: where the model was wrong, and how you measured that.
+
+## Trade-offs and Limitations
+
+The other case studies end with honest trade-offs. Do the same — it reads as
+seniority, not weakness.

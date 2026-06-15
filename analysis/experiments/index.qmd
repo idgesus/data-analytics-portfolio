@@ -1,0 +1,27 @@
+---
+title: "Experiment Readouts"
+subtitle: "Test vs. control, lift with confidence intervals, significance reads"
+page-layout: full
+toc: false
+listing:
+  id: patterns-listing
+  contents: "*.qmd"
+  type: grid
+  sort: "date desc"
+  fields: [image, title, categories, description]
+---
+
+::: {.section-label}
+Analysis Playbook · Experiment Readouts
+:::
+
+Reading a test without fooling yourself — lift with confidence intervals, the
+difference between "the test won" and "the test probably won," and how to present a
+null result.
+
+::: {.callout-note appearance="simple"}
+**🚧 In progress** — entries coming soon.
+:::
+
+::: {#patterns-listing}
+:::

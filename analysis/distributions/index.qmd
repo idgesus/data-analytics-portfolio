@@ -1,0 +1,26 @@
+---
+title: "Distributions & Uncertainty"
+subtitle: "Why the average lies, and how to show variance honestly"
+page-layout: full
+toc: false
+listing:
+  id: patterns-listing
+  contents: "*.qmd"
+  type: grid
+  sort: "date desc"
+  fields: [image, title, categories, description]
+---
+
+::: {.section-label}
+Analysis Playbook · Distributions & Uncertainty
+:::
+
+When the mean hides the story — distributions over point estimates, error bars that
+mean something, and how to put uncertainty on a chart without losing the room.
+
+::: {.callout-note appearance="simple"}
+**🚧 In progress** — entries coming soon.
+:::
+
+::: {#patterns-listing}
+:::
