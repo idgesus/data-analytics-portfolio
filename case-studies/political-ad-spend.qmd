@@ -1,7 +1,7 @@
 ---
 title: "Political Ad Spend Patterns in FEC Data"
 subtitle: "Real campaign finance data, partitioned Parquet, executive-ready analysis"
-date: 2025-01-08
+date: 2026-06-13
 categories: [Media Spend, Real Public Data, Parquet, DuckDB]
 toc: true
 toc-depth: 3

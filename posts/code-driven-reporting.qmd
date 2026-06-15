@@ -1,8 +1,8 @@
 ---
 title: "The Case for Code-Driven Reporting"
 subtitle: "Why your analytics team should stop building decks"
-date: 2025-01-20
-author: "Jesse G"
+date: 2026-05-20
+author: "Jesus M"
 description: "A methodology paper on treating reports as software products: version-controlled, reproducible, tested. Why most analytics teams drown in deliverables — and how to fix it."
 categories: [Methodology, Engineering, Analytics Leadership]
 toc: true
@@ -179,7 +179,7 @@ The teams that take this seriously will spend their time on harder, more valuabl
 ---
 
 ::: {style="text-align: center; color: var(--ink-muted); font-size: 0.9rem; margin-top: 3rem;"}
-Found this useful? [Share on LinkedIn →](https://www.linkedin.com/sharing/share-offsite/?url=https://YOURUSERNAME.github.io/portfolio/posts/code-driven-reporting.html)
+Found this useful? [Share on LinkedIn →](https://www.linkedin.com/sharing/share-offsite/?url=https://idgesus.github.io/data-analytics-portfolio/posts/code-driven-reporting.html)
 
 Or read more in the [case studies](/index.html#case-studies).
 :::

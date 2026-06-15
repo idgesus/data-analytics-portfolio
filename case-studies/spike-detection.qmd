@@ -1,7 +1,7 @@
 ---
 title: "Detecting Media-Driven Spikes in Wikipedia Traffic"
 subtitle: "Time-series anomaly detection on 50GB of real public data"
-date: 2025-01-12
+date: 2026-06-06
 categories: [Time Series, Anomaly Detection, Polars, DuckDB, Parquet]
 toc: true
 toc-depth: 3
