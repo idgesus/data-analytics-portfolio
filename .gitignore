@@ -47,3 +47,4 @@ output/
 credentials.json
 
 **/*.quarto_ipynb
+.positai

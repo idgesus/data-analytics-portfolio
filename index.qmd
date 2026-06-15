@@ -12,10 +12,10 @@ include-in-header:
 
 [Manager → Director · Analytics Leadership]{.hero-eyebrow}
 
-# Measurement frameworks that *survive contact* with executives.
-
+<!-- # Measurement frameworks that *survive contact* with executives. -->
+# Analytics Portfolio.
 ::: {.hero-tagline}
-13+ years building TV attribution models, anomaly detection systems, and code-driven reporting infrastructure for media measurement at scale.
+13+ years building attribution models, automated reporting, anomaly detection systems, and data pipelines infrastructure for media measurement at scale.
 :::
 
 ::: {.hero-cta-row}
@@ -35,22 +35,25 @@ include-in-header:
 [Encore → JuiceMedia]{.metric-detail}
 :::
 
-::: {.metric}
-[210]{.metric-value}
-[DMAs measured]{.metric-label}
-[National + regional campaigns]{.metric-detail}
-:::
 
 ::: {.metric}
-[3+]{.metric-value}
+[3-7]{.metric-value}
 [Analysts managed]{.metric-label}
 [Methodology + mentorship]{.metric-detail}
 :::
 
 ::: {.metric}
+[ 150+]{.metric-value}
+[Clients supported across campaign measurement, performance, testing and reporting]{.metric-label}
+<!-- [Cross-industry campaign experience spanning multiple verticals and business models]{.metric-label} -->
+<!-- [Hands-on measurement experience across brand, performance, attribution, and response-driven campaigns]{.metric-detail} -->
+:::
+
+
+::: {.metric}
 [Python · R · SQL]{.metric-value style="font-size: 1.4rem;"}
 [Stack]{.metric-label}
-[AWS · Quarto · Tableau]{.metric-detail}
+[AWS  · Tableau · Quarto]{.metric-detail}
 :::
 
 :::
@@ -58,29 +61,26 @@ include-in-header:
 
 [Featured writing]{.section-label}
 
-[
 ::: {.featured-essay}
 [2025 · Methodology Paper]{.fe-eyebrow}
 
-### The Case for Code-Driven Reporting: Why Your Analytics Team Should Stop Building Decks
+### [The Case for Code-Driven Reporting: Why Your Analytics Team Should Stop Building Decks](posts/code-driven-reporting.qmd){.stretched-link}
 
 What separates a data team that scales from one that drowns in deliverables. A deep argument for treating reports as products — version-controlled, reproducible, and tested — instead of one-off PowerPoints assembled by hand.
 
 :::
-](posts/code-driven-reporting.qmd)
 
 
 [Case studies]{.section-label}
 
-::: {.section-title}
-Selected work {#case-studies}
+::: {.section-title #case-studies}
+Selected work
 :::
 
 ::: {.section-intro}
-Each case study uses **public or synthetic data** — never client work. Code is on GitHub, methodology is documented, and trade-offs are explained honestly.
+Each case study uses **public or synthetic data.**. Code is on GitHub, methodology is documented, and trade-offs are explained.
 :::
 
-[
 ::: {.featured-card}
 
 ::: {.fc-row}
@@ -88,18 +88,16 @@ Each case study uses **public or synthetic data** — never client work. Code is
 [Data: Wikipedia Pageviews]{.fc-data}
 :::
 
-### Detecting Media-Driven Spikes in 50GB of Wikipedia Traffic
+### [Detecting Media-Driven Spikes in Wikipedia Traffic](case-studies/spike-detection.qmd){.stretched-link}
 
-Built an anomaly detection framework on real Wikipedia pageview data, demonstrating how to identify statistically significant traffic spikes against dynamic baselines. Uses Polars on Parquet for queries 10x faster than CSV.
+Built a robust spike detector on three months of real Wikipedia pageview data, then graded it against four planted spikes with known sizes and dates. Caught all four, and surfaced the real news of summer 2024 (the Olympics, the July 13 rally shooting, the DNC) for free.
 
 ::: {.fc-tags}
-[Python]{.fc-tag} [Polars]{.fc-tag} [DuckDB]{.fc-tag} [Parquet]{.fc-tag} [Time-Series]{.fc-tag} [Z-Score Detection]{.fc-tag}
+[Python]{.fc-tag} [Polars]{.fc-tag} [Parquet]{.fc-tag} [Time-Series]{.fc-tag} [Robust Statistics]{.fc-tag}
 :::
 
 :::
-](case-studies/spike-detection.qmd)
 
-[
 ::: {.featured-card}
 
 ::: {.fc-row}
@@ -107,7 +105,7 @@ Built an anomaly detection framework on real Wikipedia pageview data, demonstrat
 [Data: FEC Bulk Files]{.fc-data}
 :::
 
-### Political Ad Spend Patterns in FEC Operating Expenditures
+### [Political Media Spend Patterns in FEC Operating Expenditures](case-studies/political-ad-spend.qmd){.stretched-link}
 
 Analyzed real political committee disbursements from FEC bulk data — converting messy fixed-width text files to a partitioned Parquet warehouse and surfacing channel-level spend patterns across election cycles.
 
@@ -116,9 +114,7 @@ Analyzed real political committee disbursements from FEC bulk data — convertin
 :::
 
 :::
-](case-studies/political-ad-spend.qmd)
 
-[
 ::: {.featured-card}
 
 ::: {.fc-row}
@@ -126,7 +122,7 @@ Analyzed real political committee disbursements from FEC bulk data — convertin
 [Data: CMS Open Payments]{.fc-data}
 :::
 
-### Automated Reporting Pipeline (R + Quarto + gt)
+### [Automated Reporting Pipeline (R + Quarto + gt)](case-studies/automated-pipeline.qmd){.stretched-link}
 
 A reproducible pipeline that ingests real CMS Open Payments data, applies cleaning rules, and renders publication-quality HTML reports and formatted Excel workbooks — with zero manual steps after the first run.
 
@@ -135,19 +131,36 @@ A reproducible pipeline that ingests real CMS Open Payments data, applies cleani
 :::
 
 :::
-](case-studies/automated-pipeline.qmd)
 
 
 [Engineering POV]{.section-label}
 
-[
 ::: {.featured-card style="border-color: var(--accent-bright); background: var(--accent-soft);"}
 
-### → Data Foundation: How I Think About the Storage Layer
+### [→ Data Foundation: How I Think About the Storage Layer](data-foundation/data-engineering.qmd){.stretched-link}
 
 A walkthrough of the schema, partitioning strategy, and query patterns that underlie the case studies. The boring infrastructure choices that make everything else fast.
 :::
-](data-foundation/data-engineering.qmd)
+
+
+[Analysis playbook]{.section-label}
+
+::: {.featured-card}
+
+::: {.fc-row}
+[Visualization & Measurement Library]{.fc-category}
+[In progress — growing weekly]{.fc-data}
+:::
+
+### [Analysis Playbook: Business Questions, Answered Visually](analysis/index.qmd){.stretched-link}
+
+A library of analysis patterns organized by purpose — trends, comparison, distributions, experiment readouts, and KPIs. Each entry pairs a real business question with the right chart, the R code behind it, and the correct statistical read.
+
+::: {.fc-tags}
+[R / ggplot2]{.fc-tag} [Trends]{.fc-tag} [Experiment Readouts]{.fc-tag} [Distributions]{.fc-tag} [KPIs]{.fc-tag}
+:::
+
+:::
 
 
 [Toolkit]{.section-label}

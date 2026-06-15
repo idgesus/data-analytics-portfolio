@@ -6,7 +6,7 @@ project:
     - "images/"
 
 website:
-  title: "Jesse G"
+  title: "Jesus M"
   description: "Analytics Leader · Media Measurement · Data Engineering"
   favicon: images/favicon.png
   navbar:
@@ -16,8 +16,8 @@ website:
     left:
       - href: index.qmd
         text: Home
-      - href: about.qmd
-        text: About
+      # - href: about.qmd
+      #   text: About
       - text: Case Studies
         menu:
           - href: case-studies/spike-detection.qmd
@@ -30,23 +30,23 @@ website:
         text: Data Foundation
       - href: posts/code-driven-reporting.qmd
         text: Writing
-      - href: resume.qmd
-        text: Resume
+      # - href: resume.qmd
+      #   text: Resume
     right:
       - icon: github
-        href: https://github.com/YOURUSERNAME
+        href: https://github.com/idgesus
         aria-label: GitHub
       - icon: linkedin
-        href: https://linkedin.com/in/YOURUSERNAME
+        href: https://linkedin.com/in/mejiajesus
         aria-label: LinkedIn
 
   page-footer:
     border: false
     background: "#0f172a"
     left: |
-      © 2025 Jesse G
+      © 2026 Jesus M. 
     right: |
-      Built with [Quarto](https://quarto.org) · [Source on GitHub](https://github.com/YOURUSERNAME/portfolio)
+      Built with [Quarto](https://quarto.org) · [Source on GitHub](https://github.com/idgesus/data-analytics-portfolio)
 
 format:
   html:
