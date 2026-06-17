@@ -216,7 +216,7 @@ If you're convinced and want to move, here's the sequence that has worked for me
 
 The hardest part is the first one. The seventh report takes 1/4 the time of the first. The team builds shared infrastructure as they go.
 
-## Closing
+## The Takeaway
 
 Code driven reporting is not a fashion choice or a technical preference. It is a strategic decision about how an analytics team uses its scarcest resource: analyst time.
 

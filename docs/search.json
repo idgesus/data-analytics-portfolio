@@ -67,28 +67,28 @@
     "href": "posts/code-driven-reporting.html#closing",
     "title": "The Case for Code-Driven Reporting",
     "section": "Closing",
-    "text": "Closing\nCode-driven reporting is not a fashion choice or a technical preference. It’s a strategic decision about how an analytics team allocates its scarcest resource — analyst time — and how it manages its largest hidden risk: silent errors in artisanal work.\nThe teams that take this seriously will spend their time on harder, more valuable problems. The teams that don’t will keep producing decks until automation does it for them. There is no third option.\n\n\nFound this useful? Read more in the case studies."
+    "text": "Closing\nCode driven reporting is not a fashion choice or a technical preference. It is a strategic decision about how an analytics team uses its scarcest resource: analyst time.\nIt is also a decision about how the team manages one of its biggest hidden risks: silent errors in manual reporting.\nThe teams that take this seriously will spend more of their time on harder, more valuable problems. The teams that do not will keep rebuilding the same decks, reports, and metrics until automation does it for them.\nThere is no real third option.\n\n\nFound this useful? Read more in the case studies."
   },
   {
     "objectID": "analysis/trends/index.html",
     "href": "analysis/trends/index.html",
     "title": "Trends & Time Series",
     "section": "",
-    "text": "Analysis Playbook · Trends & Time Series\n\nHow to show whether a trajectory actually changed — dynamic baselines that respect seasonality, trend breaks you can defend, and the difference between an anomaly and ordinary variance.\n\n\n\n\n\n\n🚧 In progress — entries coming soon.\n\n\n\n\n\n\n\nNo matching items"
+    "text": "Analysis Playbook · Trends & Time Series\n\nHow to tell whether a trend actually changed: building dynamic baselines, accounting for seasonality, identifying defensible trend breaks, and separating real anomalies from normal variance.\n\n\n\n\n\n\n🚧 In progress — entries coming soon.\n\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "analysis/kpis/index.html",
     "href": "analysis/kpis/index.html",
     "title": "KPIs & Metrics",
     "section": "",
-    "text": "Analysis Playbook · KPIs & Metrics\n\nHow to define a KPI that survives a quarter of scrutiny — leading vs. lagging indicators, vanity vs. actionable metrics, and scorecards people actually read.\n\n\n\n\n\n\n🚧 In progress — entries coming soon.\n\n\n\n\n\n\n\nNo matching items"
+    "text": "Analysis Playbook · KPIs & Metrics\n\nA practical guide to defining KPIs people can trust: how to distinguish leading and lagging indicators, avoid vanity metrics, and design scorecards that stay useful beyond the first executive review.\n\n\n\n\n\n\n🚧 In progress — entries coming soon.\n\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "analysis/distributions/index.html",
     "href": "analysis/distributions/index.html",
     "title": "Distributions & Uncertainty",
     "section": "",
-    "text": "Analysis Playbook · Distributions & Uncertainty\n\nWhen the mean hides the story — distributions over point estimates, error bars that mean something, and how to put uncertainty on a chart without losing the room.\n\n\n\n\n\n\n🚧 In progress — entries coming soon.\n\n\n\n\n\n\n\nNo matching items"
+    "text": "Analysis Playbook · Distributions & Uncertainty\n\nWhen the mean hides the story and distributions over point estimates, error bars that mean something, and how to put uncertainty on a chart without losing the room.\n\n\n\n\n\n\n🚧 In progress — entries coming soon.\n\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "case-studies/automated-pipeline.html",
@@ -214,7 +214,7 @@
     "href": "case-studies/spike-detection.html#step-1-real-data-real-ingestion",
     "title": "Detecting Media-Driven Spikes in Wikipedia Traffic",
     "section": "Step 1: Real data, real ingestion",
-    "text": "Step 1: Real data, real ingestion\nWikipedia publishes per-article pageview counts through the Pageviews REST API. The per-article endpoint is daily grain (the hourly variant was retired; hourly still exists as multi-GB bulk dumps at ~7M rows per hour, which is where this exact pipeline would point in production). Each row is one (article, day) pair: article, timestamp, views.\nThe fetch script already cached everything as partitioned Parquet, so loading is a lazy Polars scan. I time it because the query speed is part of the point.\n\n\nLoad real Wikipedia pageviews from the Parquet cache\nimport json\nimport time\nfrom pathlib import Path\nimport numpy as np\nimport pandas as pd\nimport polars as pl\n\nCACHE = Path(\"../data/cache/wikipedia\")\nif not CACHE.exists() or not any(CACHE.glob(\"year_month=*/*.parquet\")):\n    raise FileNotFoundError(\n        \"Wikipedia pageview cache not found. Run \"\n        \"`python data/fetch_wikipedia.py` from the project root first.\"\n    )\n\nt0 = time.perf_counter()\nwiki = (\n    pl.scan_parquet(str(CACHE / \"**/*.parquet\"))\n    .filter(pl.col(\"project\") == \"en.wikipedia\")\n    .select([\"article\", \"timestamp\", \"views\"])\n    .sort([\"article\", \"timestamp\"])\n    .collect()\n)\nquery_ms = (time.perf_counter() - t0) * 1000\n\ndf = wiki.to_pandas()\ndf[\"timestamp\"] = pd.to_datetime(df[\"timestamp\"])\n\nn_articles = df[\"article\"].nunique()\nn_days = df[\"timestamp\"].nunique()\nprint(f\"loaded {len(df):,} rows in {query_ms:.0f} ms (lazy scan + predicate pushdown)\")\nprint(f\"  {n_articles} articles x {n_days} days, {df['timestamp'].min().date()} to {df['timestamp'].max().date()}\")\nprint(f\"\\nsample rows:\")\nprint(df.head(5).to_string(index=False))\n\n\nloaded 9,476 rows in 3 ms (lazy scan + predicate pushdown)\n  103 articles x 92 days, 2024-07-01 to 2024-09-30\n\nsample rows:\n        article  timestamp  views\nAbraham_Lincoln 2024-07-01  13790\nAbraham_Lincoln 2024-07-02  13548\nAbraham_Lincoln 2024-07-03  15240\nAbraham_Lincoln 2024-07-04  19220\nAbraham_Lincoln 2024-07-05  15605"
+    "text": "Step 1: Real data, real ingestion\nWikipedia publishes per-article pageview counts through the Pageviews REST API. The per-article endpoint is daily grain (the hourly variant was retired; hourly still exists as multi-GB bulk dumps at ~7M rows per hour, which is where this exact pipeline would point in production). Each row is one (article, day) pair: article, timestamp, views.\nThe fetch script already cached everything as partitioned Parquet, so loading is a lazy Polars scan. I time it because the query speed is part of the point.\n\n\nLoad real Wikipedia pageviews from the Parquet cache\nimport json\nimport time\nfrom pathlib import Path\nimport numpy as np\nimport pandas as pd\nimport polars as pl\n\nCACHE = Path(\"../data/cache/wikipedia\")\nif not CACHE.exists() or not any(CACHE.glob(\"year_month=*/*.parquet\")):\n    raise FileNotFoundError(\n        \"Wikipedia pageview cache not found. Run \"\n        \"`python data/fetch_wikipedia.py` from the project root first.\"\n    )\n\nt0 = time.perf_counter()\nwiki = (\n    pl.scan_parquet(str(CACHE / \"**/*.parquet\"))\n    .filter(pl.col(\"project\") == \"en.wikipedia\")\n    .select([\"article\", \"timestamp\", \"views\"])\n    .sort([\"article\", \"timestamp\"])\n    .collect()\n)\nquery_ms = (time.perf_counter() - t0) * 1000\n\ndf = wiki.to_pandas()\ndf[\"timestamp\"] = pd.to_datetime(df[\"timestamp\"])\n\nn_articles = df[\"article\"].nunique()\nn_days = df[\"timestamp\"].nunique()\nprint(f\"loaded {len(df):,} rows in {query_ms:.0f} ms (lazy scan + predicate pushdown)\")\nprint(f\"  {n_articles} articles x {n_days} days, {df['timestamp'].min().date()} to {df['timestamp'].max().date()}\")\nprint(f\"\\nsample rows:\")\nprint(df.head(5).to_string(index=False))\n\n\nloaded 9,476 rows in 5 ms (lazy scan + predicate pushdown)\n  103 articles x 92 days, 2024-07-01 to 2024-09-30\n\nsample rows:\n        article  timestamp  views\nAbraham_Lincoln 2024-07-01  13790\nAbraham_Lincoln 2024-07-02  13548\nAbraham_Lincoln 2024-07-03  15240\nAbraham_Lincoln 2024-07-04  19220\nAbraham_Lincoln 2024-07-05  15605"
   },
   {
     "objectID": "case-studies/spike-detection.html#step-2-the-partitioned-parquet-warehouse",
@@ -277,7 +277,7 @@
     "href": "case-studies/spike-detection.html#key-results",
     "title": "Detecting Media-Driven Spikes in Wikipedia Traffic",
     "section": "Key Results",
-    "text": "Key Results\n\n\n4/4 Planted fake spikes caught 10/10 planted days flagged\n\n\n4.3× Storage compression Parquet vs CSV, measured at render\n\n\n3 ms Full warehouse scan Polars lazy query, measured at render\n\n\n92 Events ranked for triage Two-tier robust z detection"
+    "text": "Key Results\n\n\n4/4 Planted fake spikes caught 10/10 planted days flagged\n\n\n4.3× Storage compression Parquet vs CSV, measured at render\n\n\n5 ms Full warehouse scan Polars lazy query, measured at render\n\n\n92 Events ranked for triage Two-tier robust z detection"
   },
   {
     "objectID": "case-studies/spike-detection.html#what-this-demonstrates",
@@ -417,7 +417,7 @@
     "href": "analysis/experiments/index.html",
     "title": "Experiment Readouts",
     "section": "",
-    "text": "Analysis Playbook · Experiment Readouts\n\nReading a test without fooling yourself — lift with confidence intervals, the difference between “the test won” and “the test probably won,” and how to present a null result.\n\n\n\n\n\n\n🚧 In progress — entries coming soon.\n\n\n\n\n\n\n\nNo matching items"
+    "text": "Analysis Playbook · Experiment Readouts\n\nReading a test without fooling yourself. Lift with confidence intervals, the difference between “the test won” and “the test probably won,” and how to present a null result.\n\n\n\n\n\n\n🚧 In progress — entries coming soon.\n\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "analysis/comparison/index.html",
@@ -481,5 +481,12 @@
     "title": "Data Foundation",
     "section": "Honest trade-offs",
     "text": "Honest trade-offs\nI want to be clear about what this approach isn’t good for:\n\nReal-time / streaming. Parquet is batch. If you need sub-minute freshness, this is the wrong layer. (You’d add Kafka + a streaming engine on top.)\nFrequent row-level updates. Parquet files are immutable; updating individual rows means rewriting partitions. For mostly-append-only data (which describes most analytics workloads), this is fine.\nTiny datasets. If your data fits comfortably in a CSV that opens in Excel, just use a CSV. The infrastructure overhead isn’t justified.\nCross-org data sharing. Parquet works in any modern engine, but if your stakeholders open everything in Excel, you’ll still need to export to xlsx for delivery. (Which is fine — generate it from the Parquet source.)\n\nThe point isn’t that Parquet/Polars/DuckDB is universally correct. The point is that making the choice deliberately, and being able to explain why, is what separates senior analytics work from junior analytics work."
+  },
+  {
+    "objectID": "posts/code-driven-reporting.html#the-takeaway",
+    "href": "posts/code-driven-reporting.html#the-takeaway",
+    "title": "The Case for Code-Driven Reporting",
+    "section": "The Takeaway",
+    "text": "The Takeaway\nCode driven reporting is not a fashion choice or a technical preference. It is a strategic decision about how an analytics team uses its scarcest resource: analyst time.\nIt is also a decision about how the team manages one of its biggest hidden risks: silent errors in manual reporting.\nThe teams that take this seriously will spend more of their time on harder, more valuable problems. The teams that do not will keep rebuilding the same decks, reports, and metrics until automation does it for them.\nThere is no real third option.\n\n\nFound this useful? Read more in the case studies."
   }
 ]
