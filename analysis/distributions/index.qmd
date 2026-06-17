@@ -15,7 +15,7 @@ listing:
 Analysis Playbook · Distributions & Uncertainty
 :::
 
-When the mean hides the story — distributions over point estimates, error bars that
+When the mean hides the story and distributions over point estimates, error bars that
 mean something, and how to put uncertainty on a chart without losing the room.
 
 ::: {.callout-note appearance="simple"}

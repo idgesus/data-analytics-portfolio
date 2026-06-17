@@ -15,9 +15,7 @@ listing:
 Analysis Playbook · Trends & Time Series
 :::
 
-How to show whether a trajectory actually changed — dynamic baselines that respect
-seasonality, trend breaks you can defend, and the difference between an anomaly and
-ordinary variance.
+How to tell whether a trend actually changed: building dynamic baselines, accounting for seasonality, identifying defensible trend breaks, and separating real anomalies from normal variance.
 
 ::: {.callout-note appearance="simple"}
 **🚧 In progress** — entries coming soon.

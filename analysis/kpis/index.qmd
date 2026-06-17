@@ -15,8 +15,7 @@ listing:
 Analysis Playbook · KPIs & Metrics
 :::
 
-How to define a KPI that survives a quarter of scrutiny — leading vs. lagging
-indicators, vanity vs. actionable metrics, and scorecards people actually read.
+A practical guide to defining KPIs people can trust: how to distinguish leading and lagging indicators, avoid vanity metrics, and design scorecards that stay useful beyond the first executive review.
 
 ::: {.callout-note appearance="simple"}
 **🚧 In progress** — entries coming soon.

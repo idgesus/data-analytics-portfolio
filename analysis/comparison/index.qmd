@@ -15,8 +15,7 @@ listing:
 Analysis Playbook · Comparison
 :::
 
-Comparing groups, periods, and segments without letting the comparison itself mislead —
-mix effects, denominators that move, and the charts that make a fair comparison obvious.
+Comparing groups, periods, and segments without letting the comparison itself mislead mix effects, denominators that move, and the charts that make a fair comparison obvious.
 
 ::: {.callout-note appearance="simple"}
 **🚧 In progress** — entries coming soon.
