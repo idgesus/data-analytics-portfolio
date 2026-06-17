@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.9.35">
+<meta name="generator" content="quarto-1.9.38">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -75,14 +75,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-3f230b53dc93e4a04bf4a3505d77a42a.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-29a29eae8fe046d865b2a1d8bad8a0f3.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-3f230b53dc93e4a04bf4a3505d77a42a.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-de63f62b328812d8e578a4d74e282472.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-6b6957c917596b414ec0b78690761e87.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-de63f62b328812d8e578a4d74e282472.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-83f8e35f04c37c73138a5a868b0b0896.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-fea92626445eb82eae8574f25bf7c4bd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-83f8e35f04c37c73138a5a868b0b0896.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-433884d314a7a9fb88432cc1824ec3f3.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-85f9e96ee97c5c0a065a5c956d03e936.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-433884d314a7a9fb88432cc1824ec3f3.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -533,9 +533,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>      .head().to_string(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>loaded 6,457,641 real expenditure records
+<pre><code>loaded 6,457,673 real expenditure records
 cycles: [np.int64(2020), np.int64(2022), np.int64(2024)]
-total spend: $30,232,290,513
+total spend: $30,232,303,647
 
 sample rows (FEC bulk format, post-join):
                 cmte_nm                             name transaction_dt  transaction_amt                        purpose
@@ -599,10 +599,10 @@ TOM ROONEY FOR CONGRESS                      ELECTEK USA     2019-01-18         
 <div class="cell-output cell-output-stdout">
 <pre><code>category distribution across real FEC operating expenditures:
 category
-Other               3597975
+Other               3598005
 Operations          1982890
 Consulting           322412
-Direct Mail          271838
+Direct Mail          271840
 Digital              231140
 Polling/Research      32673
 TV/Broadcast          18713
@@ -649,8 +649,8 @@ coverage: 44% of records and 60% of dollars get a named category
 <div class="cell-output cell-output-stdout">
 <pre><code>Parquet warehouse: ../data/cache/fec
   partitions:     36 files (cycle × month)
-  total size:     113.03 MB
-  csv equivalent: 628.28 MB
+  total size:     113.08 MB
+  csv equivalent: 628.29 MB
   compression:    5.6× smaller</code></pre>
 </div>
 </div>
@@ -702,11 +702,11 @@ coverage: 44% of records and 60% of dollars get a named category
   2020      Direct Mail   $874,966,074         91,276          $9,586
   2020       Consulting   $777,179,881         97,876          $7,940
   2020 Polling/Research   $260,644,546         13,294         $19,606
-  2022            Other $3,110,672,917      1,154,554          $2,694
+  2022            Other $3,110,684,968      1,154,584          $2,694
   2022       Operations   $967,297,265        497,907          $1,943
   2022     TV/Broadcast   $828,838,195          5,815        $142,535
   2022          Digital   $715,852,266         83,021          $8,623
-  2022      Direct Mail   $679,245,351         89,869          $7,558
+  2022      Direct Mail   $679,246,434         89,871          $7,558
   2022       Consulting   $675,238,028        106,457          $6,343
   2022 Polling/Research   $178,856,493          9,895         $18,075
   2024            Other $4,398,159,810      1,259,206          $3,493

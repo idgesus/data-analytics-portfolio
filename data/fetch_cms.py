@@ -4,10 +4,13 @@ program year, filter to the eight pharma companies the automated-pipeline
 case study uses, and cache as Parquet.
 
 Source: https://download.cms.gov/openpayments/<bulk-file>.zip
-        Public-domain bulk export. The exact filename includes the publication
-        date (e.g. PGYY2023_P012025.zip), which CMS rotates on each refresh —
-        if the default URL 404s, browse https://www.cms.gov/openpayments/data
-        for the current bulk download and pass it via --url.
+        Public-domain bulk export. The filename encodes the program year and two
+        dates — publication and data-refresh — e.g.
+        PGYR2024_P01232026_01102026.zip (Program Year 2024, published 2026-01-23).
+        CMS rotates these on each refresh. If the default URL 404s, list the
+        current files via the data portal's metastore API:
+          curl -s https://openpaymentsdata.cms.gov/api/1/metastore/schemas/dataset/items
+        and pass the General Payments program-year zip via --url.
 
 Why filter at fetch time:
     The full General Payments file is ~3 GB CSV with 13M+ rows and 90+ columns.
@@ -24,7 +27,7 @@ Security posture:
 
 Run:
     python data/fetch_cms.py
-    python data/fetch_cms.py --url https://download.cms.gov/openpayments/PGYY2022_P01_<date>.zip
+    python data/fetch_cms.py --url https://download.cms.gov/openpayments/PGYR2023_P01232026_01102026.zip
     python data/fetch_cms.py --force
 """
 
@@ -46,7 +49,8 @@ CACHE_DIR = PROJECT_ROOT / "data" / "cache" / "cms"
 USER_AGENT = "jesse-g-portfolio-fetch/1.0 (idgesus@gmail.com)"
 DOWNLOAD_TIMEOUT = (15, 1800)  # connect, read
 
-DEFAULT_URL = "https://download.cms.gov/openpayments/PGYY2023_P012025.zip"
+# Program Year 2024 — latest complete year, published 2026-01-23 (verified live).
+DEFAULT_URL = "https://download.cms.gov/openpayments/PGYR2024_P01232026_01102026.zip"
 MAX_BYTES = 6 * 1024 * 1024 * 1024  # 6 GB sanity cap
 
 # Companies to keep (case study uses these). The General Payments file's
@@ -59,12 +63,16 @@ TARGET_COMPANIES = [
 ]
 
 # Columns in the General Payments file we actually use. Real CMS files have
-# 90+ columns; selecting cuts memory and disk by an order of magnitude. The
-# names below match the published General Payments 2023 schema.
+# 90+ columns; selecting cuts memory and disk by an order of magnitude.
+# NOTE: the PY2024 publication renamed the single "Physician_Specialty" column
+# to "Covered_Recipient_Specialty_1" (recipients can now be non-physician
+# entities, hence the "Covered_Recipient_*" naming, and specialty is split into
+# up to six ranked slots). We take slot 1 as the primary specialty.
+SPECIALTY_COL = "Covered_Recipient_Specialty_1"
 KEEP_COLS = [
     "Record_ID",
     "Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_Name",
-    "Physician_Specialty",
+    SPECIALTY_COL,
     "Recipient_State",
     "Date_of_Payment",
     "Nature_of_Payment_or_Transfer_of_Value",
@@ -179,7 +187,7 @@ def filter_and_write_parquet(csv_path: Path, out_dir: Path) -> int:
         .drop("Total_Amount_of_Payment_USDollars", "Date_of_Payment")
         .rename({
             company_col: "company",
-            "Physician_Specialty": "specialty",
+            SPECIALTY_COL: "specialty",
             "Recipient_State": "state",
             "Nature_of_Payment_or_Transfer_of_Value": "payment_type",
             "Record_ID": "record_id",

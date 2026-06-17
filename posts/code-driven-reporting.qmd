@@ -218,9 +218,13 @@ The hardest part is the first one. The seventh report takes 1/4 the time of the 
 
 ## Closing
 
-Code-driven reporting is not a fashion choice or a technical preference. It's a strategic decision about how an analytics team allocates its scarcest resource — analyst time — and how it manages its largest hidden risk: silent errors in artisanal work.
+Code driven reporting is not a fashion choice or a technical preference. It is a strategic decision about how an analytics team uses its scarcest resource: analyst time.
 
-The teams that take this seriously will spend their time on harder, more valuable problems. The teams that don't will keep producing decks until automation does it for them. There is no third option.
+It is also a decision about how the team manages one of its biggest hidden risks: silent errors in manual reporting.
+
+The teams that take this seriously will spend more of their time on harder, more valuable problems. The teams that do not will keep rebuilding the same decks, reports, and metrics until automation does it for them.
+
+There is no real third option.
 
 ---
 

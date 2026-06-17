@@ -38,8 +38,8 @@ include-in-header:
 
 ::: {.metric}
 [3-7]{.metric-value}
-[Analysts managed]{.metric-label}
-[Methodology + mentorship]{.metric-detail}
+[Managed Data Science/Analyst]{.metric-label}
+[Methodology + taining + mentorship]{.metric-detail}
 :::
 
 ::: {.metric}

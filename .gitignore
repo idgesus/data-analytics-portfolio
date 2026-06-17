@@ -27,6 +27,8 @@ venv/
 
 # R
 .Rproj.user/
+.Renviron
+.Rprofile
 .Rhistory
 .RData
 .Ruserdata

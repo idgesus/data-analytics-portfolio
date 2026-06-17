@@ -451,10 +451,15 @@ plt.rcParams.update({
     'font.size': 10,
 })
 
-def headline(ax, title, sub):
-    ### takeaway big and bold, literal description small and gray
+# def headline(ax, title, sub):
+#     ### takeaway big and bold, literal description small and gray
+#     ax.set_title(title, fontsize=14, fontweight='bold', loc='left', pad=30, color=NAVY)
+#     ax.text(0, 1.06, sub, transform=ax.transAxes, fontsize=9.5, color=GRAY)
+def headline(ax, title, subtitle):
     ax.set_title(title, fontsize=14, fontweight='bold', loc='left', pad=30, color=NAVY)
-    ax.text(0, 1.06, sub, transform=ax.transAxes, fontsize=9.5, color=GRAY)
+    ax.text(0.0, 1.02, subtitle.strip(),
+        transform=ax.transAxes,fontsize=9.5, color=GRAY, ha='left', va='bottom')
+
 ```
 
 Each panel below is one planted spike. The shaded band is the planted window (the answer
@@ -464,10 +469,11 @@ key), the dots are what the detector flagged. The grade is visual: dots inside e
 #| label: spike-viz
 #| code-summary: "Planted windows vs detected days, one panel per event"
 #| fig-cap: "The four planted spikes. Blue line: daily views (real data plus the planted multiplier). Gray band: the page's normal range, rolling median ±3 robust σ, anything outside it is an outlier candidate. Red band: the planted window. Red dots: days the detector flagged."
-#| fig-width: 12
-#| fig-height: 8.5
+#| fig-width: 7
+#| fig-height: 10
 
-fig, axes = plt.subplots(2, 2, figsize=(13, 8.5))
+# fig, axes = plt.subplots(2, 2, figsize=(13, 8.5))
+fig, axes = plt.subplots(4, 1, figsize=(6.5, 13))
 axes = axes.flatten()
 
 for ax, evt in zip(axes, spike_events):
@@ -513,8 +519,10 @@ for ax, evt in zip(axes, spike_events):
     ax.margins(y=0.1)
 
 plt.suptitle('All four planted spikes caught, dots land inside every red window',
-             fontsize=14, fontweight='bold', x=0.005, ha='left', color=NAVY)
-plt.tight_layout(rect=[0, 0, 1, 0.97])
+             fontsize=12.5, fontweight='bold', x=0.005, ha='left', color=NAVY)
+# plt.tight_layout(rect=[0, 0, 0, 1])
+plt.tight_layout(rect=[0, 0, 1, 0.96], h_pad=2.0)
+
 plt.show()
 ```
 
@@ -588,10 +596,8 @@ fig, ax = plt.subplots(figsize=(9, 5))
 
 ax.axvspan(s, e, color=RED, alpha=0.08, zorder=0)
 ax.plot(ts['timestamp'], ts['views'], color=BLUE, linewidth=1.2, label='daily views')
-ax.plot(ts['timestamp'], ts['robust_upper'], color=NAVY, linewidth=2,
-        label='robust threshold (median + 3·MADσ)')
-ax.plot(ts['timestamp'], ts['classic_upper'], color=GRAY, linewidth=1.8,
-        linestyle='--', label='classic threshold (mean + 3·std)')
+ax.plot(ts['timestamp'], ts['robust_upper'], color=NAVY, linewidth=2,label='robust threshold (median + 3·MADσ)')
+ax.plot(ts['timestamp'], ts['classic_upper'], color=GRAY, linewidth=1.3,linestyle='--', label='classic threshold (mean + 3·std)')
 
 ## point at the failure, that's the whole chart
 post = ts[(ts['timestamp'] > e) & (ts['timestamp'] <= e + pd.Timedelta(days=18))]
@@ -627,6 +633,8 @@ found in the raw data. Plot every detected event by date and severity and the su
 #| label: events-timeline
 #| code-summary: "Every detected event by peak date and severity"
 #| fig-cap: "All detected events, peak robust z by peak date (log scale). Red: the four planted spikes. Blue: real events in the raw data. The Olympics band and the July 13 news cycle need no help from me."
+#| fig-width: 10
+#| fig-height: 6
 
 planted_set = {e['article'] for e in spike_events}
 events['planted'] = events.apply(
@@ -641,7 +649,8 @@ events['planted'] = events.apply(
 
 import matplotlib.transforms as mtransforms
 
-fig, ax = plt.subplots(figsize=(10, 5.5))
+# fig, ax = plt.subplots(figsize=(10, 5.5))
+fig, ax = plt.subplots(figsize=(10, 7))
 
 nat = events[~events['planted']]
 pla = events[events['planted']]
@@ -662,7 +671,7 @@ ax.text(j13, 0.88, 'Jul 13 rally shooting ', ha='right', transform=trans,
 
 ## label the planted four, custom offsets so einstein and gaga don't collide
 planted_offsets = {
-    'Albert_Einstein': (8, -4, 'left'),
+    'Albert_Einstein': (3, -17, 'left'),
     'Taylor_Swift': (8, 2, 'left'),
     'Bitcoin': (8, -3, 'left'),
     'Elon_Musk': (8, 2, 'left'),
@@ -675,9 +684,9 @@ for _, r in pla.iterrows():
 
 ## plus the real events i can actually name
 callouts = {
-    'Lady_Gaga': ('sang at the opening ceremony', (8, -22)),
+    'Lady_Gaga': ('sang at the opening ceremony', (8, -12)),
     'Theodore_Roosevelt': ('readers compare past assassination attempts', (-2, 12)),
-    'Barack_Obama': ('DNC speech', (8, -18)),
+    'Barack_Obama': ('DNC speech', (8, -1)),
 }
 for art, (why, (dx, dy)) in callouts.items():
     r = nat[nat['article'] == art].sort_values('peak_z', ascending=False).iloc[0]
@@ -691,9 +700,9 @@ ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %d'))
 ax.grid(axis='y', linestyle=':', alpha=0.4)
 
 headline(ax, 'The detector reconstructs the news cycle of summer 2024',
-         f'{n_events} detected events across {n_flagged_articles} articles. red diamonds are the planted answer key, blue dots are real')
+         f'\n{n_events} detected events across {n_flagged_articles} articles. red diamonds are the planted answer key, blue dots are real')
 
-plt.tight_layout()
+# plt.tight_layout()
 plt.show()
 ```
 
@@ -710,7 +719,7 @@ feed of "something happened to this page" with the sizes attached.
 
 ::: {.metric}
 [`{python} f"{n_caught}/{len(spike_events)}"`]{.metric-value}
-[Planted spikes caught]{.metric-label}
+[Planted fake spikes caught]{.metric-label}
 [`{python} f"{days_caught}/{days_planted} planted days flagged"`]{.metric-detail}
 :::
 
@@ -758,8 +767,6 @@ because I didn't plant them.
   pages is the biggest simplification here; volatility profiles differ by page
 - **Cause attribution** — join detected events against news APIs, social trends, or a
   media schedule so events arrive pre-explained instead of pre-ranked
-- **Streaming implementation** — rolling median and MAD both have incremental versions,
-  so this ports to a Kafka consumer for sub-minute detection at the hourly bulk-dump grain
 
 ## Tools & Methods
 
